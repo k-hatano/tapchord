@@ -10,12 +10,12 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@drawable/ic_launcher"
+        android:icon="@drawable/tapchord"
         android:label="@string/app_name"
         android:theme="@style/AppTheme">
         <activity
             android:name="jp.nita.tapchord.MainActivity"
-            android:label="@string/app_name" android:screenOrientation="portrait" android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
+            android:label="@string/app_name" android:screenOrientation="landscape" android:theme="@android:style/Theme.Light.NoTitleBar.Fullscreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
