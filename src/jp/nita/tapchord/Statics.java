@@ -3,6 +3,7 @@ package jp.nita.tapchord;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.Rect;
+import android.graphics.RectF;
 
 public class Statics {
 	
@@ -77,43 +78,83 @@ public class Statics {
 	public static String MAJORS[]={"C","G","D","A","E","B","F#","C#","G#","D#","A#","F"};
 	public static String MINORS[]={"Am","Em","Bm","F#m","C#m","G#m","D#m","A#m","Fm","Cm","Gm","Dm"};
 	
-	public static String TENSIONS[]={"7","M7","add9","-5/aug"};
+	public static String TENSIONS[]={"add9","-5/aug","7","M7"};
+	public static String OPTIONS[]={"Sine","Stroke","#b0"};
 	
-	public static Rect getRectOfButton(int x,int y,int width,int height){
+	public static RectF getRectOfButton(int x,int y,int width,int height){
 		int vert=height*7/35;
 		int pX=width/2+x*vert;
 		int pY=height/2+y*vert;
-		return new Rect(pX-vert/2, pY-vert/2, pX+vert/2, pY+vert/2);
-	}
-	
-	public static Point getPointOfButton(int x,int y,int width,int height){
-		int vert=height*7/35;
-		int pX=width/2+x*vert;
-		int pY=height/2+y*vert;
-		return new Point(pX, pY);
+		return new RectF(pX-vert/2+vert/14, pY-vert/2+vert/14, pX+vert/2-vert/14, pY+vert/2-vert/14);
 	}
 	
 	public static int getRadiusOfButton(int height){
 		return height*7/70-8;
 	}
 	
-	public static Rect getRectOfStatusBar(int width,int height){
-		return new Rect(0,0,width,height*7/35);
+	public static RectF getRectOfStatusBar(int width,int height){
+		return new RectF(0,0,width,height*7/35);
 	}
 	
-	public static Point getPointOfStatusBarButton(int x,int y,int width,int height){
+	public static RectF getRectOfStatusBarButton(int x,int y,int width,int height){
 		int vert=height*7/35;
 		int pX=x*vert+vert/2;
-		return new Point(pX,vert/2);
+		return new RectF(pX-vert/2+vert/14,0+vert/14,pX+vert/2-vert/14,vert-vert/14);
 	}
 	
-	public static Rect getRectOfStatusBarButton(int x,int y,int width,int height){
+	public static RectF getRectOfToolbar(int width,int height){
+		return new RectF(0,height*28/35,width,height);
+	}
+	
+	public static RectF getRectOfToolbarButton(int x,int y,int width,int height){
 		int vert=height*7/35;
 		int pX=x*vert+vert/2;
-		return new Rect(pX-vert/2,0,pX+vert/2,vert);
+		return new RectF(width-(pX+vert/2)+vert/14,height-vert+vert/14,width-(pX-vert/2)-vert/14,height-vert/14);
 	}
 	
-	public static Rect getRectOfToolbar(int width,int height){
-		return new Rect(0,height*28/35,width,height);
+	public static RectF getRectOfKeyboardIndicator(int i,int shrink,int width,int height){
+		float vert=height/35;
+		RectF r=null;
+		switch(i%12){
+		case 0:
+			r=new RectF(width-vert*21,vert*4,width-vert*19,vert*6);
+			break;
+		case 2:
+			r=new RectF(width-vert*18,vert*4,width-vert*16,vert*6);
+			break;
+		case 4:
+			r=new RectF(width-vert*15,vert*4,width-vert*13,vert*6);
+			break;
+		case 5:
+			r=new RectF(width-vert*12,vert*4,width-vert*10,vert*6);
+			break;
+		case 7:
+			r=new RectF(width-vert*9,vert*4,width-vert*7,vert*6);
+			break;
+		case 9:
+			r=new RectF(width-vert*6,vert*4,width-vert*4,vert*6);
+			break;
+		case 11:
+			r=new RectF(width-vert*3,vert*4,width-vert*1,vert*6);
+			break;
+			
+		case 1:
+			r=new RectF(width-vert*20,vert*1,width-vert*18,vert*3);
+			break;
+		case 3:
+			r=new RectF(width-vert*17,vert*1,width-vert*15,vert*3);
+			break;
+		case 6:
+			r=new RectF(width-vert*10,vert*1,width-vert*8,vert*3);
+			break;
+		case 8:
+			r=new RectF(width-vert*7,vert*1,width-vert*5,vert*3);
+			break;
+		case 10:
+			r=new RectF(width-vert*4,vert*1,width-vert*2,vert*3);
+			break;
+		}
+		
+		return r;
 	}
 }

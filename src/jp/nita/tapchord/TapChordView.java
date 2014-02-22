@@ -3,11 +3,13 @@ package jp.nita.tapchord;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Paint.FontMetrics;
 import android.graphics.Paint.Style;
 import android.graphics.Point;
 import android.graphics.Rect;
+import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
@@ -38,7 +40,7 @@ public class TapChordView extends View {
 		float w;
 		Paint paint=new Paint();
 		Paint textPaint=new Paint();
-		Rect rect;
+		RectF rect;
 		String str="";
 
 		FontMetrics fontMetrics = textPaint.getFontMetrics();
@@ -74,10 +76,9 @@ public class TapChordView extends View {
 					break;
 				}
 
-				Point pt=Statics.getPointOfButton(x, y, width, height);
-				canvas.drawCircle(pt.x, pt.y, rad, paint);
-
 				rect=Statics.getRectOfButton(x,y,width,height);
+				canvas.drawOval(rect, paint);
+
 				switch(y){
 				case -1:
 					str=Statics.SUS4S[xx]; break;
@@ -101,20 +102,37 @@ public class TapChordView extends View {
 			int d=0;
 			if(toolbarFlags[x]>0) d=1;
 			paint.setColor(Statics.getColor(5,d));
-			Point pt=Statics.getPointOfStatusBarButton(x, 0, width, height);
-			canvas.drawCircle(pt.x, pt.y, rad, paint);
-
 			rect=Statics.getRectOfStatusBarButton(x,0,width,height);
+			canvas.drawOval(rect, paint);
+
 			str=Statics.TENSIONS[x];
 			w=textPaint.measureText(str);
 			canvas.drawText(str,rect.centerX()-w/2,rect.centerY()-(fontMetrics.ascent+fontMetrics.descent)/2,textPaint);
+		}
+		
+		for(x=0;x<3;x++){
+			int d=0;
+			if(toolbarFlags[x]>0) d=1;
+			paint.setColor(Statics.getColor(5,d));
+			rect=Statics.getRectOfToolbarButton(x,0,width,height);
+			canvas.drawOval(rect, paint);
+			
+			str=Statics.OPTIONS[x];
+			w=textPaint.measureText(str);
+			canvas.drawText(str,rect.centerX()-w/2,rect.centerY()-(fontMetrics.ascent+fontMetrics.descent)/2,textPaint);
+		}
+		
+		for(x=0;x<12;x++){
+			paint.setColor(Color.WHITE);
+			RectF r=Statics.getRectOfKeyboardIndicator(x, 0, width, height);
+			canvas.drawOval(r,paint);
 		}
 	}
 
 	public boolean onTouchEvent(MotionEvent event){
 		int i,j,k;
 		int x,y;
-		Rect rect;
+		RectF rect;
 		switch(event.getAction()){
 		case MotionEvent.ACTION_DOWN:
 		case MotionEvent.ACTION_MOVE:
