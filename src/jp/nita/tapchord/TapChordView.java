@@ -7,8 +7,6 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Paint.FontMetrics;
 import android.graphics.Paint.Style;
-import android.graphics.Point;
-import android.graphics.Rect;
 import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
@@ -124,9 +122,17 @@ public class TapChordView extends View {
 		
 		for(x=0;x<12;x++){
 			paint.setColor(Color.WHITE);
-			RectF r=Statics.getRectOfKeyboardIndicator(x, 0, width, height);
-			canvas.drawOval(r,paint);
+			rect=Statics.getRectOfKeyboardIndicator(x, 0, width, height);
+			canvas.drawOval(rect,paint);
 		}
+		
+		paint.setColor(Color.GRAY);
+		rect=Statics.getRectOfScrollBar(width, height);
+		canvas.drawRect(rect,paint);
+		
+		paint.setColor(Color.DKGRAY);
+		rect=Statics.getRectOfScrollNob(0, width, height);
+		canvas.drawRect(rect,paint);
 	}
 
 	public boolean onTouchEvent(MotionEvent event){

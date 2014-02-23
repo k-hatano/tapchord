@@ -1,8 +1,6 @@
 package jp.nita.tapchord;
 
 import android.graphics.Color;
-import android.graphics.Point;
-import android.graphics.Rect;
 import android.graphics.RectF;
 
 public class Statics {
@@ -82,9 +80,9 @@ public class Statics {
 	public static String OPTIONS[]={"Sine","Stroke","#b0"};
 	
 	public static RectF getRectOfButton(int x,int y,int width,int height){
-		int vert=height*7/35;
-		int pX=width/2+x*vert;
-		int pY=height/2+y*vert;
+		float vert=height*7/35f;
+		float pX=width/2+x*vert;
+		float pY=height/2+y*vert;
 		return new RectF(pX-vert/2+vert/14, pY-vert/2+vert/14, pX+vert/2-vert/14, pY+vert/2-vert/14);
 	}
 	
@@ -97,8 +95,8 @@ public class Statics {
 	}
 	
 	public static RectF getRectOfStatusBarButton(int x,int y,int width,int height){
-		int vert=height*7/35;
-		int pX=x*vert+vert/2;
+		float vert=height*7/35f;
+		float pX=x*vert+vert/2;
 		return new RectF(pX-vert/2+vert/14,0+vert/14,pX+vert/2-vert/14,vert-vert/14);
 	}
 	
@@ -107,13 +105,13 @@ public class Statics {
 	}
 	
 	public static RectF getRectOfToolbarButton(int x,int y,int width,int height){
-		int vert=height*7/35;
-		int pX=x*vert+vert/2;
+		float vert=height*7/35f;
+		float pX=x*vert+vert/2;
 		return new RectF(width-(pX+vert/2)+vert/14,height-vert+vert/14,width-(pX-vert/2)-vert/14,height-vert/14);
 	}
 	
 	public static RectF getRectOfKeyboardIndicator(int i,int shrink,int width,int height){
-		float vert=height/35;
+		float vert=height/35f;
 		RectF r=null;
 		switch(i%12){
 		case 0:
@@ -139,22 +137,36 @@ public class Statics {
 			break;
 			
 		case 1:
-			r=new RectF(width-vert*20,vert*1,width-vert*18,vert*3);
+			r=new RectF(width-vert*19.5f,vert*1,width-vert*17.5f,vert*3);
 			break;
 		case 3:
-			r=new RectF(width-vert*17,vert*1,width-vert*15,vert*3);
+			r=new RectF(width-vert*16.5f,vert*1,width-vert*14.5f,vert*3);
 			break;
 		case 6:
-			r=new RectF(width-vert*10,vert*1,width-vert*8,vert*3);
+			r=new RectF(width-vert*10.5f,vert*1,width-vert*8.5f,vert*3);
 			break;
 		case 8:
-			r=new RectF(width-vert*7,vert*1,width-vert*5,vert*3);
+			r=new RectF(width-vert*7.5f,vert*1,width-vert*5.5f,vert*3);
 			break;
 		case 10:
-			r=new RectF(width-vert*4,vert*1,width-vert*2,vert*3);
+			r=new RectF(width-vert*4.5f,vert*1,width-vert*2.5f,vert*3);
 			break;
 		}
 		
 		return r;
 	}
+	
+	public static RectF getRectOfScrollBar(int width,int height){
+		float vert=height/35f;
+		return new RectF(vert*2,vert*31f,vert*21,vert*32f);
+	}
+	
+	public static RectF getRectOfScrollNob(int pos,int width,int height){
+		float vert=height/35f;
+		float max=(vert*7)*19;
+		float nob=width/max;
+		float x=vert*2+vert*19/2+pos*vert;
+		return new RectF(x-(nob*vert*19)/2,vert*30.5f,x+(nob*vert*19)/2,vert*32.5f);
+	}
+	
 }
