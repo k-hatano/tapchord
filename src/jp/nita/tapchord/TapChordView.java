@@ -22,6 +22,8 @@ public class TapChordView extends View {
 	
 	private final int SITUATION_NORMAL=0;
 	private final int SITUATION_SCROLLING=1;
+	
+	Sound sound=new Sound(null,0);
 
 	public TapChordView(Context context, AttributeSet attrs) {
 		super(context, attrs);
@@ -31,6 +33,7 @@ public class TapChordView extends View {
 		playing=0;
 		scroll=0;
 		upper=0;
+		
 	}
 
 	public void init(Context context){
@@ -255,6 +258,7 @@ public class TapChordView extends View {
 	}
 	
 	public void play(int x,int y){
+		sound.play();
 		switch(y){
 		case -1:
 			playing=1;
@@ -278,6 +282,7 @@ public class TapChordView extends View {
 	}
 	
 	public void stop(){
+		sound.stop();
 		playing=0;
 	}
 
