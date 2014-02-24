@@ -161,12 +161,12 @@ public class Statics {
 		return new RectF(vert*2,vert*31f,vert*2+vert*13,vert*32f);
 	}
 	
-	public static RectF getRectOfScrollNob(int pos,int width,int height){
+	public static RectF getRectOfScrollNob(int pos,int upper,int width,int height){
 		float vert=height/35f;
 		float max=(vert*7)*13;
 		float nob=width/max;
 		float x=vert*2+vert*13/2-pos;
-		return new RectF(x-(nob*vert*13)/2,vert*30.5f,x+(nob*vert*13)/2,vert*32.5f);
+		return new RectF(x-(nob*vert*13)/2,vert*30.5f-upper,x+(nob*vert*13)/2,vert*32.5f-upper);
 	}
 	
 }

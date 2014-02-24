@@ -14,7 +14,7 @@ import android.view.View;
 
 public class TapChordView extends View {
 	int width,height,originalX,originalY,originalScroll;
-	int situation,destination,step,scroll;
+	int situation,destination,step,scroll,upper;
 	int playing,playingX,playingY;
 	int playingID;
 	
@@ -30,6 +30,7 @@ public class TapChordView extends View {
 		step=0;
 		playing=0;
 		scroll=0;
+		upper=0;
 	}
 
 	public void init(Context context){
@@ -135,7 +136,7 @@ public class TapChordView extends View {
 		canvas.drawRect(rect,paint);
 		
 		paint.setColor(Color.DKGRAY);
-		rect=Statics.getRectOfScrollNob(scroll, width, height);
+		rect=Statics.getRectOfScrollNob(scroll, upper, width, height);
 		canvas.drawRect(rect,paint);
 	}
 
@@ -152,7 +153,7 @@ public class TapChordView extends View {
 					rect=Statics.getRectOfStatusBarButton(i,0,width,height);
 					if(rect.contains(x, y)) toolbarFlags[i]=1;
 				}
-				if(Statics.getRectOfScrollNob(scroll,width,height).contains(x,y)){
+				if(Statics.getRectOfScrollNob(scroll,upper,width,height).contains(x,y)){
 					situation=SITUATION_SCROLLING;
 					originalX=x;
 					originalY=y;
@@ -184,8 +185,10 @@ public class TapChordView extends View {
 				if(event.getHistorySize()>0||event.getPointerCount()>0){
 					if(-event.getY(0)+originalY>height/5){
 						scroll=0;
+						upper=4;
 					}else{
 						scroll=(int)(-event.getX(0)+originalX)+originalScroll;
+						upper=0;
 					}
 				}
 				break;
@@ -244,6 +247,7 @@ public class TapChordView extends View {
 				}
 			}
 			situation=SITUATION_NORMAL;
+			upper=0;
 			invalidate();
 			break;
 		}
