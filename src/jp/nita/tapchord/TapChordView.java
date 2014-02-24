@@ -13,19 +13,23 @@ import android.view.MotionEvent;
 import android.view.View;
 
 public class TapChordView extends View {
-	int width,height;
-	int situation,destination,step;
+	int width,height,originalX,originalY,originalScroll;
+	int situation,destination,step,scroll;
 	int playing,playingX,playingY;
 	int playingID;
 	
 	int toolbarFlags[]={0,0,0,0};
+	
+	private final int SITUATION_NORMAL=0;
+	private final int SITUATION_SCROLLING=1;
 
 	public TapChordView(Context context, AttributeSet attrs) {
 		super(context, attrs);
-		situation=1;
+		situation=SITUATION_NORMAL;
 		destination=1;
 		step=0;
 		playing=0;
+		scroll=0;
 	}
 
 	public void init(Context context){
@@ -74,7 +78,7 @@ public class TapChordView extends View {
 					break;
 				}
 
-				rect=Statics.getRectOfButton(x,y,width,height);
+				rect=Statics.getRectOfButton(x,y,width,height,scroll);
 				canvas.drawOval(rect, paint);
 
 				switch(y){
@@ -104,14 +108,14 @@ public class TapChordView extends View {
 			canvas.drawOval(rect, paint);
 
 			str=Statics.TENSIONS[x];
+			if(x==2&&toolbarFlags[3]>0) str="6";
+			if(x==3&&toolbarFlags[2]>0) str="6";
 			w=textPaint.measureText(str);
 			canvas.drawText(str,rect.centerX()-w/2,rect.centerY()-(fontMetrics.ascent+fontMetrics.descent)/2,textPaint);
 		}
 		
 		for(x=0;x<3;x++){
-			int d=0;
-			if(toolbarFlags[x]>0) d=1;
-			paint.setColor(Statics.getColor(5,d));
+			paint.setColor(Statics.getColor(5,0));
 			rect=Statics.getRectOfToolbarButton(x,0,width,height);
 			canvas.drawOval(rect, paint);
 			
@@ -131,7 +135,7 @@ public class TapChordView extends View {
 		canvas.drawRect(rect,paint);
 		
 		paint.setColor(Color.DKGRAY);
-		rect=Statics.getRectOfScrollNob(0, width, height);
+		rect=Statics.getRectOfScrollNob(scroll, width, height);
 		canvas.drawRect(rect,paint);
 	}
 
@@ -141,13 +145,20 @@ public class TapChordView extends View {
 		RectF rect;
 		switch(event.getAction()){
 		case MotionEvent.ACTION_DOWN:
-		case MotionEvent.ACTION_MOVE:
 			for(k=0;k<event.getPointerCount();k++){
 				x=(int)event.getX(k);
 				y=(int)event.getY(k);
 				for(i=0;i<4;i++){
 					rect=Statics.getRectOfStatusBarButton(i,0,width,height);
 					if(rect.contains(x, y)) toolbarFlags[i]=1;
+				}
+				if(Statics.getRectOfScrollNob(scroll,width,height).contains(x,y)){
+					situation=SITUATION_SCROLLING;
+					originalX=x;
+					originalY=y;
+					originalScroll=scroll;
+					invalidate();
+					break;
 				}
 			}
 			if(playing<=0){
@@ -156,7 +167,7 @@ public class TapChordView extends View {
 					y=(int)event.getY(k);
 					for(j=-6;j<=6;j++){
 						for(i=-1;i<=1;i++){
-							rect=Statics.getRectOfButton(j,i,width,height);
+							rect=Statics.getRectOfButton(j,i,width,height,scroll);
 							if(rect.contains(x, y)){
 								play(j,i);
 								playingID=event.getPointerId(k);
@@ -167,6 +178,29 @@ public class TapChordView extends View {
 			}
 			invalidate();
 			break;
+		case MotionEvent.ACTION_MOVE:
+			switch(situation){
+			case SITUATION_SCROLLING:
+				if(event.getHistorySize()>0||event.getPointerCount()>0){
+					if(-event.getY(0)+originalY>height/5){
+						scroll=0;
+					}else{
+						scroll=(int)(-event.getX(0)+originalX)+originalScroll;
+					}
+				}
+				break;
+			default:
+				for(k=0;k<event.getPointerCount();k++){
+					x=(int)event.getX(k);
+					y=(int)event.getY(k);
+					for(i=0;i<4;i++){
+						rect=Statics.getRectOfStatusBarButton(i,0,width,height);
+						if(rect.contains(x, y)) toolbarFlags[i]=1;
+					}
+				}	
+			}
+			invalidate();
+			break;
 		case MotionEvent.ACTION_CANCEL:
 		case MotionEvent.ACTION_UP:
 			for(k=0;k<event.getPointerCount();k++){
@@ -174,18 +208,22 @@ public class TapChordView extends View {
 				y=(int)event.getY(k);
 				for(i=0;i<4;i++){
 					rect=Statics.getRectOfStatusBarButton(i,0,width,height);
-					if(rect.contains(x, y)) toolbarFlags[i]=0;
+					if(rect.contains(x, y)){
+						for(j=0;j<4;j++) toolbarFlags[j]=0;
+					}
 				}
 			}
 			for(k=0;k<event.getPointerCount();k++){
-				x=(int)event.getHistoricalX(k);
-				y=(int)event.getHistoricalX(k);
-				for(j=-6;j<=6;j++){
-					for(i=-1;i<=1;i++){
-						rect=Statics.getRectOfButton(j,i,width,height);
-						if(rect.contains(x, y)){
-							stop();
-							playingID=0;
+				if(event.getHistorySize()>0){
+					x=(int)event.getHistoricalX(k);
+					y=(int)event.getHistoricalX(k);
+					for(j=-6;j<=6;j++){
+						for(i=-1;i<=1;i++){
+							rect=Statics.getRectOfButton(j,i,width,height,scroll);
+							if(rect.contains(x, y)){
+								stop();
+								playingID=0;
+							}
 						}
 					}
 				}
@@ -193,7 +231,7 @@ public class TapChordView extends View {
 				y=(int)event.getY(k);
 				for(j=-6;j<=6;j++){
 					for(i=-1;i<=1;i++){
-						rect=Statics.getRectOfButton(j,i,width,height);
+						rect=Statics.getRectOfButton(j,i,width,height,scroll);
 						if(rect.contains(x, y)){
 							stop();
 							playingID=0;
@@ -205,6 +243,7 @@ public class TapChordView extends View {
 					playingID=0;
 				}
 			}
+			situation=SITUATION_NORMAL;
 			invalidate();
 			break;
 		}

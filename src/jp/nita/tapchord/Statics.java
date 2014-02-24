@@ -79,11 +79,11 @@ public class Statics {
 	public static String TENSIONS[]={"add9","-5/aug","7","M7"};
 	public static String OPTIONS[]={"Sine","Stroke","#b0"};
 	
-	public static RectF getRectOfButton(int x,int y,int width,int height){
+	public static RectF getRectOfButton(int x,int y,int width,int height,int scroll){
 		float vert=height*7/35f;
 		float pX=width/2+x*vert;
 		float pY=height/2+y*vert;
-		return new RectF(pX-vert/2+vert/14, pY-vert/2+vert/14, pX+vert/2-vert/14, pY+vert/2-vert/14);
+		return new RectF(pX-vert/2+vert/14+scroll*vert/7, pY-vert/2+vert/14, pX+vert/2-vert/14+scroll*vert/7, pY+vert/2-vert/14);
 	}
 	
 	public static int getRadiusOfButton(int height){
@@ -158,15 +158,15 @@ public class Statics {
 	
 	public static RectF getRectOfScrollBar(int width,int height){
 		float vert=height/35f;
-		return new RectF(vert*2,vert*31f,vert*21,vert*32f);
+		return new RectF(vert*2,vert*31f,vert*2+vert*13,vert*32f);
 	}
 	
 	public static RectF getRectOfScrollNob(int pos,int width,int height){
 		float vert=height/35f;
-		float max=(vert*7)*19;
+		float max=(vert*7)*13;
 		float nob=width/max;
-		float x=vert*2+vert*19/2+pos*vert;
-		return new RectF(x-(nob*vert*19)/2,vert*30.5f,x+(nob*vert*19)/2,vert*32.5f);
+		float x=vert*2+vert*13/2-pos;
+		return new RectF(x-(nob*vert*13)/2,vert*30.5f,x+(nob*vert*13)/2,vert*32.5f);
 	}
 	
 }
