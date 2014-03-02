@@ -1,5 +1,8 @@
 package jp.nita.tapchord;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import android.graphics.Color;
 import android.graphics.RectF;
 
@@ -115,41 +118,41 @@ public class Statics {
 		RectF r=null;
 		switch(i%12){
 		case 0:
-			r=new RectF(width-vert*21,vert*4,width-vert*19,vert*6);
+			r=new RectF(width-vert*21+shrink,vert*4+shrink,width-vert*19-shrink,vert*6-shrink);
 			break;
 		case 2:
-			r=new RectF(width-vert*18,vert*4,width-vert*16,vert*6);
+			r=new RectF(width-vert*18+shrink,vert*4+shrink,width-vert*16-shrink,vert*6-shrink);
 			break;
 		case 4:
-			r=new RectF(width-vert*15,vert*4,width-vert*13,vert*6);
+			r=new RectF(width-vert*15+shrink,vert*4+shrink,width-vert*13-shrink,vert*6-shrink);
 			break;
 		case 5:
-			r=new RectF(width-vert*12,vert*4,width-vert*10,vert*6);
+			r=new RectF(width-vert*12+shrink,vert*4+shrink,width-vert*10-shrink,vert*6-shrink);
 			break;
 		case 7:
-			r=new RectF(width-vert*9,vert*4,width-vert*7,vert*6);
+			r=new RectF(width-vert*9+shrink,vert*4+shrink,width-vert*7-shrink,vert*6-shrink);
 			break;
 		case 9:
-			r=new RectF(width-vert*6,vert*4,width-vert*4,vert*6);
+			r=new RectF(width-vert*6+shrink,vert*4+shrink,width-vert*4-shrink,vert*6-shrink);
 			break;
 		case 11:
-			r=new RectF(width-vert*3,vert*4,width-vert*1,vert*6);
+			r=new RectF(width-vert*3+shrink,vert*4+shrink,width-vert*1-shrink,vert*6-shrink);
 			break;
 			
 		case 1:
-			r=new RectF(width-vert*19.5f,vert*1,width-vert*17.5f,vert*3);
+			r=new RectF(width-vert*19.5f+shrink,vert*1+shrink,width-vert*17.5f-shrink,vert*3-shrink);
 			break;
 		case 3:
-			r=new RectF(width-vert*16.5f,vert*1,width-vert*14.5f,vert*3);
+			r=new RectF(width-vert*16.5f+shrink,vert*1+shrink,width-vert*14.5f-shrink,vert*3-shrink);
 			break;
 		case 6:
-			r=new RectF(width-vert*10.5f,vert*1,width-vert*8.5f,vert*3);
+			r=new RectF(width-vert*10.5f+shrink,vert*1+shrink,width-vert*8.5f-shrink,vert*3-shrink);
 			break;
 		case 8:
-			r=new RectF(width-vert*7.5f,vert*1,width-vert*5.5f,vert*3);
+			r=new RectF(width-vert*7.5f+shrink,vert*1+shrink,width-vert*5.5f-shrink,vert*3-shrink);
 			break;
 		case 10:
-			r=new RectF(width-vert*4.5f,vert*1,width-vert*2.5f,vert*3);
+			r=new RectF(width-vert*4.5f+shrink,vert*1+shrink,width-vert*2.5f-shrink,vert*3-shrink);
 			break;
 		}
 		
@@ -169,4 +172,42 @@ public class Statics {
 		return new RectF(x-(nob*vert*13)/2,vert*30f-upper,x+(nob*vert*13)/2,vert*33f-upper);
 	}
 	
+	public static int getFrequencyOfNote(int note){
+		double f=440.0;
+		int n=note-9;
+		return (int)(f*Math.pow(2,n/12.0));
+	}
+	
+	public static Integer[] getNotesOfChord(int x,int y,int[] tensions){
+		List<Integer> notes=new ArrayList<Integer>();
+
+		if(y==-1){
+			notes.add((x*7+36)%12);
+			notes.add((x*7+5+36)%12);
+			notes.add((x*7+7+36)%12);
+		}else if(y==0){
+			notes.add((x*7+36)%12);
+			notes.add((x*7+4+36)%12);
+			notes.add((x*7+7+36)%12);
+		}else if(y==1){
+			notes.add(((x+3)*7+36)%12);
+			notes.add(((x+3)*7+3+36)%12);
+			notes.add(((x+3)*7+7+36)%12);
+		}
+
+		Integer ns[]=notes.toArray(new Integer[0]);
+		return ns;
+	}
+	
+	public static Integer[] convertNotesToFrequencies(Integer[] notes){
+		List<Integer> freqs=new ArrayList<Integer>();
+		
+		for(int i=0;i<notes.length;i++){
+			freqs.add(getFrequencyOfNote(notes[i]));
+		}
+		
+		Integer fs[]=freqs.toArray(new Integer[0]);
+		return fs;
+	}
+
 }

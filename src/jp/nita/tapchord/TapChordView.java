@@ -23,7 +23,8 @@ public class TapChordView extends View {
 	private final int SITUATION_NORMAL=0;
 	private final int SITUATION_SCROLLING=1;
 	
-	Sound sound=new Sound(null,0);
+	Sound sound=null;
+	Integer notesOfChord[]=new Integer[0];
 
 	public TapChordView(Context context, AttributeSet attrs) {
 		super(context, attrs);
@@ -129,8 +130,14 @@ public class TapChordView extends View {
 		}
 		
 		for(x=0;x<12;x++){
-			paint.setColor(Color.WHITE);
+			paint.setColor(Color.LTGRAY);
 			rect=Statics.getRectOfKeyboardIndicator(x, 0, width, height);
+			canvas.drawOval(rect,paint);
+		}
+		
+		for(int i=0;i<notesOfChord.length;i++){
+			paint.setColor(Color.WHITE);
+			rect=Statics.getRectOfKeyboardIndicator(notesOfChord[i], 2, width, height);
 			canvas.drawOval(rect,paint);
 		}
 		
@@ -258,6 +265,9 @@ public class TapChordView extends View {
 	}
 	
 	public void play(int x,int y){
+		Integer f[]=(Statics.convertNotesToFrequencies(Statics.getNotesOfChord(x,y,toolbarFlags)));
+		sound=new Sound(f,0.1f);
+		notesOfChord=Statics.getNotesOfChord(x,y,toolbarFlags);
 		sound.play();
 		switch(y){
 		case -1:
@@ -278,12 +288,14 @@ public class TapChordView extends View {
 		default:
 			break;
 		}
-		
+		invalidate();
 	}
 	
 	public void stop(){
 		sound.stop();
 		playing=0;
+		notesOfChord=new Integer[0];
+		invalidate();
 	}
 
 }

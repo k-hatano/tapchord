@@ -7,8 +7,9 @@ import android.media.AudioTrack;
 public class Sound {
 	AudioTrack track=null;
 	final int sampleRate=44100;
+	int waveLength;
 	
-	public Sound(int[] freqs,float volume){
+	public Sound(Integer[] freqs,float volume){
 		track = new AudioTrack(AudioManager.STREAM_MUSIC,
 				sampleRate,
 				AudioFormat.CHANNEL_CONFIGURATION_DEFAULT,
@@ -20,20 +21,28 @@ public class Sound {
 		double t=0;
 		double dt=1.0/sampleRate;
 		for(int i=0;i<sampleRate;i++){
-			double s=Math.sin(2.0*Math.PI*t*441);
-			wave[i]=(byte)(Byte.MAX_VALUE*s/3);
+			double ss=0;
+			for(int j=0;j<freqs.length;j++){
+				double s=Math.sin(2.0*Math.PI*t*freqs[j]);
+				ss+=s;
+			}
+			wave[i]=(byte)(Byte.MAX_VALUE*ss*volume);
 			t+=dt;
 		}
 		track.write(wave,0,wave.length);
+		waveLength=wave.length/2;
+		track.setLoopPoints(0,wave.length,-1);
 	}
 	
 	public void play(){
+		track.stop();
+		track.reloadStaticData();
+		track.setLoopPoints(0,waveLength,-1);
 		track.play();
 	}
 	
 	public void stop(){
 		track.stop();
-		track.reloadStaticData();
 	}
 	
 }
