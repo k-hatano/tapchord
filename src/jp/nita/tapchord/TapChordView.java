@@ -1,5 +1,8 @@
 package jp.nita.tapchord;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
@@ -7,8 +10,11 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Paint.FontMetrics;
 import android.graphics.Paint.Style;
+import android.graphics.Point;
 import android.graphics.RectF;
 import android.util.AttributeSet;
+import android.util.Log;
+import android.util.SparseIntArray;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -17,14 +23,16 @@ public class TapChordView extends View {
 	int situation,destination,step,scroll,upper;
 	int playing,playingX,playingY;
 	int playingID;
-	
+
 	int toolbarFlags[]={0,0,0,0};
-	
+
 	private final int SITUATION_NORMAL=0;
 	private final int SITUATION_SCROLLING=1;
-	
-	Sound sound=null;
+
 	Integer notesOfChord[]=new Integer[0];
+	Sound sound=null;
+
+	SparseIntArray taps=new SparseIntArray();
 
 	public TapChordView(Context context, AttributeSet attrs) {
 		super(context, attrs);
@@ -34,7 +42,6 @@ public class TapChordView extends View {
 		playing=0;
 		scroll=0;
 		upper=0;
-		
 	}
 
 	public void init(Context context){
@@ -58,7 +65,7 @@ public class TapChordView extends View {
 		paint.setAntiAlias(true);
 		paint.setStyle(Style.FILL);
 		int rad=Statics.getRadiusOfButton(height);
-		
+
 		textPaint.setAntiAlias(true); 
 		textPaint.setColor(Statics.getColor(-1,0));
 		textPaint.setTextSize(rad/2);
@@ -118,71 +125,70 @@ public class TapChordView extends View {
 			w=textPaint.measureText(str);
 			canvas.drawText(str,rect.centerX()-w/2,rect.centerY()-(fontMetrics.ascent+fontMetrics.descent)/2,textPaint);
 		}
-		
+
 		for(x=0;x<3;x++){
 			paint.setColor(Statics.getColor(5,0));
 			rect=Statics.getRectOfToolbarButton(x,0,width,height);
 			canvas.drawOval(rect, paint);
-			
+
 			str=Statics.OPTIONS[x];
 			w=textPaint.measureText(str);
 			canvas.drawText(str,rect.centerX()-w/2,rect.centerY()-(fontMetrics.ascent+fontMetrics.descent)/2,textPaint);
 		}
-		
+
 		for(x=0;x<12;x++){
 			paint.setColor(Color.LTGRAY);
 			rect=Statics.getRectOfKeyboardIndicator(x, 0, width, height);
 			canvas.drawOval(rect,paint);
 		}
-		
+
 		for(int i=0;i<notesOfChord.length;i++){
 			paint.setColor(Color.WHITE);
 			rect=Statics.getRectOfKeyboardIndicator(notesOfChord[i], 2, width, height);
 			canvas.drawOval(rect,paint);
 		}
-		
+
 		paint.setColor(Color.GRAY);
 		rect=Statics.getRectOfScrollBar(width, height);
 		canvas.drawRect(rect,paint);
-		
+
 		paint.setColor(Color.DKGRAY);
 		rect=Statics.getRectOfScrollNob(scroll, upper, width, height);
 		canvas.drawRect(rect,paint);
 	}
 
 	public boolean onTouchEvent(MotionEvent event){
-		int i,j,k;
+		int i,j;
+		int id,kind;
 		int x,y;
 		RectF rect;
 		switch(event.getAction()){
 		case MotionEvent.ACTION_DOWN:
-			for(k=0;k<event.getPointerCount();k++){
-				x=(int)event.getX(k);
-				y=(int)event.getY(k);
-				for(i=0;i<4;i++){
-					rect=Statics.getRectOfStatusBarButton(i,0,width,height);
-					if(rect.contains(x, y)) toolbarFlags[i]=1;
-				}
-				if(Statics.getRectOfScrollNob(scroll,upper,width,height).contains(x,y)){
-					situation=SITUATION_SCROLLING;
-					originalX=x;
-					originalY=y;
-					originalScroll=scroll;
-					invalidate();
-					break;
+			Log.i("TapChordView","DOWN id:"+event.getPointerId(event.getActionIndex()));
+			x=(int)event.getX(event.getActionIndex());
+			y=(int)event.getY(event.getActionIndex());
+			for(i=0;i<4;i++){
+				rect=Statics.getRectOfStatusBarButton(i,0,width,height);
+				if(rect.contains(x, y)){
+					toolbarFlags[i]=1;
+					taps.put(event.getPointerId(event.getActionIndex()),Statics.STATUSBAR_BUTTON);
 				}
 			}
+			if(Statics.getRectOfScrollNob(scroll,upper,width,height).contains(x,y)){
+				situation=SITUATION_SCROLLING;
+				originalX=x;
+				originalY=y;
+				originalScroll=scroll;
+				taps.put(event.getPointerId(event.getActionIndex()),Statics.SCROLL_NOB);
+			}
 			if(playing<=0){
-				for(k=0;k<event.getPointerCount();k++){
-					x=(int)event.getX(k);
-					y=(int)event.getY(k);
-					for(j=-6;j<=6;j++){
-						for(i=-1;i<=1;i++){
-							rect=Statics.getRectOfButton(j,i,width,height,scroll);
-							if(rect.contains(x, y)){
-								play(j,i);
-								playingID=event.getPointerId(k);
-							}
+				for(j=-6;j<=6;j++){
+					for(i=-1;i<=1;i++){
+						rect=Statics.getRectOfButton(j,i,width,height,scroll);
+						if(rect.contains(x, y)){
+							play(j,i);
+							playingID=event.getPointerId(event.getActionIndex());
+							taps.put(event.getPointerId(event.getActionIndex()),Statics.CHORD_BUTTON);
 						}
 					}
 				}
@@ -190,80 +196,71 @@ public class TapChordView extends View {
 			invalidate();
 			break;
 		case MotionEvent.ACTION_MOVE:
-			switch(situation){
-			case SITUATION_SCROLLING:
+			Log.i("TapChordView","MOVE id:"+event.getPointerId(event.getActionIndex()));
+			id=event.getPointerId(event.getActionIndex());
+			if(id>=0) kind=taps.get(id);
+			else kind=0;
+			x=(int)event.getX(event.getActionIndex());
+			y=(int)event.getY(event.getActionIndex());
+			switch(kind){
+			case Statics.SCROLL_NOB:
 				if(event.getHistorySize()>0||event.getPointerCount()>0){
-					if(-event.getY(0)+originalY>height/5){
+					if(-event.getY(event.getActionIndex())+originalY>height/5){
 						scroll=0;
-						upper=4;
+						upper=5;
 					}else{
-						scroll=(int)(-event.getX(0)+originalX)+originalScroll;
+						scroll=(int)(-event.getX(event.getActionIndex())+originalX)+originalScroll;
 						upper=0;
 					}
 				}
 				break;
 			default:
-				for(k=0;k<event.getPointerCount();k++){
-					x=(int)event.getX(k);
-					y=(int)event.getY(k);
-					for(i=0;i<4;i++){
-						rect=Statics.getRectOfStatusBarButton(i,0,width,height);
-						if(rect.contains(x, y)) toolbarFlags[i]=1;
-					}
-				}	
-			}
-			invalidate();
-			break;
-		case MotionEvent.ACTION_CANCEL:
-		case MotionEvent.ACTION_UP:
-			for(k=0;k<event.getPointerCount();k++){
-				x=(int)event.getX(k);
-				y=(int)event.getY(k);
 				for(i=0;i<4;i++){
 					rect=Statics.getRectOfStatusBarButton(i,0,width,height);
-					if(rect.contains(x, y)){
-						for(j=0;j<4;j++) toolbarFlags[j]=0;
-					}
+					if(rect.contains(x, y)) toolbarFlags[i]=1;
 				}
-			}
-			for(k=0;k<event.getPointerCount();k++){
-				if(event.getHistorySize()>0){
-					x=(int)event.getHistoricalX(k);
-					y=(int)event.getHistoricalX(k);
+				if(playing<=0){
 					for(j=-6;j<=6;j++){
 						for(i=-1;i<=1;i++){
 							rect=Statics.getRectOfButton(j,i,width,height,scroll);
 							if(rect.contains(x, y)){
-								stop();
-								playingID=0;
+								play(j,i);
+								playingID=event.getPointerId(event.getActionIndex());
+								taps.put(event.getPointerId(event.getActionIndex()),Statics.CHORD_BUTTON);
+								break;
 							}
 						}
 					}
 				}
-				x=(int)event.getX(k);
-				y=(int)event.getY(k);
-				for(j=-6;j<=6;j++){
-					for(i=-1;i<=1;i++){
-						rect=Statics.getRectOfButton(j,i,width,height,scroll);
-						if(rect.contains(x, y)){
-							stop();
-							playingID=0;
-						}
-					}
-				}
-				if(event.getPointerId(k)==playingID){
-					stop();
-					playingID=0;
-				}
+				break;
 			}
-			situation=SITUATION_NORMAL;
-			upper=0;
-			invalidate();
+			break;
+		case MotionEvent.ACTION_CANCEL:
+		case MotionEvent.ACTION_UP:
+			Log.i("TapChordView","UP   id:"+event.getPointerId(event.getActionIndex()));
+			id=event.getPointerId(event.getActionIndex());
+			kind=taps.get(id);
+			switch(kind){
+			case Statics.STATUSBAR_BUTTON:
+			case Statics.CHORD_BUTTON:
+				for(int l=0;l<4;l++) toolbarFlags[l]=0;
+				stop();
+				playingID=-1;
+				break;
+			case Statics.SCROLL_NOB:
+				situation=SITUATION_NORMAL;
+				upper=0;
+				break;
+			default:
+				break;
+			}
+			taps.delete(id);
 			break;
 		}
+		invalidate();
 		return true;
 	}
-	
+
 	public void play(int x,int y){
 		Integer f[]=(Statics.convertNotesToFrequencies(Statics.getNotesOfChord(x,y,toolbarFlags)));
 		sound=new Sound(f,0.1f);
@@ -290,9 +287,12 @@ public class TapChordView extends View {
 		}
 		invalidate();
 	}
-	
+
 	public void stop(){
-		sound.stop();
+		if(sound!=null){
+			sound.stop();
+			sound=null;
+		}
 		playing=0;
 		notesOfChord=new Integer[0];
 		invalidate();

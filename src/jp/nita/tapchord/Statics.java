@@ -8,6 +8,11 @@ import android.graphics.RectF;
 
 public class Statics {
 	
+	final public static int CHORD_BUTTON=1;
+	final public static int STATUSBAR_BUTTON=2;
+	final public static int SCROLL_NOB=3;
+	final public static int TOOLBAR_BUTTON=4;
+	
 	public static int getColor(int which,int darkness){
 		int r,g,b;
 		switch(which){
