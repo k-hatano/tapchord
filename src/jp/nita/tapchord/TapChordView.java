@@ -1,8 +1,5 @@
 package jp.nita.tapchord;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
@@ -10,7 +7,6 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Paint.FontMetrics;
 import android.graphics.Paint.Style;
-import android.graphics.Point;
 import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -257,6 +253,7 @@ public class TapChordView extends View {
 			taps.delete(id);
 			break;
 		}
+		Log.i("TapChordView","Count:"+event.getPointerCount());
 		invalidate();
 		return true;
 	}

@@ -6,7 +6,7 @@ import android.media.AudioTrack;
 
 public class Sound {
 	AudioTrack track=null;
-	final int sampleRate=44100;
+	final int sampleRate=8000;
 	int waveLength;
 	
 	public Sound(Integer[] freqs,float volume){
