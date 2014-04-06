@@ -14,6 +14,7 @@ import android.util.SparseIntArray;
 import android.view.MotionEvent;
 import android.view.View;
 
+
 public class TapChordView extends View {
 	int width,height,originalX,originalY,originalScroll;
 	int situation,destination,step,scroll,upper;
@@ -160,7 +161,7 @@ public class TapChordView extends View {
 		RectF rect;
 		switch(event.getAction()){
 		case MotionEvent.ACTION_DOWN:
-			Log.i("TapChordView","DOWN id:"+event.getPointerId(event.getActionIndex()));
+			Log.i("TapChordView","DOWN Count:"+event.getPointerCount());
 			x=(int)event.getX(event.getActionIndex());
 			y=(int)event.getY(event.getActionIndex());
 			for(i=0;i<4;i++){
@@ -184,76 +185,69 @@ public class TapChordView extends View {
 						if(rect.contains(x, y)){
 							play(j,i);
 							playingID=event.getPointerId(event.getActionIndex());
-							taps.put(event.getPointerId(event.getActionIndex()),Statics.CHORD_BUTTON);
+							taps.put(playingID,Statics.CHORD_BUTTON);
 						}
 					}
 				}
 			}
-			invalidate();
 			break;
 		case MotionEvent.ACTION_MOVE:
-			Log.i("TapChordView","MOVE id:"+event.getPointerId(event.getActionIndex()));
-			id=event.getPointerId(event.getActionIndex());
-			if(id>=0) kind=taps.get(id);
-			else kind=0;
-			x=(int)event.getX(event.getActionIndex());
-			y=(int)event.getY(event.getActionIndex());
-			switch(kind){
-			case Statics.SCROLL_NOB:
-				if(event.getHistorySize()>0||event.getPointerCount()>0){
-					if(-event.getY(event.getActionIndex())+originalY>height/5){
-						scroll=0;
-						upper=5;
-					}else{
-						scroll=(int)(-event.getX(event.getActionIndex())+originalX)+originalScroll;
-						upper=0;
+			Log.i("TapChordView","MOVE Count:"+event.getPointerCount());
+			for(int index=0;index<event.getPointerCount();index++){
+				id=event.getPointerId(index);
+				if(id>=0) kind=taps.get(id);
+				else kind=0;
+				x=(int)event.getX(index);
+				y=(int)event.getY(index);
+				switch(kind){
+				case Statics.SCROLL_NOB:
+					if(event.getHistorySize()>0||event.getPointerCount()>0){
+						if(-event.getY(index)+originalY>height/5){
+							scroll=0;
+							upper=5;
+						}else{
+							scroll=(int)(-event.getX(index)+originalX)+originalScroll;
+							upper=0;
+						}
 					}
-				}
-				break;
-			default:
-				for(i=0;i<4;i++){
-					rect=Statics.getRectOfStatusBarButton(i,0,width,height);
-					if(rect.contains(x, y)) toolbarFlags[i]=1;
-				}
-				if(playing<=0){
-					for(j=-6;j<=6;j++){
-						for(i=-1;i<=1;i++){
-							rect=Statics.getRectOfButton(j,i,width,height,scroll);
-							if(rect.contains(x, y)){
-								play(j,i);
-								playingID=event.getPointerId(event.getActionIndex());
-								taps.put(event.getPointerId(event.getActionIndex()),Statics.CHORD_BUTTON);
-								break;
+					break;
+				case Statics.STATUSBAR_BUTTON:
+					for(i=0;i<4;i++){
+						rect=Statics.getRectOfStatusBarButton(i,0,width,height);
+						if(rect.contains(x, y)) toolbarFlags[i]=1;
+					}
+					break;
+				case Statics.CHORD_BUTTON:
+				default:
+					if(playing<=0){
+						for(j=-6;j<=6;j++){
+							for(i=-1;i<=1;i++){
+								rect=Statics.getRectOfButton(j,i,width,height,scroll);
+								if(rect.contains(x, y)){
+									play(j,i);
+									playingID=event.getPointerId(index);
+									taps.put(playingID,Statics.CHORD_BUTTON);
+									break;
+								}
 							}
 						}
 					}
+					break;
 				}
-				break;
 			}
 			break;
-		case MotionEvent.ACTION_CANCEL:
 		case MotionEvent.ACTION_UP:
-			Log.i("TapChordView","UP   id:"+event.getPointerId(event.getActionIndex()));
-			id=event.getPointerId(event.getActionIndex());
-			kind=taps.get(id);
-			switch(kind){
-			case Statics.STATUSBAR_BUTTON:
-			case Statics.CHORD_BUTTON:
-				for(int l=0;l<4;l++) toolbarFlags[l]=0;
-				stop();
-				playingID=-1;
-				break;
-			case Statics.SCROLL_NOB:
-				situation=SITUATION_NORMAL;
-				upper=0;
-				break;
-			default:
-				break;
-			}
-			taps.delete(id);
+			Log.i("TapChordView","UP Count:"+event.getPointerCount());
+			stop();
+			for(int l=0;l<4;l++) toolbarFlags[l]=0;
+			playingID=-1;
+			situation=SITUATION_NORMAL;
+			upper=0;
+			taps=new SparseIntArray();
+			break;
+		default:
 			break;
 		}
-		Log.i("TapChordView","Count:"+event.getPointerCount());
 		invalidate();
 		return true;
 	}

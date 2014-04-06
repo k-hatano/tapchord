@@ -8,6 +8,8 @@ import android.graphics.RectF;
 
 public class Statics {
 	
+	final public static int NIHIL=0;
+	
 	final public static int CHORD_BUTTON=1;
 	final public static int STATUSBAR_BUTTON=2;
 	final public static int SCROLL_NOB=3;
@@ -185,19 +187,47 @@ public class Statics {
 	
 	public static Integer[] getNotesOfChord(int x,int y,int[] tensions){
 		List<Integer> notes=new ArrayList<Integer>();
+		
+		if(y>=1) x+=3;
 
 		if(y==-1){
-			notes.add((x*7+36)%12);
-			notes.add((x*7+5+36)%12);
-			notes.add((x*7+7+36)%12);
+			if(tensions[1]>0){
+				notes.add((x*7+36)%12);
+				notes.add((x*7+4+36)%12);
+				notes.add((x*7+8+36)%12);
+			}else{
+				notes.add((x*7+36)%12);
+				notes.add((x*7+5+36)%12);
+				notes.add((x*7+7+36)%12);
+			}
 		}else if(y==0){
 			notes.add((x*7+36)%12);
 			notes.add((x*7+4+36)%12);
-			notes.add((x*7+7+36)%12);
+			if(tensions[1]>0){
+				notes.add((x*7+6+36)%12);
+			}else{
+				notes.add((x*7+7+36)%12);
+			}
 		}else if(y==1){
-			notes.add(((x+3)*7+36)%12);
-			notes.add(((x+3)*7+3+36)%12);
-			notes.add(((x+3)*7+7+36)%12);
+			notes.add((x*7+36)%12);
+			notes.add((x*7+3+36)%12);
+			if(tensions[1]>0){
+				notes.add((x*7+6+36)%12);
+			}else{
+				notes.add((x*7+7+36)%12);
+			}
+		}
+		
+		if(tensions[0]>0){
+			notes.add((x*7+2+36)%12);
+		}
+		
+		if(tensions[2]>0&&tensions[3]>0){
+			notes.add((x*7+9+36)%12);
+		}else if(tensions[2]>0){
+			notes.add((x*7+10+36)%12);
+		}else if(tensions[3]>0){
+			notes.add((x*7+11+36)%12);
 		}
 
 		Integer ns[]=notes.toArray(new Integer[0]);

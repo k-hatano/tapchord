@@ -18,12 +18,12 @@ public class Sound {
 		        AudioTrack.MODE_STATIC);
 		
 		byte[] wave=new byte[sampleRate];
-		double t=0;
-		double dt=1.0/sampleRate;
+		float t=0;
+		float dt=1.0f/sampleRate;
 		for(int i=0;i<sampleRate;i++){
-			double ss=0;
+			float ss=0;
 			for(int j=0;j<freqs.length;j++){
-				double s=Math.sin(2.0*Math.PI*t*freqs[j]);
+				float s=wave(2.0*Math.PI*t*freqs[j],0);
 				ss+=s;
 			}
 			wave[i]=(byte)(Byte.MAX_VALUE*ss*volume);
@@ -42,7 +42,20 @@ public class Sound {
 	}
 	
 	public void stop(){
+		track.pause();
 		track.stop();
+		track.release();
+	}
+	
+	public float wave(double t,int which){
+		switch(which){
+		case 0:
+			return (float)Math.sin(t);
+		case 1:
+			return Math.sin(t)>0?1:-1;
+		default:
+			return (float)Math.sin(t);
+		}
 	}
 	
 }
