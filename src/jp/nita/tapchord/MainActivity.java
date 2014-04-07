@@ -2,6 +2,8 @@ package jp.nita.tapchord;
 
 import android.os.Bundle;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -27,6 +29,21 @@ public class MainActivity extends Activity {
 	        Intent intent=new Intent(this,SettingsActivity.class);
 	        startActivity(intent);
 	        return true;
+	    case R.id.action_quit:
+	    	new AlertDialog.Builder(this)
+			.setTitle(getString(R.string.action_quit))
+			.setMessage(getString(R.string.message_quit))
+			.setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					finish();
+				}
+			}).setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener(){
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					
+				}
+			}).show();
 	    }
 	    return false;
 	}

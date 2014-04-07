@@ -15,6 +15,9 @@ public class Statics {
 	final public static int SCROLL_NOB=3;
 	final public static int TOOLBAR_BUTTON=4;
 	
+	final public static String SUS4="sus4";
+	final public static String MINOR="m";
+	
 	public static int getColor(int which,int darkness){
 		int r,g,b;
 		switch(which){
@@ -82,18 +85,39 @@ public class Statics {
 		return Color.argb(255,r,g,b);
 	}
 	
-	public static String SUS4S[]={"Csus4","Gsus4","Dsus4","Asus4","Esus4","Bsus4","F#sus4","C#sus4","G#sus4","D#sus4","A#sus4","Fsus4"};
-	public static String MAJORS[]={"C","G","D","A","E","B","F#","C#","G#","D#","A#","F"};
-	public static String MINORS[]={"Am","Em","Bm","F#m","C#m","G#m","D#m","A#m","Fm","Cm","Gm","Dm"};
+	public static String NOTES[]={"Dbb","Abb","Ebb","Bbb","Fb","Cb","Gb","Db","Ab","Eb","Bb","F",
+		"C","G","D","A","E","B","F#","C#","G#","D#","A#","E#",
+		"B#","F#","Cx","Gx","Dx","Ax"};
 	
 	public static String TENSIONS[]={"add9","-5/aug","7","M7"};
-	public static String OPTIONS[]={"Sine","Stroke","#b0"};
+	public static String OPTIONS[]={"Settings","Light","#b0"};
 	
 	public static RectF getRectOfButton(int x,int y,int width,int height,int scroll){
 		float vert=height*7/35f;
 		float pX=width/2+x*vert;
 		float pY=height/2+y*vert;
-		return new RectF(pX-vert/2+vert/14+scroll*vert/7, pY-vert/2+vert/14, pX+vert/2-vert/14+scroll*vert/7, pY+vert/2-vert/14);
+		return new RectF(pX-vert/2+vert/14+scroll*4, pY-vert/2+vert/14, pX+vert/2-vert/14+scroll*4, pY+vert/2-vert/14);
+	}
+	
+	public static int getScrollMax(int width,int height){
+		float vert=height/35f;
+		float max=(vert*7)*13;
+		float nob=width/4;
+		return (int)(max/4-nob)/2;
+	}
+	
+	public static RectF getRectOfScrollBar(int width,int height){
+		float vert=height/35f;
+		float max=(vert*7)*13;
+		return new RectF(vert*2,vert*30.5f,vert*2+max/4,vert*32.5f);
+	}
+	
+	public static RectF getRectOfScrollNob(int pos,int upper,int width,int height){
+		float vert=height/35f;
+		float max=(vert*7)*13;
+		float nob=width/4;
+		float x=vert*2+max/8-pos;
+		return new RectF(x-nob/2,vert*30f-upper,x+nob/2,vert*33f-upper);
 	}
 	
 	public static int getRadiusOfButton(int height){
@@ -166,19 +190,6 @@ public class Statics {
 		return r;
 	}
 	
-	public static RectF getRectOfScrollBar(int width,int height){
-		float vert=height/35f;
-		return new RectF(vert*2,vert*30.5f,vert*2+vert*13,vert*32.5f);
-	}
-	
-	public static RectF getRectOfScrollNob(int pos,int upper,int width,int height){
-		float vert=height/35f;
-		float max=(vert*7)*13;
-		float nob=width/max;
-		float x=vert*2+vert*13/2-pos;
-		return new RectF(x-(nob*vert*13)/2,vert*30f-upper,x+(nob*vert*13)/2,vert*33f-upper);
-	}
-	
 	public static int getFrequencyOfNote(int note){
 		double f=440.0;
 		int n=note-9;
@@ -192,42 +203,42 @@ public class Statics {
 
 		if(y==-1){
 			if(tensions[1]>0){
-				notes.add((x*7+36)%12);
-				notes.add((x*7+4+36)%12);
-				notes.add((x*7+8+36)%12);
+				notes.add((x*7+72)%12);
+				notes.add((x*7+4+72)%12);
+				notes.add((x*7+8+72)%12);
 			}else{
-				notes.add((x*7+36)%12);
-				notes.add((x*7+5+36)%12);
-				notes.add((x*7+7+36)%12);
+				notes.add((x*7+72)%12);
+				notes.add((x*7+5+72)%12);
+				notes.add((x*7+7+72)%12);
 			}
 		}else if(y==0){
-			notes.add((x*7+36)%12);
-			notes.add((x*7+4+36)%12);
+			notes.add((x*7+72)%12);
+			notes.add((x*7+4+72)%12);
 			if(tensions[1]>0){
-				notes.add((x*7+6+36)%12);
+				notes.add((x*7+6+72)%12);
 			}else{
-				notes.add((x*7+7+36)%12);
+				notes.add((x*7+7+72)%12);
 			}
 		}else if(y==1){
-			notes.add((x*7+36)%12);
-			notes.add((x*7+3+36)%12);
+			notes.add((x*7+72)%12);
+			notes.add((x*7+3+72)%12);
 			if(tensions[1]>0){
-				notes.add((x*7+6+36)%12);
+				notes.add((x*7+6+72)%12);
 			}else{
-				notes.add((x*7+7+36)%12);
+				notes.add((x*7+7+72)%12);
 			}
 		}
 		
 		if(tensions[0]>0){
-			notes.add((x*7+2+36)%12);
+			notes.add((x*7+2+72)%12);
 		}
 		
 		if(tensions[2]>0&&tensions[3]>0){
-			notes.add((x*7+9+36)%12);
+			notes.add((x*7+9+72)%12);
 		}else if(tensions[2]>0){
-			notes.add((x*7+10+36)%12);
+			notes.add((x*7+10+72)%12);
 		}else if(tensions[3]>0){
-			notes.add((x*7+11+36)%12);
+			notes.add((x*7+11+72)%12);
 		}
 
 		Integer ns[]=notes.toArray(new Integer[0]);
