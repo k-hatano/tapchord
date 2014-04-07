@@ -8,6 +8,7 @@ public class Sound {
 	AudioTrack track=null;
 	final int sampleRate=8000;
 	int waveLength;
+	static AudioTrack lastTrack=null;
 	
 	public Sound(Integer[] freqs,float volume){
 		track = new AudioTrack(AudioManager.STREAM_MUSIC,
@@ -35,16 +36,19 @@ public class Sound {
 	}
 	
 	public void play(){
+		if(lastTrack!=null) lastTrack.release();
 		track.stop();
 		track.reloadStaticData();
 		track.setLoopPoints(0,waveLength,-1);
 		track.play();
+		lastTrack=track;
 	}
 	
 	public void stop(){
 		track.pause();
 		track.stop();
 		track.release();
+		lastTrack=null;
 	}
 	
 	public float wave(double t,int which){

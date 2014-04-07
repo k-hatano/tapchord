@@ -155,6 +155,7 @@ public class TapChordView extends View {
 	}
 
 	public boolean onTouchEvent(MotionEvent event){
+		boolean chordPressed;
 		int i,j;
 		int id,kind;
 		int x,y;
@@ -193,6 +194,7 @@ public class TapChordView extends View {
 			break;
 		case MotionEvent.ACTION_MOVE:
 			Log.i("TapChordView","MOVE Count:"+event.getPointerCount());
+			chordPressed=false;
 			for(int index=0;index<event.getPointerCount();index++){
 				id=event.getPointerId(index);
 				if(id>=0) kind=taps.get(id);
@@ -225,15 +227,22 @@ public class TapChordView extends View {
 								rect=Statics.getRectOfButton(j,i,width,height,scroll);
 								if(rect.contains(x, y)){
 									play(j,i);
+									chordPressed=true;
 									playingID=event.getPointerId(index);
 									taps.put(playingID,Statics.CHORD_BUTTON);
 									break;
 								}
 							}
 						}
+					}else{
+						chordPressed=true;
 					}
 					break;
 				}
+			}
+			if(chordPressed==false){
+				playingID=-1;
+				stop();
 			}
 			break;
 		case MotionEvent.ACTION_UP:
