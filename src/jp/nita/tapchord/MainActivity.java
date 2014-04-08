@@ -9,17 +9,28 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 public class MainActivity extends Activity {
+	
+	private Heart heart=null;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+		heart=new Heart();
+		heart.start();
 	}
 	
 	@Override
 	protected void onPause(){
 		super.onPause();
-		((jp.nita.tapchord.TapChordView)findViewById(R.id.tapChordView)).activityPaused();
+		((TapChordView)findViewById(R.id.tapChordView)).activityPaused();
+		heart.sleep();
+	}
+	
+	@Override
+	protected void onResume(){
+		super.onResume();
+		heart.wake();
 	}
 
 	@Override
@@ -52,6 +63,31 @@ public class MainActivity extends Activity {
 			}).show();
 	    }
 	    return false;
+	}
+	
+	class Heart extends Thread implements Runnable{
+		private boolean awake=true;
+		private boolean alive=true;
+		public void run(){
+			TapChordView view=((TapChordView)findViewById(R.id.tapChordView));
+			while(alive){
+				try{
+					Thread.sleep(10);
+					if(awake) view.heartbeat();
+				}catch(InterruptedException e){
+					die();
+				}
+			}
+		}
+		public void wake(){
+			awake=true;
+		}
+		public void sleep(){
+			awake=false;
+		}
+		public void die(){
+			alive=false;
+		}
 	}
 
 }
