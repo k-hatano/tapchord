@@ -15,6 +15,12 @@ public class MainActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 	}
+	
+	@Override
+	protected void onPause(){
+		super.onPause();
+		((jp.nita.tapchord.TapChordView)findViewById(R.id.tapChordView)).activityPaused();
+	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {

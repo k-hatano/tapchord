@@ -26,9 +26,6 @@ public class TapChordView extends View {
 	int statusbarFlags[]={0,0,0,0};
 	int toolbarPressed=-1;
 
-	private final int SITUATION_NORMAL=0;
-	private final int SITUATION_TRANSPORTING=1;
-
 	Integer notesOfChord[]=new Integer[0];
 	Sound sound=null;
 
@@ -36,7 +33,7 @@ public class TapChordView extends View {
 
 	public TapChordView(Context context, AttributeSet attrs) {
 		super(context, attrs);
-		situation=SITUATION_NORMAL;
+		situation=Statics.SITUATION_NORMAL;
 		destination=1;
 		step=0;
 		playing=0;
@@ -92,7 +89,7 @@ public class TapChordView extends View {
 					c=4;
 					break;
 				}
-				if(situation==SITUATION_TRANSPORTING) c=0;
+				if(situation==Statics.SITUATION_TRANSPORTING) c=0;
 				paint.setColor(Statics.getColor(c,d));
 
 				rect=Statics.getRectOfButton(x,y,width,height,scroll);
@@ -163,15 +160,13 @@ public class TapChordView extends View {
 		rect=Statics.getRectOfScrollNob(scroll, upper, width, height);
 		canvas.drawRect(rect,paint);
 		
-		if(situation==SITUATION_TRANSPORTING){
+		if(situation==Statics.SITUATION_TRANSPORTING){
 			paint.setStyle(Style.STROKE);
 			paint.setStrokeWidth(4.0f);
 			for(x=-6;x<=6;x++){
 				int xx=(x+72)%12;
 				for(y=-1;y<=1;y++){
 					int c=0;
-					int d=0;
-					if(playing>0&&playingX==x&&playingY==y) d=1;
 					switch(xx){
 					case 11: case 0: case 1:
 						c=1;
@@ -186,7 +181,7 @@ public class TapChordView extends View {
 						c=4;
 						break;
 					}
-					paint.setColor(Statics.getColor(c,d));
+					paint.setColor(Statics.getColor(c,0));
 
 					rect=Statics.getRectOfButton(x,y,width,height,0);
 					canvas.drawOval(rect, paint);
@@ -218,6 +213,9 @@ public class TapChordView extends View {
 			originalY=y;
 			originalScroll=scroll;
 			taps.put(id,Statics.SCROLL_NOB);
+		}else if(Statics.getRectOfScrollBar(width,height).contains(x,y)){
+			scroll=0;
+			taps.put(id,Statics.SCROLL_BAR);
 		}
 		if(playing<=0){
 			for(j=-6;j<=6;j++){
@@ -286,6 +284,8 @@ public class TapChordView extends View {
 			}else{
 				chordPressed=true;
 			}
+			break;
+		case Statics.SCROLL_BAR:
 			break;
 		default:
 			actionDown(x,y,id);
@@ -385,6 +385,10 @@ public class TapChordView extends View {
 		playing=0;
 		notesOfChord=new Integer[0];
 		invalidate();
+	}
+	
+	public void activityPaused(){
+		stop();
 	}
 
 }

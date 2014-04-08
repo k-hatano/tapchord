@@ -10,10 +10,14 @@ public class Statics {
 	
 	final public static int NIHIL=0;
 	
+	final public static int SITUATION_NORMAL=0;
+	final public static int SITUATION_TRANSPORTING=1;
+	
 	final public static int CHORD_BUTTON=1;
 	final public static int STATUSBAR_BUTTON=2;
 	final public static int SCROLL_NOB=3;
 	final public static int TOOLBAR_BUTTON=4;
+	final public static int SCROLL_BAR=5;
 	
 	final public static String SUS4="sus4";
 	final public static String MINOR="m";
