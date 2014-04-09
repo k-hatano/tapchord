@@ -23,10 +23,13 @@ public class TapChordView extends View {
 	int situation,destination,step,scroll,upper,dark;
 	int playing,playingX,playingY;
 	int playingID;
+	
+	int scale=0;
 
 	int statusbarFlags[]={0,0,0,0};
 	int toolbarPressed=-1;
-
+	int scalePressed=Statics.FARAWAY;
+	
 	float barsShowingRate=1.0f;
 	
 	Handler handler=new Handler();
@@ -78,20 +81,22 @@ public class TapChordView extends View {
 		canvas.drawRect(rect,paint);
 		
 		for(x=-6;x<=6;x++){
-			paint.setColor(Statics.getColor(Statics.COLOR_LIGHTGRAY,0,dark));
+			int d=0;
+			if(x==scalePressed) d=1;
+			paint.setColor(Statics.getColor(Statics.COLOR_LIGHTGRAY,d,dark));
 
 			rect=Statics.getRectOfButton(x,-2,width,height,scroll);
 			canvas.drawOval(rect, paint);
 			
-			str=Statics.SCALES[x+6];
+			str=Statics.getStringOfScale(x+scale);
 			w=textPaint.measureText(str);
 			canvas.drawText(str,rect.centerX()-w/2,rect.centerY()-(fontMetrics.ascent+fontMetrics.descent)/2,textPaint);
 		}
 
 		for(x=-6;x<=6;x++){
-			int maj=x+12;
-			int min=x+15;
-			int xx=(x+72)%12;
+			int maj=x+15+scale;
+			int min=x+18+scale;
+			int xx=(x+360)%12;
 			for(y=-1;y<=1;y++){
 				int c=0;
 				int d=0;
@@ -135,7 +140,7 @@ public class TapChordView extends View {
 			paint.setStyle(Style.STROKE);
 			paint.setStrokeWidth(4.0f);
 			for(x=-6;x<=6;x++){
-				int xx=(x+72)%12;
+				int xx=(x+360)%12;
 				for(y=-1;y<=1;y++){
 					int c=0;
 					switch(xx){
@@ -224,13 +229,25 @@ public class TapChordView extends View {
 		int i,j;
 		RectF rect;
 
-		for(i=0;i<4;i++){
-			rect=Statics.getRectOfStatusBarButton(i,0,width,height,barsShowingRate);
-			if(rect.contains(x, y)){
-				statusbarFlags[i]=1;
-				taps.put(id,Statics.STATUSBAR_BUTTON);
+		if(situation==Statics.SITUATION_TRANSPOSE){
+			for(i=-6;i<=6;i++){
+				rect=Statics.getRectOfButton(i,-2,width,height,scroll);
+				if(rect.contains(x, y)){
+					scalePressed=i;
+					taps.put(id,Statics.TRANSPOSE_SCALE_BUTTON);
+					break;
+				}
+			}
+		}else{
+			for(i=0;i<4;i++){
+				rect=Statics.getRectOfStatusBarButton(i,0,width,height,barsShowingRate);
+				if(rect.contains(x, y)){
+					statusbarFlags[i]=1;
+					taps.put(id,Statics.STATUSBAR_BUTTON);
+				}
 			}
 		}
+		
 		for(i=0;i<3;i++){
 			rect=Statics.getRectOfToolbarButton(i,0,width,height,barsShowingRate);
 			if(rect.contains(x, y)){
@@ -317,6 +334,8 @@ public class TapChordView extends View {
 			break;
 		case Statics.SCROLL_BAR:
 			break;
+		case Statics.TRANSPOSE_SCALE_BUTTON:
+			break;
 		default:
 			actionDown(x,y,id);
 			break;
@@ -353,7 +372,9 @@ public class TapChordView extends View {
 			stop();
 			for(int l=0;l<4;l++) statusbarFlags[l]=0;
 			if(toolbarPressed>=0) toolbarReleased(toolbarPressed);
+			if(scalePressed!=Statics.FARAWAY) scaleReleased(scalePressed);
 			toolbarPressed=-1;
+			scalePressed=Statics.FARAWAY;
 			playingID=-1;
 			upper=0;
 			taps=new SparseIntArray();
@@ -383,11 +404,18 @@ public class TapChordView extends View {
 		}
 		invalidate();
 	}
+	
+	public void scaleReleased(int which){
+		scale=which+scale;
+		if(scale<-7) scale+=12;
+		if(scale>7) scale-=12;
+		invalidate();
+	}
 
 	public void play(int x,int y){
-		Integer f[]=(Statics.convertNotesToFrequencies(Statics.getNotesOfChord(x,y,statusbarFlags)));
+		notesOfChord=Statics.getNotesOfChord(x+scale,y,statusbarFlags);
+		Integer f[]=(Statics.convertNotesToFrequencies(notesOfChord));
 		sound=new Sound(f,0.1f);
-		notesOfChord=Statics.getNotesOfChord(x,y,statusbarFlags);
 		sound.play();
 		switch(y){
 		case -1:

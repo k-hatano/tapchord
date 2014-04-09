@@ -9,6 +9,7 @@ import android.graphics.RectF;
 public class Statics {
 
 	final public static int NIHIL=0;
+	final public static int FARAWAY=256;
 
 	final public static int SITUATION_NORMAL=0;
 	final public static int SITUATION_TRANSPOSE=1;
@@ -18,6 +19,7 @@ public class Statics {
 	final public static int SCROLL_NOB=3;
 	final public static int TOOLBAR_BUTTON=4;
 	final public static int SCROLL_BAR=5;
+	final public static int TRANSPOSE_SCALE_BUTTON=6;
 	
 	final public static int COLOR_BLACK=-5;
 	final public static int COLOR_DARKGRAY=-4;
@@ -174,11 +176,11 @@ public class Statics {
 		return Color.argb(255,r,g,b);
 	}
 
-	public static String NOTES[]={"Dbb","Abb","Ebb","Bbb","Fb","Cb","Gb","Db","Ab","Eb","Bb","F",
+	public static String NOTES[]={"Fbb","Cbb","Gbb","Dbb","Abb","Ebb","Bbb","Fb","Cb","Gb","Db","Ab","Eb","Bb","F",
 		"C","G","D","A","E","B","F#","C#","G#","D#","A#","E#",
-		"B#","F#","Cx","Gx","Dx","Ax"};
+		"B#","F#","Cx","Gx","Dx","Ax","Ex","Gx","Fx"};
 
-	public static String SCALES[]={"6b","5b","4b","3b","2b","1b","0#b","1#","2#","3#","4#","5#","6#"};
+	public static String SCALES[]={"b7","b6","b5","b4","b3","b2","b1","#b0","#1","#2","#3","#4","#5","#6","#7"};
 
 	public static String TENSIONS[]={"add9","-5/aug","7","M7"};
 	public static String OPTIONS[]={"Settings","Light","0#b"};
@@ -311,42 +313,42 @@ public class Statics {
 
 		if(y==-1){
 			if(tensions[1]>0){
-				notes.add((x*7+72)%12);
-				notes.add((x*7+4+72)%12);
-				notes.add((x*7+8+72)%12);
+				notes.add((x*7+360)%12);
+				notes.add((x*7+4+360)%12);
+				notes.add((x*7+8+360)%12);
 			}else{
-				notes.add((x*7+72)%12);
-				notes.add((x*7+5+72)%12);
-				notes.add((x*7+7+72)%12);
+				notes.add((x*7+360)%12);
+				notes.add((x*7+5+360)%12);
+				notes.add((x*7+7+360)%12);
 			}
 		}else if(y==0){
-			notes.add((x*7+72)%12);
-			notes.add((x*7+4+72)%12);
+			notes.add((x*7+360)%12);
+			notes.add((x*7+4+360)%12);
 			if(tensions[1]>0){
-				notes.add((x*7+6+72)%12);
+				notes.add((x*7+6+360)%12);
 			}else{
-				notes.add((x*7+7+72)%12);
+				notes.add((x*7+7+360)%12);
 			}
 		}else if(y==1){
-			notes.add((x*7+72)%12);
-			notes.add((x*7+3+72)%12);
+			notes.add((x*7+360)%12);
+			notes.add((x*7+3+360)%12);
 			if(tensions[1]>0){
-				notes.add((x*7+6+72)%12);
+				notes.add((x*7+6+360)%12);
 			}else{
-				notes.add((x*7+7+72)%12);
+				notes.add((x*7+7+360)%12);
 			}
 		}
 
 		if(tensions[0]>0){
-			notes.add((x*7+2+72)%12);
+			notes.add((x*7+2+360)%12);
 		}
 
 		if(tensions[2]>0&&tensions[3]>0){
-			notes.add((x*7+9+72)%12);
+			notes.add((x*7+9+360)%12);
 		}else if(tensions[2]>0){
-			notes.add((x*7+10+72)%12);
+			notes.add((x*7+10+360)%12);
 		}else if(tensions[3]>0){
-			notes.add((x*7+11+72)%12);
+			notes.add((x*7+11+360)%12);
 		}
 
 		Integer ns[]=notes.toArray(new Integer[0]);
@@ -364,4 +366,8 @@ public class Statics {
 		return fs;
 	}
 
+	public static String getStringOfScale(int i){
+		if(i<-7||i>7) return "";
+		return SCALES[i+7];
+	}
 }
