@@ -22,7 +22,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="jp.nita.tapchord.SettingsActivity" android:theme="@android:style/Theme.Light" android:screenOrientation="sensorLandscape" android:label="@string/action_settings"></activity>
+        <activity android:name="jp.nita.tapchord.SettingsActivity" android:theme="@android:style/Theme.Light" android:screenOrientation="sensorLandscape" android:label="@string/tapchord_settings"></activity>
     </application>
 
 </manifest>

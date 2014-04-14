@@ -21,5 +21,8 @@
         <item name="settings_sampling_rate_22050">22050 Hz</item>
         <item name="settings_sampling_rate_44100">44100 Hz</item>
     </string-array>
+    <string name="special_thanks">Special Thanks to\nAkiyoshi Kamide</string>
+    <string name="copyright">Version 1.0 (c) Nita</string>
+    <string name="tapchord_settings">tapchord - Settings</string>
 
 </resources>
