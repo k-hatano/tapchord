@@ -44,6 +44,8 @@ public class MainActivity extends Activity {
 	    switch (item.getItemId()) {
 	    case R.id.action_settings:
 	        Intent intent=new Intent(this,SettingsActivity.class);
+	        // TapChordView view=(TapChordView)findViewById(R.id.tapChordView);
+	        // intent.putExtra("darken",view.getDarken());
 	        startActivity(intent);
 	        return true;
 	    case R.id.action_quit:

@@ -9,6 +9,7 @@ package jp.nita.tapchord;
 
 public final class R {
     public static final class array {
+        public static final int settings_items=0x7f060001;
         public static final int settings_sampling_rate_values=0x7f060000;
     }
     public static final class attr {
@@ -27,8 +28,12 @@ public final class R {
         public static final int tapchord=0x7f020000;
     }
     public static final class id {
-        public static final int action_quit=0x7f090002;
-        public static final int action_settings=0x7f090001;
+        public static final int action_quit=0x7f090006;
+        public static final int action_settings=0x7f090005;
+        public static final int settings_about=0x7f090001;
+        public static final int settings_items=0x7f090004;
+        public static final int settings_ok=0x7f090002;
+        public static final int settings_settings=0x7f090003;
         public static final int tapChordView=0x7f090000;
     }
     public static final class layout {
@@ -45,6 +50,7 @@ public final class R {
         public static final int app_name=0x7f050000;
         public static final int cancel=0x7f050006;
         public static final int copyright=0x7f05000e;
+        public static final int darken=0x7f050010;
         public static final int hello_world=0x7f050002;
         public static final int message_quit=0x7f050004;
         public static final int ok=0x7f050005;

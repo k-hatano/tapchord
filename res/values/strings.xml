@@ -24,5 +24,13 @@
     <string name="special_thanks">Special Thanks to\nAkiyoshi Kamide</string>
     <string name="copyright">Version 1.0 (c) Nita</string>
     <string name="tapchord_settings">tapchord - Settings</string>
+    
+    <string-array name="settings_items">
+        <item name="settings_items_darken">Darken</item>
+        <item name="settings_items_scale">Scale</item>
+        <item name="settings_items_volume">Volume</item>
+        <item name="settings_items_waveform">Waveform</item>
+    </string-array>
+    <string name="darken">Darken</string>
 
 </resources>

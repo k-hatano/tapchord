@@ -11,59 +11,74 @@
         android:layout_height="match_parent"
         android:orientation="horizontal" >
 
-        <LinearLayout
+        <RelativeLayout
+            android:id="@+id/settings_about"
             android:layout_width="160dp"
             android:layout_height="match_parent"
             android:orientation="vertical" >
 
             <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:orientation="vertical"
-                android:layout_marginTop="8dp" >
+                android:padding="8dp" >
 
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:src="@drawable/tapchord"
-                    android:padding="2dp" />
+                    android:padding="2dp"
+                    android:src="@drawable/tapchord" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
+                    android:padding="2dp"
                     android:text="@string/app_name"
-                    android:textAppearance="?android:attr/textAppearanceLarge"
-                    android:padding="2dp" />
-                
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:gravity="center"
-                    android:text="@string/copyright"
-                    android:textAppearance="?android:attr/textAppearanceSmall"
-                    android:padding="2dp"/>
-                
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:gravity="center"
-                    android:text="@string/special_thanks"
-                    android:textAppearance="?android:attr/textAppearanceSmall"
-                    android:padding="2dp"/>
+                    android:textAppearance="?android:attr/textAppearanceLarge" />
 
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:padding="2dp"
+                    android:text="@string/copyright"
+                    android:textAppearance="?android:attr/textAppearanceSmall" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:padding="2dp"
+                    android:text="@string/special_thanks"
+                    android:textAppearance="?android:attr/textAppearanceSmall" />
             </LinearLayout>
-        </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="8dp"
+                android:layout_alignParentBottom="true" >
+
+                <Button
+                    android:id="@+id/settings_ok"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/ok" />
+            </LinearLayout>
+        </RelativeLayout>
 
         <ScrollView
+            android:id="@+id/settings_settings"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" >
 
             <ListView
+                android:id="@+id/settings_items"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" >
             </ListView>

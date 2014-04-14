@@ -13,6 +13,7 @@ public class Statics {
 
 	final public static int SITUATION_NORMAL=0;
 	final public static int SITUATION_TRANSPOSE=1;
+	final public static int SITUATION_TRANSPOSING=2;
 
 	final public static int CHORD_BUTTON=1;
 	final public static int STATUSBAR_BUTTON=2;
@@ -183,7 +184,7 @@ public class Statics {
 	public static String SCALES[]={"b7","b6","b5","b4","b3","b2","b1","#b0","#1","#2","#3","#4","#5","#6","#7"};
 
 	public static String TENSIONS[]={"add9","-5/aug","7","M7"};
-	public static String OPTIONS[]={"Settings","Light","0#b"};
+	public static String OPTIONS[]={"Settings","Darken","#b0"};
 
 	public static RectF getRectOfButton(int x,int y,int width,int height,int scroll){
 		float vert=height*7/35f;
