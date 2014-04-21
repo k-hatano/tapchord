@@ -15,10 +15,7 @@
     <string name="settings_waveform_square_wave">Square Wave</string>
     <string name="settings_waveform_pulse_wave">1:3 Pulse Wave</string>
 
-    <string name="settings_sampling_rate_4000">4000 Hz</string>
-    <string name="settings_sampling_rate_8000">8000 Hz</string>
-    <string name="settings_sampling_rate_16000">16000 Hz</string>
-    <string name="settings_sampling_rate_22050">22050 Hz</string>
+    <string name="settings_sampling_rate_hz"> Hz</string>
     <string name="special_thanks">Special Thanks to\nAkiyoshi Kamide</string>
     <string name="copyright">Version 1.0 (c) Nita</string>
     <string name="tapchord_settings">tapchord - Settings</string>

@@ -25,7 +25,7 @@ public class Statics {
 	final public static int TOOLBAR_BUTTON=4;
 	final public static int SCROLL_BAR=5;
 	final public static int TRANSPOSE_SCALE_BUTTON=6;
-	
+
 	final public static int COLOR_BLACK=-5;
 	final public static int COLOR_DARKGRAY=-4;
 	final public static int COLOR_GRAY=-3;
@@ -40,9 +40,13 @@ public class Statics {
 
 	final public static String SUS4="sus4";
 	final public static String MINOR="m";
-	
+
 	public static final String PREF_KEY = "tapchord";
 	public static final String PREF_SCALE = "scale";
+	public static final String PREF_DARKEN = "darken";
+	public static final String PREF_VOLUME = "volume";
+	public static final String PREF_SAMPLING_RATE = "sampling_rate";
+	public static final String PREF_WAVEFORM = "waveform";
 
 	public static int getColor(int which,int pressed,int dark){
 		int r,g,b;
@@ -378,16 +382,75 @@ public class Statics {
 		if(i<-7||i>7) return "";
 		return SCALES[i+7];
 	}
-	
-	public static String getPreferenceValue(Context context,String key,String def){
+
+	public static int getPreferenceValue(Context context,String key,int def){
 		SharedPreferences pref=context.getSharedPreferences(PREF_KEY,Activity.MODE_PRIVATE);
-		return pref.getString(key,def);
+		return pref.getInt(key,def);
 	}
-	
-	@SuppressLint("CommitPrefEdits")
-	public static void setPreferenceValue(Context context,String key,String val){
+
+	public static void setPreferenceValue(Context context,String key,int val){
 		SharedPreferences pref=context.getSharedPreferences(PREF_KEY,Activity.MODE_PRIVATE);
 		Editor editor=pref.edit();
-		editor.putString(key, val);
+		editor.putInt(key, val);
+		editor.commit();
+	}
+
+	public static String getLongStringOfScale(int i){
+		switch(i){
+		case -7:
+			return "b7 : Cb / Abm";
+		case -6:
+			return "b6 : Gb / Ebm";
+		case -5:
+			return "b5 : Db / Bbm";
+		case -4:
+			return "b4 : Ab / Fm";
+		case -3:
+			return "b3 : Eb / Cm";
+		case -2:
+			return "b2 : Bb / Gm";
+		case -1:
+			return "b1 : F / Dm";
+		case 0:
+			return "#b0 : C / Am";
+		case 1:
+			return "#1 : G / Em";
+		case 2:
+			return "#2 : D / Bm";
+		case 3:
+			return "#3 : A / F#m";
+		case 4:
+			return "#4 : E / C#m";
+		case 5:
+			return "#5 : G / G#m";
+		case 6:
+			return "#6 : F# / D#m";
+		case 7:
+			return "#7 : C# / A#m";
+		default:
+			return "";
+		}
+	}
+
+	public static String getOnOrOffString(Context context,int v){
+		if(v>0) return context.getString(R.string.on);
+		else return context.getString(R.string.off);
+	}
+
+	public static int getValueOfSamplingRate(int i){
+		switch(i){
+		case 0:
+			return 4000;
+		case 1:
+			return 8000;
+		case 2:
+			return 16000;
+		case 3:
+			return 22050;
+		case 4:
+			return 44100;
+		default:
+			return 0;
+		}
 	}
 }

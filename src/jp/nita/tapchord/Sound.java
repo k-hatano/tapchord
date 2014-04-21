@@ -1,16 +1,19 @@
 package jp.nita.tapchord;
 
+import android.content.Context;
 import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioTrack;
 
 public class Sound {
 	AudioTrack track=null;
-	final int sampleRate=4000;
+	int sampleRate=4000;
 	int waveLength;
 	static AudioTrack lastTrack=null;
 	
-	public Sound(Integer[] freqs,float volume){
+	public Sound(Integer[] freqs,float volume,Context context){
+		sampleRate=Statics.getValueOfSamplingRate(Statics.getPreferenceValue(context,Statics.PREF_SAMPLING_RATE,0));
+		
 		track = new AudioTrack(AudioManager.STREAM_MUSIC,
 				sampleRate,
 				AudioFormat.CHANNEL_CONFIGURATION_DEFAULT,

@@ -136,7 +136,7 @@ public class TapChordView extends View {
 		
 		if(situation==Statics.SITUATION_TRANSPOSE || destination==Statics.SITUATION_TRANSPOSE){
 			paint.setStyle(Style.STROKE);
-			paint.setStrokeWidth(4.0f);
+			paint.setStrokeWidth(height/200);
 			for(x=-6;x<=6;x++){
 				int xx=(x+360)%12;
 				for(y=-1;y<=1;y++){
@@ -166,7 +166,9 @@ public class TapChordView extends View {
 			
 			paint.setColor(Statics.getColor(Statics.COLOR_RED,0,darken));
 
-			rect=Statics.getRectOfButton(0,-2,width,height,scroll);
+			int sc=scroll;
+			if(situation==Statics.SITUATION_TRANSPOSING) sc=0;
+			rect=Statics.getRectOfButton(0,-2,width,height,sc);
 			canvas.drawOval(rect, paint);
 		}
 		
@@ -394,7 +396,7 @@ public class TapChordView extends View {
 			this.getContext().startActivity(intent);
 			break;
 		case 1:
-			darken=1-darken;
+			setDarken(1-darken);
 			break;
 		case 2:
 			originalScroll=scroll;
@@ -418,7 +420,7 @@ public class TapChordView extends View {
 	public void play(int x,int y){
 		notesOfChord=Statics.getNotesOfChord(x+scale,y,statusbarFlags);
 		Integer f[]=(Statics.convertNotesToFrequencies(notesOfChord));
-		sound=new Sound(f,0.1f);
+		sound=new Sound(f,0.1f,this.getContext());
 		sound.play();
 		switch(y){
 		case -1:
@@ -455,6 +457,11 @@ public class TapChordView extends View {
 	public void activityPaused(){
 		stop();
 	}
+	
+	public void activityResumed(){
+		getPreferenceValues();
+		invalidate();
+	}
 
 	public void heartbeat(){
 		if(step>0){
@@ -481,7 +488,7 @@ public class TapChordView extends View {
 			}
 			if(step==0&&situation!=destination){
 				if(situation==Statics.SITUATION_TRANSPOSING){
-					scale=destScale;
+					setScale(destScale);
 					scroll=0;
 				}
 				situation=destination;
@@ -510,5 +517,20 @@ public class TapChordView extends View {
 	
 	public int getDarken(){
 		return darken;
+	}
+	
+	public void setScale(int s){
+		scale=s;
+		Statics.setPreferenceValue(this.getContext(),Statics.PREF_SCALE,scale);
+	}
+	
+	public void setDarken(int d){
+		darken=d;
+		Statics.setPreferenceValue(this.getContext(),Statics.PREF_DARKEN,darken);
+	}
+	
+	public void getPreferenceValues(){
+		scale=Statics.getPreferenceValue(this.getContext(),Statics.PREF_SCALE,0);
+		darken=Statics.getPreferenceValue(this.getContext(),Statics.PREF_DARKEN,0);
 	}
 }
