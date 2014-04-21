@@ -19,10 +19,11 @@ import android.view.View;
 public class TapChordView extends View {
 	int width,height,originalX,originalY,originalScroll;
 	int situation,destination,step,scroll,upper,darken,destScale;
-	int playing,playingX,playingY;
+	int playing,playingX,playingY,tappedX,virtualScroll;
 	int playingID;
 	
 	int scale=0;
+	int pulling=0;
 
 	int statusbarFlags[]={0,0,0,0};
 	int toolbarPressed=-1;
@@ -273,6 +274,8 @@ public class TapChordView extends View {
 					rect=Statics.getRectOfButton(j,i,width,height,scroll);
 					if(rect.contains(x, y)){
 						play(j,i);
+						originalScroll=scroll;
+						tappedX=x;
 						playingID=id;
 						taps.put(playingID,Statics.CHORD_BUTTON);
 					}
@@ -293,7 +296,7 @@ public class TapChordView extends View {
 		case Statics.SCROLL_NOB:
 			if(-y+originalY>height/5){
 				scroll=0;
-				upper=5;
+				upper=height/35/5*2;
 			}else{
 				scroll=(int)(-x+originalX)+originalScroll;
 				if(scroll<-Statics.getScrollMax(width,height)) scroll=-Statics.getScrollMax(width,height);
@@ -318,6 +321,24 @@ public class TapChordView extends View {
 			}
 			break;
 		case Statics.CHORD_BUTTON:
+			if(id==playingID){
+				if(pulling==2){
+					scroll=originalScroll+(x-tappedX)/4;
+					if(scroll<-Statics.getScrollMax(width,height)) scroll=-Statics.getScrollMax(width,height);
+					if(scroll>Statics.getScrollMax(width,height)) scroll=Statics.getScrollMax(width,height);
+				}else if(pulling==1){
+					virtualScroll=originalScroll+(x-tappedX)/4;
+					scroll=(virtualScroll+scroll)/2;
+					if(scroll<-Statics.getScrollMax(width,height)) scroll=-Statics.getScrollMax(width,height);
+					if(scroll>Statics.getScrollMax(width,height)) scroll=Statics.getScrollMax(width,height);
+				}else if(Math.abs(x-tappedX)>height/5){
+					virtualScroll=originalScroll+(x-tappedX)/4;
+					pulling=1;
+					startPullingAnimation();
+				}
+				chordPressed=true;
+				break;
+			}
 			if(playing<=0){
 				for(j=-6;j<=6;j++){
 					for(i=-1;i<=1;i++){
@@ -325,6 +346,8 @@ public class TapChordView extends View {
 						if(rect.contains(x, y)){
 							play(j,i);
 							chordPressed=true;
+							originalScroll=scroll;
+							tappedX=x;
 							playingID=id;
 							taps.put(playingID,Statics.CHORD_BUTTON);
 							break;
@@ -367,6 +390,7 @@ public class TapChordView extends View {
 			}
 			if(chordPressed==false){
 				playingID=-1;
+				pulling=0;
 				stop();
 			}
 			break;
@@ -379,6 +403,7 @@ public class TapChordView extends View {
 			toolbarPressed=-1;
 			scalePressed=Statics.FARAWAY;
 			playingID=-1;
+			pulling=0;
 			upper=0;
 			taps=new SparseIntArray();
 			break;
@@ -472,6 +497,8 @@ public class TapChordView extends View {
 					scroll=(int)(originalScroll*step/10.0f);
 					barsShowingRate=step/10.0f;
 					break;
+				case Statics.SITUATION_PULLING:
+					break;
 				}
 			}else if(situation==Statics.SITUATION_TRANSPOSE){
 				switch(destination){
@@ -513,6 +540,11 @@ public class TapChordView extends View {
 		situation=Statics.SITUATION_TRANSPOSING;
 		step=10;
 		destScale=ds;
+	}
+	
+	public void startPullingAnimation(){
+		situation=Statics.SITUATION_PULLING;
+		step=10;
 	}
 	
 	public int getDarken(){

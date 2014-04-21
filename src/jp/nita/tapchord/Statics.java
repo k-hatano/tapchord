@@ -3,7 +3,6 @@ package jp.nita.tapchord;
 import java.util.ArrayList;
 import java.util.List;
 import android.content.SharedPreferences.Editor;
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -18,6 +17,7 @@ public class Statics {
 	final public static int SITUATION_NORMAL=0;
 	final public static int SITUATION_TRANSPOSE=1;
 	final public static int SITUATION_TRANSPOSING=2;
+	final public static int SITUATION_PULLING=3;
 
 	final public static int CHORD_BUTTON=1;
 	final public static int STATUSBAR_BUTTON=2;
