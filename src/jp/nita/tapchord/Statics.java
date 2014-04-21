@@ -3,6 +3,10 @@ package jp.nita.tapchord;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.content.ContextWrapper.*;
+import android.app.Activity;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.RectF;
 
@@ -36,6 +40,9 @@ public class Statics {
 
 	final public static String SUS4="sus4";
 	final public static String MINOR="m";
+	
+	public static final String PREF_KEY = "tapchord";
+	public static final String PREF_SCALE = "scale";
 
 	public static int getColor(int which,int pressed,int dark){
 		int r,g,b;
@@ -370,5 +377,10 @@ public class Statics {
 	public static String getStringOfScale(int i){
 		if(i<-7||i>7) return "";
 		return SCALES[i+7];
+	}
+	
+	public static String getPreferenceValue(Context context,String key,String def){
+		SharedPreferences pref=context.getSharedPreferences(PREF_KEY,Activity.MODE_PRIVATE);
+		return pref.getString(key,def);
 	}
 }

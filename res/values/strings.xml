@@ -8,29 +8,27 @@
     <string name="message_quit">Are you sure you want to quit tapchord?</string>
     <string name="ok">OK</string>
     <string name="cancel">Cancel</string>
-    <string name="settings_sampling_rate">Sampling Rate: </string>
+    <string name="settings_sampling_rate">Sampling Rate</string>
     <string name="settings_waveform">Waveform</string>
     <string name="settings_waveform_sine_wave">Sine Wave</string>
     <string name="settings_waveform_sawtooth_wave">Sawtooth Wave</string>
     <string name="settings_waveform_square_wave">Square Wave</string>
     <string name="settings_waveform_pulse_wave">1:3 Pulse Wave</string>
 
-    <string-array name="settings_sampling_rate_values">
-        <item name="settings_sampling_rate_8000">8000 Hz</item>
-        <item name="settings_sampling_rate_16000">16000 Hz</item>
-        <item name="settings_sampling_rate_22050">22050 Hz</item>
-        <item name="settings_sampling_rate_44100">44100 Hz</item>
-    </string-array>
+    <string name="settings_sampling_rate_4000">4000 Hz</string>
+    <string name="settings_sampling_rate_8000">8000 Hz</string>
+    <string name="settings_sampling_rate_16000">16000 Hz</string>
+    <string name="settings_sampling_rate_22050">22050 Hz</string>
     <string name="special_thanks">Special Thanks to\nAkiyoshi Kamide</string>
     <string name="copyright">Version 1.0 (c) Nita</string>
     <string name="tapchord_settings">tapchord - Settings</string>
     
-    <string-array name="settings_items">
-        <item name="settings_items_darken">Darken</item>
-        <item name="settings_items_scale">Scale</item>
-        <item name="settings_items_volume">Volume</item>
-        <item name="settings_items_waveform">Waveform</item>
-    </string-array>
+    <string name="settings_volume">Volume</string>
+    
     <string name="darken">Darken</string>
+    <string name="on">On</string>
+    <string name="off">Off</string>
+    <string name="settings_darken">Darken</string>
+    <string name="settings_scale">Scale</string>
 
 </resources>
