@@ -24,7 +24,9 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 
 	int darken=0;
 	int scale;
+	int volume;
 	int samplingRate;
+	int waveform;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -44,7 +46,9 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 	public void getPreferenceValues(){
 		scale=Statics.getPreferenceValue(this,Statics.PREF_SCALE,0);
 		darken=Statics.getPreferenceValue(this,Statics.PREF_DARKEN,0);
+		volume=Statics.getPreferenceValue(this,Statics.PREF_VOLUME,0);
 		samplingRate=Statics.getPreferenceValue(this,Statics.PREF_SAMPLING_RATE,0);
+		waveform=Statics.getPreferenceValue(this,Statics.PREF_WAVEFORM,0);
 	}
 	
 	public void updateSettingsListView(){
@@ -65,7 +69,7 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 
 			map=new HashMap<String,String>();
 			map.put("key", getString(R.string.settings_volume));
-			map.put("value", "");
+			map.put("value", ""+Statics.getValueOfVolume(volume));
 			list.add(map);
 
 			map=new HashMap<String,String>();
@@ -75,7 +79,7 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 
 			map=new HashMap<String,String>();
 			map.put("key", getString(R.string.settings_waveform));
-			map.put("value", "");
+			map.put("value", Statics.getValueOfWaveform(waveform,this));
 			list.add(map);
 		}
 
@@ -136,6 +140,7 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 					setScale(arg1-7);
 				}
 			}).show();
+			break;
 		}
 		case 1:{
 			CharSequence list[]=new String[2];
@@ -149,6 +154,22 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 					setDarken(arg1);
 				}
 			}).show();
+			break;
+		}
+		case 2:{
+			CharSequence list[]=new String[5];
+			for(int i=-1;i<4;i++){
+			list[i+1]=""+Statics.getValueOfVolume(i);
+			}
+			new AlertDialog.Builder(SettingsActivity.this)
+			.setTitle(getString(R.string.settings_volume))
+			.setItems(list,new DialogInterface.OnClickListener(){
+				@Override
+				public void onClick(DialogInterface arg0, int arg1) {
+					setVolume(arg1-1);
+				}
+			}).show();
+			break;
 		}
 		case 3:{
 			CharSequence list[]=new String[5];
@@ -156,13 +177,29 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 			list[i]=""+Statics.getValueOfSamplingRate(i)+" "+getString(R.string.settings_sampling_rate_hz);
 			}
 			new AlertDialog.Builder(SettingsActivity.this)
-			.setTitle(getString(R.string.settings_scale))
+			.setTitle(getString(R.string.settings_sampling_rate))
 			.setItems(list,new DialogInterface.OnClickListener(){
 				@Override
 				public void onClick(DialogInterface arg0, int arg1) {
 					setSamplingRate(arg1);
 				}
 			}).show();
+			break;
+		}
+		case 4:{
+			CharSequence list[]=new String[3];
+			for(int i=0;i<3;i++){
+			list[i]=Statics.getValueOfWaveform(i,this);
+			}
+			new AlertDialog.Builder(SettingsActivity.this)
+			.setTitle(getString(R.string.settings_waveform))
+			.setItems(list,new DialogInterface.OnClickListener(){
+				@Override
+				public void onClick(DialogInterface arg0, int arg1) {
+					setWaveform(arg1);
+				}
+			}).show();
+			break;
 		}
 		default:
 			return;
@@ -186,6 +223,20 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 	public void setSamplingRate(int sr){
 		samplingRate=sr;
 		Statics.setPreferenceValue(this,Statics.PREF_SAMPLING_RATE,samplingRate);
+		getPreferenceValues();
+		updateSettingsListView();
+	}
+	
+	public void setVolume(int v){
+		volume=v;
+		Statics.setPreferenceValue(this,Statics.PREF_VOLUME,volume);
+		getPreferenceValues();
+		updateSettingsListView();
+	}
+	
+	public void setWaveform(int wf){
+		waveform=wf;
+		Statics.setPreferenceValue(this,Statics.PREF_WAVEFORM,waveform);
 		getPreferenceValues();
 		updateSettingsListView();
 	}

@@ -197,7 +197,7 @@ public class TapChordView extends View {
 		for(x=0;x<3;x++){
 			int d=0;
 			if(toolbarPressed==x) d=1;
-			paint.setColor(Statics.getColor(Statics.COLOR_ORANGE,d,darken));
+			paint.setColor(Statics.getColor(Statics.COLOR_PURPLE,d,darken));
 			rect=Statics.getRectOfToolbarButton(x,0,width,height,barsShowingRate);
 			canvas.drawOval(rect, paint);
 
@@ -420,7 +420,7 @@ public class TapChordView extends View {
 	public void play(int x,int y){
 		notesOfChord=Statics.getNotesOfChord(x+scale,y,statusbarFlags);
 		Integer f[]=(Statics.convertNotesToFrequencies(notesOfChord));
-		sound=new Sound(f,0.1f,this.getContext());
+		sound=new Sound(f,this.getContext());
 		sound.play();
 		switch(y){
 		case -1:

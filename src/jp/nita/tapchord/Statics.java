@@ -37,6 +37,7 @@ public class Statics {
 	final public static int COLOR_GREEN=3;
 	final public static int COLOR_BLUE=4;
 	final public static int COLOR_ORANGE=5;
+	final public static int COLOR_PURPLE=6;
 
 	final public static String SUS4="sus4";
 	final public static String MINOR="m";
@@ -53,59 +54,64 @@ public class Statics {
 		if(dark==0){
 			switch(which){
 			case COLOR_BLACK:
-				r=0;
-				g=0;
-				b=0;
+				r=0x00;
+				g=0x00;
+				b=0x00;
 				break;
 			case COLOR_DARKGRAY:
-				r=64;
-				g=64;
-				b=64;
+				r=0x40;
+				g=0x40;
+				b=0x40;
 				break;
 			case COLOR_GRAY:
-				r=128;
-				g=128;
-				b=128;
+				r=0x80;
+				g=0x80;
+				b=0x80;
 				break;
 			case COLOR_LIGHTGRAY:
-				r=240;
-				g=240;
-				b=240;
+				r=0xE0;
+				g=0xE0;
+				b=0xE0;
 				break;
 			case COLOR_ABSOLUTE_LIGHT:
-				r=255;
-				g=255;
-				b=255;
+				r=0xFF;
+				g=0xFF;
+				b=0xFF;
 				break;
 			case COLOR_RED:
-				r=255;
-				g=160;
-				b=224;
+				r=0xFF;
+				g=0xA0;
+				b=0xE0; // SUM=0x28
 				break;
 			case COLOR_YELLOW:
-				r=255;
-				g=255;
-				b=128;
+				r=0xFF;
+				g=0xFF;
+				b=0x70;
 				break;
 			case COLOR_GREEN:
-				r=160;
-				g=255;
-				b=160;
+				r=0xA0;
+				g=0xFF;
+				b=0xA0;
 				break;
 			case COLOR_BLUE:
-				r=160;
-				g=224;
-				b=255;
+				r=0xA0;
+				g=0xE0;
+				b=0xFF;
 				break;
 			case COLOR_ORANGE:
-				r=255;
-				g=192;
-				b=128;
+				r=0xFF;
+				g=0xC0;
+				b=0x80;
+				break;
+			case COLOR_PURPLE:
+				r=0xC0;
+				g=0xC0;
+				b=0xFF;
 				break;
 			default:
-				r=255;
-				g=255;
-				b=255;
+				r=0xFF;
+				g=0xFF;
+				b=0xFF;
 				break;
 			}
 			switch(pressed){
@@ -154,6 +160,7 @@ public class Statics {
 			case COLOR_GREEN:
 			case COLOR_BLUE:
 			case COLOR_ORANGE:
+			case COLOR_PURPLE:
 				r=0;
 				g=32;
 				b=32;
@@ -451,6 +458,36 @@ public class Statics {
 			return 44100;
 		default:
 			return 0;
+		}
+	}
+	
+	public static int getValueOfVolume(int i){
+		switch(i){
+		case -1:
+			return 20;
+		case 0:
+			return 40;
+		case 1:
+			return 60;
+		case 2:
+			return 80;
+		case 3:
+			return 100;
+		default:
+			return 0;
+		}
+	}
+	
+	public static String getValueOfWaveform(int i,Context context){
+		switch(i){
+		case 0:
+			return context.getString(R.string.settings_waveform_sine_wave);
+		case 1:
+			return context.getString(R.string.settings_waveform_sawtooth_wave);
+		case 2:
+			return context.getString(R.string.settings_waveform_square_wave);
+		default:
+			return "";
 		}
 	}
 }
