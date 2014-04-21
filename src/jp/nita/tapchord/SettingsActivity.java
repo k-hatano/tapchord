@@ -6,17 +6,11 @@ import java.util.List;
 import java.util.Map;
 
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.View.OnTouchListener;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
@@ -24,6 +18,8 @@ import android.widget.SimpleAdapter;
 public class SettingsActivity extends Activity implements OnClickListener {
 
 	int darken=0;
+	
+	String scale;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -36,7 +32,6 @@ public class SettingsActivity extends Activity implements OnClickListener {
 		// setTheme(darken>0?android.R.style.Theme_Black:android.R.style.Theme_Light);
 
 		ListView items=(ListView)findViewById(R.id.settings_items);
-
 		List<Map<String,String>> list=new ArrayList<Map<String,String>>();
 		{
 			Map<String,String> map;
@@ -73,7 +68,7 @@ public class SettingsActivity extends Activity implements OnClickListener {
 new String[]{"key","value"},
 				new int[]{android.R.id.text1,android.R.id.text2});
 		items.setAdapter(adapter);
-
+		
 		Button button;
 		button=(Button)findViewById(R.id.settings_ok);
 		button.setOnClickListener(this);

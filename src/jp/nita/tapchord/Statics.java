@@ -2,8 +2,8 @@ package jp.nita.tapchord;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import android.content.ContextWrapper.*;
+import android.content.SharedPreferences.Editor;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -382,5 +382,12 @@ public class Statics {
 	public static String getPreferenceValue(Context context,String key,String def){
 		SharedPreferences pref=context.getSharedPreferences(PREF_KEY,Activity.MODE_PRIVATE);
 		return pref.getString(key,def);
+	}
+	
+	@SuppressLint("CommitPrefEdits")
+	public static void setPreferenceValue(Context context,String key,String val){
+		SharedPreferences pref=context.getSharedPreferences(PREF_KEY,Activity.MODE_PRIVATE);
+		Editor editor=pref.edit();
+		editor.putString(key, val);
 	}
 }
