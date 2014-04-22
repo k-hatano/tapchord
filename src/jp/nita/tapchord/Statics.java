@@ -447,14 +447,12 @@ public class Statics {
 	public static int getValueOfSamplingRate(int i){
 		switch(i){
 		case 0:
-			return 4000;
-		case 1:
 			return 8000;
-		case 2:
+		case 1:
 			return 16000;
-		case 3:
+		case 2:
 			return 22050;
-		case 4:
+		case 3:
 			return 44100;
 		default:
 			return 0;

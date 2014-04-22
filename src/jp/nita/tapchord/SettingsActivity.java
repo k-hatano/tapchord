@@ -172,8 +172,8 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 			break;
 		}
 		case 3:{
-			CharSequence list[]=new String[5];
-			for(int i=0;i<5;i++){
+			CharSequence list[]=new String[4];
+			for(int i=0;i<4;i++){
 			list[i]=""+Statics.getValueOfSamplingRate(i)+" "+getString(R.string.settings_sampling_rate_hz);
 			}
 			new AlertDialog.Builder(SettingsActivity.this)
