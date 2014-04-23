@@ -9,11 +9,12 @@ public class Shape {
 	public PointF center;
 	
 	public final static int STYLE_LINE=0;
+	public final static int STYLE_CIRCLE=1;
 	
 	public final static int MAX_LIFETIME=32;
 	
 	Shape(PointF pf){
-		style=0;
+		style=(int)(Math.random()*2);
 		rad=(int)(Math.random()*360);
 		lifetime=MAX_LIFETIME;
 		center=pf;

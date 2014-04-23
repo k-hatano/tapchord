@@ -185,7 +185,7 @@ public class TapChordView extends View {
 		canvas.drawRect(Statics.getRectOfStatusBar(width, height,barsShowingRate),paint);
 
 		paint.setColor(Statics.getColor(Statics.COLOR_LIGHTGRAY,0,darken));
-		canvas.drawRect(Statics.getRectOfToolbar(width, height,barsShowingRate),paint);
+		canvas.drawRect(Statics.getRectOfToolbar(width, height,1.0f),paint);
 
 		for(x=0;x<4;x++){
 			int d=0;
@@ -205,7 +205,7 @@ public class TapChordView extends View {
 			int d=0;
 			if(toolbarPressed==x) d=1;
 			paint.setColor(Statics.getColor(Statics.COLOR_PURPLE,d,darken));
-			rect=Statics.getRectOfToolbarButton(x,0,width,height,barsShowingRate);
+			rect=Statics.getRectOfToolbarButton(x,0,width,height,1.0f);
 			canvas.drawOval(rect, paint);
 
 			str=Statics.OPTIONS[x];
@@ -237,15 +237,40 @@ public class TapChordView extends View {
 		if(darken>0){
 			paint.setStyle(Style.STROKE);
 			paint.setStrokeWidth(height/25);
-			paint.setColor(Statics.getColor(Statics.COLOR_ABSOLUTE_LIGHT,1,darken));
+			paint.setColor(Statics.getColor(Statics.COLOR_ABSOLUTE_CYAN,1,darken));
 			for(int i=0;i<shapes.size();i++){
-				paint.setAlpha(255*shapes.get(i).lifetime/Shape.MAX_LIFETIME);
-				float ax=shapes.get(i).center.x-(float)(Math.cos(shapes.get(i).rad)*width);
-				float ay=shapes.get(i).center.y-(float)(Math.sin(shapes.get(i).rad)*width);
-				float bx=shapes.get(i).center.x+(float)(Math.cos(shapes.get(i).rad)*width);
-				float by=shapes.get(i).center.y+(float)(Math.sin(shapes.get(i).rad)*width);
-				canvas.drawLine(ax,ay,bx,by,paint);
+				Shape shape=shapes.get(i);
+				paint.setAlpha(255*shape.lifetime/Shape.MAX_LIFETIME);
+
+				if(shape.style==Shape.STYLE_LINE){
+					float ax=shape.center.x-(float)(Math.cos(shape.rad)*width);
+					float ay=shape.center.y-(float)(Math.sin(shape.rad)*width);
+					float bx=shape.center.x+(float)(Math.cos(shape.rad)*width);
+					float by=shape.center.y+(float)(Math.sin(shape.rad)*width);
+					canvas.drawLine(ax,ay,bx,by,paint);
+				}if(shape.style==Shape.STYLE_CIRCLE){
+					float cx=shape.center.x;
+					float cy=shape.center.y;
+					canvas.drawCircle(cx,cy,(float)(height*(0.25f+(float)(Shape.MAX_LIFETIME-shape.lifetime)/Shape.MAX_LIFETIME)*0.75f),paint);
+				}
 			}
+		}
+
+		paint.setStyle(Style.FILL);
+		if(barsShowingRate<1){
+			paint.setColor(Statics.getColor(Statics.COLOR_GRAY,0,darken));
+			canvas.drawRect(Statics.getRectOfToolbar(width, height,1.0f-barsShowingRate),paint);
+
+			int d=0;
+			if(toolbarPressed==0) d=1;
+			paint.setColor(Statics.getColor(Statics.COLOR_PURPLE,d,darken));
+			rect=Statics.getRectOfToolbarButton(0,0,width,height,1.0f-barsShowingRate);
+			canvas.drawOval(rect, paint);
+
+			str=getContext().getString(R.string.ok);
+			w=textPaint.measureText(str);
+			canvas.drawText(str,rect.centerX()-w/2,rect.centerY()-(fontMetrics.ascent+fontMetrics.descent)/2,textPaint);
+
 		}
 	}
 
@@ -272,11 +297,21 @@ public class TapChordView extends View {
 			}
 		}
 
-		for(i=0;i<3;i++){
-			rect=Statics.getRectOfToolbarButton(i,0,width,height,barsShowingRate);
-			if(rect.contains(x, y)){
-				toolbarPressed=i;
-				taps.put(id,Statics.TOOLBAR_BUTTON);
+		if(situation==Statics.SITUATION_TRANSPOSE){
+			for(i=0;i<1;i++){
+				rect=Statics.getRectOfToolbarButton(i,0,width,height,1.0f);
+				if(rect.contains(x, y)){
+					toolbarPressed=i;
+					taps.put(id,Statics.TOOLBAR_BUTTON);
+				}
+			}
+		}else{
+			for(i=0;i<3;i++){
+				rect=Statics.getRectOfToolbarButton(i,0,width,height,barsShowingRate);
+				if(rect.contains(x, y)){
+					toolbarPressed=i;
+					taps.put(id,Statics.TOOLBAR_BUTTON);
+				}
 			}
 		}
 		if(Statics.getRectOfScrollNob(scroll,upper,width,height).contains(x,y)){
@@ -335,11 +370,21 @@ public class TapChordView extends View {
 			break;
 		case Statics.TOOLBAR_BUTTON:
 			toolbarPressed=-1;
-			for(i=0;i<3;i++){
-				rect=Statics.getRectOfToolbarButton(i,0,width,height,barsShowingRate);
-				if(rect.contains(x, y)){
-					toolbarPressed=i;
-					break;
+			if(situation==Statics.SITUATION_TRANSPOSE){
+				for(i=0;i<1;i++){
+					rect=Statics.getRectOfToolbarButton(i,0,width,height,barsShowingRate);
+					if(rect.contains(x, y)){
+						toolbarPressed=i;
+						taps.put(id,Statics.TOOLBAR_BUTTON);
+					}
+				}
+			}else{
+				for(i=0;i<3;i++){
+					rect=Statics.getRectOfToolbarButton(i,0,width,height,barsShowingRate);
+					if(rect.contains(x, y)){
+						toolbarPressed=i;
+						taps.put(id,Statics.TOOLBAR_BUTTON);
+					}
 				}
 			}
 			break;
@@ -441,21 +486,27 @@ public class TapChordView extends View {
 	}
 
 	public void toolbarReleased(int which){
-		switch(which){
-		case 0:
-			Intent intent=new Intent((Activity)this.getContext(),SettingsActivity.class);
-			this.getContext().startActivity(intent);
-			break;
-		case 1:
-			setDarken(1-darken);
-			break;
-		case 2:
+		if(situation==Statics.SITUATION_TRANSPOSE){
 			originalScroll=scroll;
 			startAnimation(1-situation);
-			break;
-		default:
-			break;
+		}else{
+			switch(which){
+			case 0:
+				Intent intent=new Intent((Activity)this.getContext(),SettingsActivity.class);
+				this.getContext().startActivity(intent);
+				break;
+			case 1:
+				setDarken(1-darken);
+				break;
+			case 2:
+				originalScroll=scroll;
+				startAnimation(1-situation);
+				break;
+			default:
+				break;
+			}
 		}
+		toolbarPressed=-1;
 		invalidate();
 	}
 

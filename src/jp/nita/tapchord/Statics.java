@@ -26,6 +26,7 @@ public class Statics {
 	final public static int SCROLL_BAR=5;
 	final public static int TRANSPOSE_SCALE_BUTTON=6;
 
+	final public static int COLOR_ABSOLUTE_CYAN=-6;
 	final public static int COLOR_BLACK=-5;
 	final public static int COLOR_DARKGRAY=-4;
 	final public static int COLOR_GRAY=-3;
@@ -151,9 +152,9 @@ public class Statics {
 				b=16;
 				break;
 			case COLOR_ABSOLUTE_LIGHT:
-				r=80;
-				g=80;
-				b=80;
+				r=0;
+				g=64;
+				b=64;
 				break;
 			case COLOR_RED:
 			case COLOR_YELLOW:
@@ -178,9 +179,9 @@ public class Statics {
 				b/=2;
 				break;
 			case 1:
-				r=256-(256-r)/2;
-				g=256-(256-g)/2;
-				b=256-(256-b)/2;
+				r=128-(128-r)/2;
+				g=128-(128-g)/2;
+				b=128-(128-b)/2;
 				break;
 			default:
 				break;
@@ -192,6 +193,13 @@ public class Statics {
 		if(g>255) g=255;
 		if(b<0) b=0;
 		if(b>255) b=255;
+		
+		if(which==COLOR_ABSOLUTE_CYAN){
+			r=32;
+			g=196;
+			b=196;
+		}
+		
 		return Color.argb(255,r,g,b);
 	}
 
@@ -250,14 +258,17 @@ public class Statics {
 	}
 
 	public static RectF getRectOfToolbar(int width,int height,float showingRate){
-		return new RectF(0,height*28/35,width,height);
+		float vert=height*7/35f;
+		float hidingDelta=vert*(1.0f-showingRate);
+		return new RectF(0,height*28/35+hidingDelta,width,height+hidingDelta);
 	}
 
 	public static RectF getRectOfToolbarButton(int x,int y,int width,int height,float showingRate){
 		float vert=height*7/35f;
 		float pX=x*vert+vert/2;
-		return new RectF(width-(pX+vert/2)+vert/14,height-vert+vert/14,
-				width-(pX-vert/2)-vert/14,height-vert/14);
+		float hidingDelta=vert*(1.0f-showingRate);
+		return new RectF(width-(pX+vert/2)+vert/14,height-vert+vert/14+hidingDelta,
+				width-(pX-vert/2)-vert/14,height-vert/14+hidingDelta);
 	}
 
 	public static RectF getRectOfKeyboardIndicator(int i,int shrink,int width,int height,float showingRate){
