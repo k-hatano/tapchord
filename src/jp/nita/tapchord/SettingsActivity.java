@@ -73,13 +73,13 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 			list.add(map);
 
 			map=new HashMap<String,String>();
-			map.put("key", getString(R.string.settings_sampling_rate));
-			map.put("value", ""+Statics.getValueOfSamplingRate(samplingRate)+" "+getString(R.string.settings_sampling_rate_hz));
-			list.add(map);
-
-			map=new HashMap<String,String>();
 			map.put("key", getString(R.string.settings_waveform));
 			map.put("value", Statics.getValueOfWaveform(waveform,this));
+			list.add(map);
+			
+			map=new HashMap<String,String>();
+			map.put("key", getString(R.string.settings_sampling_rate));
+			map.put("value", ""+Statics.getValueOfSamplingRate(samplingRate)+" "+getString(R.string.settings_sampling_rate_hz));
 			list.add(map);
 		}
 
@@ -147,7 +147,7 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 			list[0]=getString(R.string.off);
 			list[1]=getString(R.string.on);
 			new AlertDialog.Builder(SettingsActivity.this)
-			.setTitle(getString(R.string.settings_scale))
+			.setTitle(getString(R.string.settings_darken))
 			.setItems(list,new DialogInterface.OnClickListener(){
 				@Override
 				public void onClick(DialogInterface arg0, int arg1) {
@@ -172,21 +172,6 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 			break;
 		}
 		case 3:{
-			CharSequence list[]=new String[4];
-			for(int i=0;i<4;i++){
-			list[i]=""+Statics.getValueOfSamplingRate(i)+" "+getString(R.string.settings_sampling_rate_hz);
-			}
-			new AlertDialog.Builder(SettingsActivity.this)
-			.setTitle(getString(R.string.settings_sampling_rate))
-			.setItems(list,new DialogInterface.OnClickListener(){
-				@Override
-				public void onClick(DialogInterface arg0, int arg1) {
-					setSamplingRate(arg1);
-				}
-			}).show();
-			break;
-		}
-		case 4:{
 			CharSequence list[]=new String[3];
 			for(int i=0;i<3;i++){
 			list[i]=Statics.getValueOfWaveform(i,this);
@@ -197,6 +182,21 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 				@Override
 				public void onClick(DialogInterface arg0, int arg1) {
 					setWaveform(arg1);
+				}
+			}).show();
+			break;
+		}
+		case 4:{
+			CharSequence list[]=new String[4];
+			for(int i=0;i<4;i++){
+			list[i]=""+Statics.getValueOfSamplingRate(i)+" "+getString(R.string.settings_sampling_rate_hz);
+			}
+			new AlertDialog.Builder(SettingsActivity.this)
+			.setTitle(getString(R.string.settings_sampling_rate))
+			.setItems(list,new DialogInterface.OnClickListener(){
+				@Override
+				public void onClick(DialogInterface arg0, int arg1) {
+					setSamplingRate(arg1);
 				}
 			}).show();
 			break;

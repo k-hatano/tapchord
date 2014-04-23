@@ -257,21 +257,19 @@ public class TapChordView extends View {
 		}
 
 		paint.setStyle(Style.FILL);
-		if(barsShowingRate<1){
-			paint.setColor(Statics.getColor(Statics.COLOR_GRAY,0,darken));
-			canvas.drawRect(Statics.getRectOfToolbar(width, height,1.0f-barsShowingRate),paint);
+		paint.setColor(Statics.getColor(Statics.COLOR_GRAY,0,darken));
+		canvas.drawRect(Statics.getRectOfToolbar(width, height,1.0f-barsShowingRate),paint);
 
-			int d=0;
-			if(toolbarPressed==0) d=1;
-			paint.setColor(Statics.getColor(Statics.COLOR_PURPLE,d,darken));
-			rect=Statics.getRectOfToolbarButton(0,0,width,height,1.0f-barsShowingRate);
-			canvas.drawOval(rect, paint);
+		int d=0;
+		if(toolbarPressed==0) d=1;
+		paint.setColor(Statics.getColor(Statics.COLOR_PURPLE,d,darken));
+		rect=Statics.getRectOfToolbarButton(0,0,width,height,1.0f-barsShowingRate);
+		canvas.drawOval(rect, paint);
 
-			str=getContext().getString(R.string.ok);
-			w=textPaint.measureText(str);
-			canvas.drawText(str,rect.centerX()-w/2,rect.centerY()-(fontMetrics.ascent+fontMetrics.descent)/2,textPaint);
+		str=getContext().getString(R.string.ok);
+		w=textPaint.measureText(str);
+		canvas.drawText(str,rect.centerX()-w/2,rect.centerY()-(fontMetrics.ascent+fontMetrics.descent)/2,textPaint);
 
-		}
 	}
 
 	public boolean actionDown(int x,int y,int id){
@@ -297,7 +295,7 @@ public class TapChordView extends View {
 			}
 		}
 
-		if(situation==Statics.SITUATION_TRANSPOSE){
+		if(situation==Statics.SITUATION_TRANSPOSE||situation==Statics.SITUATION_TRANSPOSING){
 			for(i=0;i<1;i++){
 				rect=Statics.getRectOfToolbarButton(i,0,width,height,1.0f);
 				if(rect.contains(x, y)){
@@ -370,9 +368,9 @@ public class TapChordView extends View {
 			break;
 		case Statics.TOOLBAR_BUTTON:
 			toolbarPressed=-1;
-			if(situation==Statics.SITUATION_TRANSPOSE){
+			if(situation==Statics.SITUATION_TRANSPOSE||situation==Statics.SITUATION_TRANSPOSING){
 				for(i=0;i<1;i++){
-					rect=Statics.getRectOfToolbarButton(i,0,width,height,barsShowingRate);
+					rect=Statics.getRectOfToolbarButton(i,0,width,height,1.0f);
 					if(rect.contains(x, y)){
 						toolbarPressed=i;
 						taps.put(id,Statics.TOOLBAR_BUTTON);
