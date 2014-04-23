@@ -214,16 +214,20 @@ public class TapChordView extends View {
 			canvas.drawText(str,rect.centerX()-w/2,rect.centerY()-(fontMetrics.ascent+fontMetrics.descent)/2,textPaint);
 		}
 
-		for(x=0;x<12;x++){
-			paint.setColor(Statics.getColor(Statics.COLOR_GRAY,0,darken));
-			rect=Statics.getRectOfKeyboardIndicator(x, 0, width, height, barsShowingRate);
-			canvas.drawOval(rect,paint);
-		}
+		if(Statics.getRectOfStatusBarButton(3, 0, width, height, barsShowingRate).right<Statics.getRectOfKeyboardIndicator(0, 0, width, height, barsShowingRate).left){
 
-		for(int i=0;i<notesOfChord.length;i++){
-			paint.setColor(Statics.getColor(Statics.COLOR_ABSOLUTE_LIGHT,0,darken));
-			rect=Statics.getRectOfKeyboardIndicator(notesOfChord[i], 2, width, height, barsShowingRate);
-			canvas.drawOval(rect,paint);
+			for(x=0;x<12;x++){
+				paint.setColor(Statics.getColor(Statics.COLOR_GRAY,0,darken));
+				rect=Statics.getRectOfKeyboardIndicator(x, 0, width, height, barsShowingRate);
+				canvas.drawOval(rect,paint);
+			}
+
+			for(int i=0;i<notesOfChord.length;i++){
+				paint.setColor(Statics.getColor(Statics.COLOR_ABSOLUTE_LIGHT,0,darken));
+				rect=Statics.getRectOfKeyboardIndicator(notesOfChord[i], 2, width, height, barsShowingRate);
+				canvas.drawOval(rect,paint);
+			}
+
 		}
 
 		paint.setColor(Statics.getColor(Statics.COLOR_GRAY,0,darken));
@@ -252,12 +256,37 @@ public class TapChordView extends View {
 					float cx=shape.center.x;
 					float cy=shape.center.y;
 					canvas.drawCircle(cx,cy,(float)(height*(0.25f+(float)(Shape.MAX_LIFETIME-shape.lifetime)/Shape.MAX_LIFETIME)*0.75f),paint);
+				}if(shape.style==Shape.STYLE_TRIANGLE){
+					float l=(float)(height*(0.25f+(float)(Shape.MAX_LIFETIME-shape.lifetime)/Shape.MAX_LIFETIME)*0.75f);
+					float ax=shape.center.x+(float)(Math.cos((shape.rad)/360.0*Math.PI*2)*l);
+					float ay=shape.center.y+(float)(Math.sin((shape.rad)/360.0*Math.PI*2)*l);
+					float bx=shape.center.x+(float)(Math.cos((shape.rad+120)/360.0*Math.PI*2)*l);
+					float by=shape.center.y+(float)(Math.sin((shape.rad+120)/360.0*Math.PI*2)*l);
+					float cx=shape.center.x+(float)(Math.cos((shape.rad+240)/360.0*Math.PI*2)*l);
+					float cy=shape.center.y+(float)(Math.sin((shape.rad+240)/360.0*Math.PI*2)*l);
+					canvas.drawLine(ax,ay,bx,by,paint);
+					canvas.drawLine(bx,by,cx,cy,paint);
+					canvas.drawLine(cx,cy,ax,ay,paint);
+				}if(shape.style==Shape.STYLE_SQUARE){
+					float l=(float)(height*(0.25f+(float)(Shape.MAX_LIFETIME-shape.lifetime)/Shape.MAX_LIFETIME)*0.75f);
+					float ax=shape.center.x+(float)(Math.cos((shape.rad)/360.0*Math.PI*2)*l);
+					float ay=shape.center.y+(float)(Math.sin((shape.rad)/360.0*Math.PI*2)*l);
+					float bx=shape.center.x+(float)(Math.cos((shape.rad+90)/360.0*Math.PI*2)*l);
+					float by=shape.center.y+(float)(Math.sin((shape.rad+90)/360.0*Math.PI*2)*l);
+					float cx=shape.center.x+(float)(Math.cos((shape.rad+180)/360.0*Math.PI*2)*l);
+					float cy=shape.center.y+(float)(Math.sin((shape.rad+180)/360.0*Math.PI*2)*l);
+					float dx=shape.center.x+(float)(Math.cos((shape.rad+270)/360.0*Math.PI*2)*l);
+					float dy=shape.center.y+(float)(Math.sin((shape.rad+270)/360.0*Math.PI*2)*l);
+					canvas.drawLine(ax,ay,bx,by,paint);
+					canvas.drawLine(bx,by,cx,cy,paint);
+					canvas.drawLine(cx,cy,dx,dy,paint);
+					canvas.drawLine(dx,dy,ax,ay,paint);
 				}
 			}
 		}
 
 		paint.setStyle(Style.FILL);
-		paint.setColor(Statics.getColor(Statics.COLOR_GRAY,0,darken));
+		paint.setColor(Statics.getColor(Statics.COLOR_PASTELGRAY,0,darken));
 		canvas.drawRect(Statics.getRectOfToolbar(width, height,1.0f-barsShowingRate),paint);
 
 		int d=0;
@@ -389,16 +418,16 @@ public class TapChordView extends View {
 		case Statics.CHORD_BUTTON:
 			if(id==playingID){
 				if(pulling==2){
-					scroll=originalScroll+(x-tappedX)/4;
+					scroll=originalScroll+(x-tappedX)/5;
 					if(scroll<-Statics.getScrollMax(width,height)) scroll=-Statics.getScrollMax(width,height);
 					if(scroll>Statics.getScrollMax(width,height)) scroll=Statics.getScrollMax(width,height);
 				}else if(pulling==1){
-					virtualScroll=originalScroll+(x-tappedX)/4;
+					virtualScroll=originalScroll+(x-tappedX)/5;
 					scroll=(virtualScroll+scroll)/2;
 					if(scroll<-Statics.getScrollMax(width,height)) scroll=-Statics.getScrollMax(width,height);
 					if(scroll>Statics.getScrollMax(width,height)) scroll=Statics.getScrollMax(width,height);
 				}else if(Math.abs(x-tappedX)>height/5){
-					virtualScroll=originalScroll+(x-tappedX)/4;
+					virtualScroll=originalScroll+(x-tappedX)/5;
 					pulling=1;
 					startPullingAnimation();
 				}

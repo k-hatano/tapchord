@@ -26,10 +26,11 @@ public class Statics {
 	final public static int SCROLL_BAR=5;
 	final public static int TRANSPOSE_SCALE_BUTTON=6;
 
-	final public static int COLOR_ABSOLUTE_CYAN=-6;
-	final public static int COLOR_BLACK=-5;
-	final public static int COLOR_DARKGRAY=-4;
-	final public static int COLOR_GRAY=-3;
+	final public static int COLOR_ABSOLUTE_CYAN=-128;
+	final public static int COLOR_BLACK=-6;
+	final public static int COLOR_DARKGRAY=-5;
+	final public static int COLOR_GRAY=-4;
+	final public static int COLOR_PASTELGRAY=-3;
 	final public static int COLOR_LIGHTGRAY=-2;
 	final public static int COLOR_WHITE=-1;
 	final public static int COLOR_ABSOLUTE_LIGHT=0;
@@ -68,6 +69,11 @@ public class Statics {
 				r=0x80;
 				g=0x80;
 				b=0x80;
+				break;
+			case COLOR_PASTELGRAY:
+				r=0xA0;
+				g=0xA0;
+				b=0xA0;
 				break;
 			case COLOR_LIGHTGRAY:
 				r=0xE0;
@@ -146,10 +152,15 @@ public class Statics {
 				g=32;
 				b=32;
 				break;
-			case COLOR_LIGHTGRAY:
+			case COLOR_PASTELGRAY:
 				r=0;
 				g=16;
 				b=16;
+				break;
+			case COLOR_LIGHTGRAY:
+				r=0;
+				g=8;
+				b=8;
 				break;
 			case COLOR_ABSOLUTE_LIGHT:
 				r=0;
@@ -216,27 +227,27 @@ public class Statics {
 		float vert=height*7/35f;
 		float pX=width/2+x*vert;
 		float pY=height/2+y*vert;
-		return new RectF(pX-vert/2+vert/14+scroll*4, pY-vert/2+vert/14, pX+vert/2-vert/14+scroll*4, pY+vert/2-vert/14);
+		return new RectF(pX-vert/2+vert/14+scroll*5, pY-vert/2+vert/14, pX+vert/2-vert/14+scroll*5, pY+vert/2-vert/14);
 	}
 
 	public static int getScrollMax(int width,int height){
 		float vert=height/35f;
 		float max=(vert*7)*13;
-		float nob=width/4;
-		return (int)(max/4-nob)/2;
+		float nob=width/5;
+		return (int)(max/5-nob)/2;
 	}
 
 	public static RectF getRectOfScrollBar(int width,int height){
 		float vert=height/35f;
 		float max=(vert*7)*13;
-		return new RectF(vert*2,vert*30.5f,vert*2+max/4,vert*32.5f);
+		return new RectF(vert*2,vert*30.5f,vert*2+max/5,vert*32.5f);
 	}
 
 	public static RectF getRectOfScrollNob(int pos,int upper,int width,int height){
 		float vert=height/35f;
 		float max=(vert*7)*13;
-		float nob=width/4;
-		float x=vert*2+max/8-pos;
+		float nob=width/5;
+		float x=vert*2+max/10-pos;
 		return new RectF(x-nob/2,vert*30f-upper,x+nob/2,vert*33f-upper);
 	}
 
