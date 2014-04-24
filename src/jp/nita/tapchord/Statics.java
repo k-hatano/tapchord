@@ -506,6 +506,10 @@ public class Statics {
 			return context.getString(R.string.settings_waveform_sawtooth_wave);
 		case 2:
 			return context.getString(R.string.settings_waveform_square_wave);
+		case 3:
+			return context.getString(R.string.settings_waveform_fourth_pulse_wave);
+		case 4:
+			return context.getString(R.string.settings_waveform_eighth_pulse_wave);
 		default:
 			return "";
 		}

@@ -20,8 +20,8 @@ public class Sound {
 		
 		track = new AudioTrack(AudioManager.STREAM_MUSIC,
 				sampleRate,
-				AudioFormat.CHANNEL_CONFIGURATION_DEFAULT,
-		        AudioFormat.ENCODING_DEFAULT,
+				AudioFormat.CHANNEL_CONFIGURATION_MONO,
+		        AudioFormat.ENCODING_PCM_16BIT,
 		        sampleRate,
 		        AudioTrack.MODE_STATIC);
 		
@@ -42,7 +42,7 @@ public class Sound {
 		}
 		track.write(wave,0,wave.length);
 		waveLength=wave.length/2;
-		track.setLoopPoints(0,wave.length,-1);
+		track.setLoopPoints(0,waveLength,-1);
 	}
 	
 	public void play(){
@@ -69,6 +69,10 @@ public class Sound {
 			return (float)(t/(2*Math.PI)-Math.floor(t/(Math.PI*2)+1/2.0f))*2;
 		case 2:
 			return Math.sin(t)>0?1:-1;
+		case 3:
+			return (t/Math.PI/2)-Math.floor(t/Math.PI/2)<1.0/4.0?1:-1;
+		case 4:
+			return (t/Math.PI/2)-Math.floor(t/Math.PI/2)<1.0/8.0?1:-1;
 		default:
 			return (float)Math.sin(t);
 		}

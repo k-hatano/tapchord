@@ -172,8 +172,8 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 			break;
 		}
 		case 3:{
-			CharSequence list[]=new String[3];
-			for(int i=0;i<3;i++){
+			CharSequence list[]=new String[5];
+			for(int i=0;i<5;i++){
 			list[i]=Statics.getValueOfWaveform(i,this);
 			}
 			new AlertDialog.Builder(SettingsActivity.this)

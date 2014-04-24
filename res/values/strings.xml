@@ -13,7 +13,8 @@
     <string name="settings_waveform_sine_wave">Sine Wave</string>
     <string name="settings_waveform_sawtooth_wave">Sawtooth Wave</string>
     <string name="settings_waveform_square_wave">Square Wave</string>
-    <string name="settings_waveform_pulse_wave">1:3 Pulse Wave</string>
+    <string name="settings_waveform_fourth_pulse_wave">1:3 Pulse Wave</string>
+    <string name="settings_waveform_eighth_pulse_wave">1:7 Pulse Wave</string>
 
     <string name="settings_sampling_rate_hz"> Hz</string>
     <string name="special_thanks">Special Thanks to\nAkiyoshi Kamide</string>

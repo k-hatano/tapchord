@@ -45,25 +45,26 @@ public final class R {
         public static final int action_settings=0x7f050001;
         public static final int app_name=0x7f050000;
         public static final int cancel=0x7f050006;
-        public static final int copyright=0x7f05000f;
-        public static final int darken=0x7f050012;
+        public static final int copyright=0x7f050010;
+        public static final int darken=0x7f050013;
         public static final int hello_world=0x7f050002;
         public static final int message_quit=0x7f050004;
-        public static final int off=0x7f050014;
+        public static final int off=0x7f050015;
         public static final int ok=0x7f050005;
-        public static final int on=0x7f050013;
-        public static final int settings_darken=0x7f050015;
+        public static final int on=0x7f050014;
+        public static final int settings_darken=0x7f050016;
         public static final int settings_sampling_rate=0x7f050007;
-        public static final int settings_sampling_rate_hz=0x7f05000d;
-        public static final int settings_scale=0x7f050016;
-        public static final int settings_volume=0x7f050011;
+        public static final int settings_sampling_rate_hz=0x7f05000e;
+        public static final int settings_scale=0x7f050017;
+        public static final int settings_volume=0x7f050012;
         public static final int settings_waveform=0x7f050008;
-        public static final int settings_waveform_pulse_wave=0x7f05000c;
+        public static final int settings_waveform_eighth_pulse_wave=0x7f05000d;
+        public static final int settings_waveform_fourth_pulse_wave=0x7f05000c;
         public static final int settings_waveform_sawtooth_wave=0x7f05000a;
         public static final int settings_waveform_sine_wave=0x7f050009;
         public static final int settings_waveform_square_wave=0x7f05000b;
-        public static final int special_thanks=0x7f05000e;
-        public static final int tapchord_settings=0x7f050010;
+        public static final int special_thanks=0x7f05000f;
+        public static final int tapchord_settings=0x7f050011;
     }
     public static final class style {
         /** 
