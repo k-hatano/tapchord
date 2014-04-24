@@ -322,6 +322,15 @@ public class TapChordView extends View {
 					taps.put(id,Statics.STATUSBAR_BUTTON);
 				}
 			}
+			if(Statics.getRectOfScrollNob(scroll,upper,width,height).contains(x,y)){
+				originalX=x;
+				originalY=y;
+				originalScroll=scroll;
+				taps.put(id,Statics.SCROLL_NOB);
+			}else if(Statics.getRectOfScrollBar(width,height).contains(x,y)){
+				scroll=0;
+				taps.put(id,Statics.SCROLL_BAR);
+			}
 		}
 
 		if(situation==Statics.SITUATION_TRANSPOSE||situation==Statics.SITUATION_TRANSPOSING){
@@ -340,15 +349,6 @@ public class TapChordView extends View {
 					taps.put(id,Statics.TOOLBAR_BUTTON);
 				}
 			}
-		}
-		if(Statics.getRectOfScrollNob(scroll,upper,width,height).contains(x,y)){
-			originalX=x;
-			originalY=y;
-			originalScroll=scroll;
-			taps.put(id,Statics.SCROLL_NOB);
-		}else if(Statics.getRectOfScrollBar(width,height).contains(x,y)){
-			scroll=0;
-			taps.put(id,Statics.SCROLL_BAR);
 		}
 		if(playing<=0){
 			for(j=-6;j<=6;j++){
