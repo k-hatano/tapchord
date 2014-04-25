@@ -126,20 +126,36 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 		}
 	}
 
+	int selected=-1;
+
 	@Override
 	public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
+		selected=-1;
 		switch(arg2){
 		case 0:{
 			CharSequence list[]=new String[15];
 			for(int i=-7;i<=7;i++) list[i+7]=Statics.getLongStringOfScale(i);
 			new AlertDialog.Builder(SettingsActivity.this)
 			.setTitle(getString(R.string.settings_scale))
-			.setItems(list,new DialogInterface.OnClickListener(){
+			.setSingleChoiceItems(list,scale+7,new DialogInterface.OnClickListener(){
 				@Override
 				public void onClick(DialogInterface arg0, int arg1) {
-					setScale(arg1-7);
+					selected=arg1;
 				}
-			}).show();
+			})
+			.setPositiveButton(getString(R.string.ok),new DialogInterface.OnClickListener(){
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					if(selected>=0) setScale(selected-7);
+				}
+			})
+			.setNegativeButton(getString(R.string.cancel),new DialogInterface.OnClickListener(){
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+
+				}
+			})
+			.show();
 			break;
 		}
 		case 1:{
@@ -148,12 +164,25 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 			list[1]=getString(R.string.on);
 			new AlertDialog.Builder(SettingsActivity.this)
 			.setTitle(getString(R.string.settings_darken))
-			.setItems(list,new DialogInterface.OnClickListener(){
+			.setSingleChoiceItems(list,darken,new DialogInterface.OnClickListener(){
 				@Override
 				public void onClick(DialogInterface arg0, int arg1) {
-					setDarken(arg1);
+					selected=arg1;
 				}
-			}).show();
+			})
+			.setPositiveButton(getString(R.string.ok),new DialogInterface.OnClickListener(){
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					if(selected>=0) setDarken(selected);
+				}
+			})
+			.setNegativeButton(getString(R.string.cancel),new DialogInterface.OnClickListener(){
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+
+				}
+			})
+			.show();
 			break;
 		}
 		case 2:{
@@ -163,12 +192,25 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 			}
 			new AlertDialog.Builder(SettingsActivity.this)
 			.setTitle(getString(R.string.settings_volume))
-			.setItems(list,new DialogInterface.OnClickListener(){
+			.setSingleChoiceItems(list,volume+1,new DialogInterface.OnClickListener(){
 				@Override
 				public void onClick(DialogInterface arg0, int arg1) {
-					setVolume(arg1-1);
+					selected=arg1;
 				}
-			}).show();
+			})
+			.setPositiveButton(getString(R.string.ok),new DialogInterface.OnClickListener(){
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					if(selected>=0) setVolume(selected-1);
+				}
+			})
+			.setNegativeButton(getString(R.string.cancel),new DialogInterface.OnClickListener(){
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+
+				}
+			})
+			.show();
 			break;
 		}
 		case 3:{
@@ -178,12 +220,25 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 			}
 			new AlertDialog.Builder(SettingsActivity.this)
 			.setTitle(getString(R.string.settings_waveform))
-			.setItems(list,new DialogInterface.OnClickListener(){
+			.setSingleChoiceItems(list,waveform,new DialogInterface.OnClickListener(){
 				@Override
 				public void onClick(DialogInterface arg0, int arg1) {
-					setWaveform(arg1);
+					selected=arg1;
 				}
-			}).show();
+			})
+			.setPositiveButton(getString(R.string.ok),new DialogInterface.OnClickListener(){
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					if(selected>=0) setWaveform(selected);
+				}
+			})
+			.setNegativeButton(getString(R.string.cancel),new DialogInterface.OnClickListener(){
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+
+				}
+			})
+			.show();
 			break;
 		}
 		case 4:{
@@ -193,12 +248,25 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 			}
 			new AlertDialog.Builder(SettingsActivity.this)
 			.setTitle(getString(R.string.settings_sampling_rate))
-			.setItems(list,new DialogInterface.OnClickListener(){
+			.setSingleChoiceItems(list,samplingRate,new DialogInterface.OnClickListener(){
 				@Override
 				public void onClick(DialogInterface arg0, int arg1) {
-					setSamplingRate(arg1);
+					selected=arg1;
 				}
-			}).show();
+			})
+			.setPositiveButton(getString(R.string.ok),new DialogInterface.OnClickListener(){
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					if(selected>=0) setSamplingRate(selected);
+				}
+			})
+			.setNegativeButton(getString(R.string.cancel),new DialogInterface.OnClickListener(){
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+
+				}
+			})
+			.show();
 			break;
 		}
 		default:
