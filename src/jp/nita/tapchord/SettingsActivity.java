@@ -50,7 +50,7 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 		samplingRate=Statics.getPreferenceValue(this,Statics.PREF_SAMPLING_RATE,0);
 		waveform=Statics.getPreferenceValue(this,Statics.PREF_WAVEFORM,0);
 	}
-	
+
 	public void updateSettingsListView(){
 		ListView items=(ListView)findViewById(R.id.settings_items);
 		List<Map<String,String>> list=new ArrayList<Map<String,String>>();
@@ -76,7 +76,7 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 			map.put("key", getString(R.string.settings_waveform));
 			map.put("value", Statics.getValueOfWaveform(waveform,this));
 			list.add(map);
-			
+
 			map=new HashMap<String,String>();
 			map.put("key", getString(R.string.settings_sampling_rate));
 			map.put("value", ""+Statics.getValueOfSamplingRate(samplingRate)+" "+getString(R.string.settings_sampling_rate_hz));
@@ -159,7 +159,7 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 		case 2:{
 			CharSequence list[]=new String[5];
 			for(int i=-1;i<4;i++){
-			list[i+1]=""+Statics.getValueOfVolume(i);
+				list[i+1]=""+Statics.getValueOfVolume(i);
 			}
 			new AlertDialog.Builder(SettingsActivity.this)
 			.setTitle(getString(R.string.settings_volume))
@@ -172,9 +172,9 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 			break;
 		}
 		case 3:{
-			CharSequence list[]=new String[5];
-			for(int i=0;i<5;i++){
-			list[i]=Statics.getValueOfWaveform(i,this);
+			CharSequence list[]=new String[6];
+			for(int i=0;i<6;i++){
+				list[i]=Statics.getValueOfWaveform(i,this);
 			}
 			new AlertDialog.Builder(SettingsActivity.this)
 			.setTitle(getString(R.string.settings_waveform))
@@ -189,7 +189,7 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 		case 4:{
 			CharSequence list[]=new String[4];
 			for(int i=0;i<4;i++){
-			list[i]=""+Statics.getValueOfSamplingRate(i)+" "+getString(R.string.settings_sampling_rate_hz);
+				list[i]=""+Statics.getValueOfSamplingRate(i)+" "+getString(R.string.settings_sampling_rate_hz);
 			}
 			new AlertDialog.Builder(SettingsActivity.this)
 			.setTitle(getString(R.string.settings_sampling_rate))
@@ -205,14 +205,14 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 			return;
 		}
 	}
-	
+
 	public void setScale(int s){
 		scale=s;
 		Statics.setPreferenceValue(this,Statics.PREF_SCALE,scale);
 		getPreferenceValues();
 		updateSettingsListView();
 	}
-	
+
 	public void setDarken(int d){
 		darken=d;
 		Statics.setPreferenceValue(this,Statics.PREF_DARKEN,darken);
@@ -226,14 +226,14 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 		getPreferenceValues();
 		updateSettingsListView();
 	}
-	
+
 	public void setVolume(int v){
 		volume=v;
 		Statics.setPreferenceValue(this,Statics.PREF_VOLUME,volume);
 		getPreferenceValues();
 		updateSettingsListView();
 	}
-	
+
 	public void setWaveform(int wf){
 		waveform=wf;
 		Statics.setPreferenceValue(this,Statics.PREF_WAVEFORM,waveform);

@@ -26,19 +26,19 @@ public class Sound {
 		        AudioTrack.MODE_STATIC);
 		
 		byte[] wave=new byte[sampleRate];
-		float t=0;
-		float dt=1.0f/sampleRate;
+		double t=0;
+		double dt=1.0/sampleRate;
 		for(int i=0;i<sampleRate;i++){
-			float ss=0;
+			double ss=0;
 			for(int j=0;j<freqs.length;j++){
-				float s=wave(2.0*Math.PI*t*freqs[j],waveform);
+				double s=wave(2.0*Math.PI*t*freqs[j],waveform);
 				ss+=s;
 			}
-			float sss=(Byte.MAX_VALUE*ss*(volume/400.0f));
+			double sss=(Byte.MAX_VALUE*ss*(volume/400.0));
 			if(sss>=127) sss=127;
 			if(sss<=-127) sss=-127;
 			wave[i]=(byte)sss;
-			t+=dt;
+			t=dt*i;
 		}
 		track.write(wave,0,wave.length);
 		waveLength=wave.length/2;
@@ -61,20 +61,33 @@ public class Sound {
 		lastTrack=null;
 	}
 	
-	public float wave(double t,int which){
+	public double wave(double t,int which){
 		switch(which){
 		case 0:
-			return (float)Math.sin(t);
+			return Math.sin(t);
 		case 1:
-			return (float)(t/(2*Math.PI)-Math.floor(t/(Math.PI*2)+1/2.0f))*2;
+			return (t/(2*Math.PI)-Math.floor(t/(Math.PI*2)+1/2.0))*2;
 		case 2:
 			return Math.sin(t)>0?1:-1;
 		case 3:
-			return (t/Math.PI/2)-Math.floor(t/Math.PI/2)<1.0/4.0?1:-1;
+		{
+			double tt=t/Math.PI/2-Math.floor(t/Math.PI/2);
+			if(tt<0.25){
+				return tt*4;
+			}else if(tt<0.50){
+				return (0.5-tt)*4;
+			}else if(tt<0.75){
+				return (-tt+0.5)*4;
+			}else{
+				return (-1+tt)*4;
+			}
+		}
 		case 4:
+			return (t/Math.PI/2)-Math.floor(t/Math.PI/2)<1.0/4.0?1:-1;
+		case 5:
 			return (t/Math.PI/2)-Math.floor(t/Math.PI/2)<1.0/8.0?1:-1;
 		default:
-			return (float)Math.sin(t);
+			return Math.sin(t);
 		}
 	}
 	

@@ -227,14 +227,14 @@ public class Statics {
 		float vert=height*7/35f;
 		float pX=width/2+x*vert;
 		float pY=height/2+y*vert;
-		return new RectF(pX-vert/2+vert/14+scroll*5, pY-vert/2+vert/14, pX+vert/2-vert/14+scroll*5, pY+vert/2-vert/14);
+		return new RectF(pX-vert/2+vert/14+scroll, pY-vert/2+vert/14, pX+vert/2-vert/14+scroll, pY+vert/2-vert/14);
 	}
 
 	public static int getScrollMax(int width,int height){
 		float vert=height/35f;
 		float max=(vert*7)*13;
-		float nob=width/5;
-		return (int)(max/5-nob)/2;
+		float nob=width;
+		return (int)(max-nob)/2;
 	}
 
 	public static RectF getRectOfScrollBar(int width,int height){
@@ -247,7 +247,7 @@ public class Statics {
 		float vert=height/35f;
 		float max=(vert*7)*13;
 		float nob=width/5;
-		float x=vert*2+max/10-pos;
+		float x=vert*2+max/10-pos/5;
 		return new RectF(x-nob/2,vert*30f-upper,x+nob/2,vert*33f-upper);
 	}
 
@@ -280,6 +280,14 @@ public class Statics {
 		float hidingDelta=vert*(1.0f-showingRate);
 		return new RectF(width-(pX+vert/2)+vert/14,height-vert+vert/14+hidingDelta,
 				width-(pX-vert/2)-vert/14,height-vert/14+hidingDelta);
+	}
+	
+	public static RectF getRectOfToolbarTransposingButton(int x,int y,int width,int height,float showingRate){
+		float vert=height*7/35f;
+		float pX=x*vert+vert/2;
+		float hidingDelta=vert*(1.0f-showingRate);
+		return new RectF(pX-vert/2+vert/14,height-vert+vert/14+hidingDelta,
+				pX+vert/2-vert/14,height-vert/14+hidingDelta);
 	}
 
 	public static RectF getRectOfKeyboardIndicator(int i,int shrink,int width,int height,float showingRate){
@@ -507,8 +515,10 @@ public class Statics {
 		case 2:
 			return context.getString(R.string.settings_waveform_square_wave);
 		case 3:
-			return context.getString(R.string.settings_waveform_fourth_pulse_wave);
+			return context.getString(R.string.settings_waveform_triangle_wave);
 		case 4:
+			return context.getString(R.string.settings_waveform_fourth_pulse_wave);
+		case 5:
 			return context.getString(R.string.settings_waveform_eighth_pulse_wave);
 		default:
 			return "";
