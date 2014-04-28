@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">tapchord</string>
+    <string name="action_settings">設定</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_quit">終了</string>
+    <string name="message_quit">tapchord を終了しますか?</string>
+    <string name="ok">OK</string>
+    <string name="cancel">キャンセル</string>
+    <string name="settings_sampling_rate">サンプリング周波数</string>
+    <string name="settings_waveform">波形</string>
+    <string name="settings_waveform_sine_wave">正弦波</string>
+    <string name="settings_waveform_sawtooth_wave">のこぎり波</string>
+    <string name="settings_waveform_square_wave">三角波</string>
+    <string name="settings_waveform_triangle_wave">矩形波</string>
+    <string name="settings_waveform_fourth_pulse_wave">1:3 パルス波</string>
+    <string name="settings_waveform_eighth_pulse_wave">1:7 パルス波</string>
+
+    <string name="settings_sampling_rate_hz"> Hz</string>
+    <string name="special_thanks">Special Thanks to\nAkiyoshi Kamide</string>
+    <string name="copyright">Version 1.0 (c) Nita</string>
+    <string name="tapchord_settings">tapchord - 設定</string>
+    
+    <string name="settings_volume">ボリューム</string>
+    
+    <string name="darken">あの楽器</string>
+    <string name="on">オン</string>
+    <string name="off">オフ</string>
+    <string name="settings_darken">あの楽器</string>
+    <string name="settings_scale">調</string>
+
+</resources>

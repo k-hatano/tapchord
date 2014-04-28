@@ -13,7 +13,7 @@ public class Shape {
 	public final static int STYLE_TRIANGLE=2;
 	public final static int STYLE_SQUARE=3;
 	
-	public final static int MAX_LIFETIME=32;
+	public final static int MAX_LIFETIME=36;
 	
 	Shape(PointF pf){
 		style=(int)(Math.random()*4);

@@ -229,8 +229,19 @@ public class TapChordView extends View {
 			rect=Statics.getRectOfToolbarButton(x,0,width,height,1.0f);
 			canvas.drawOval(rect, paint);
 
-			str=Statics.OPTIONS[x];
-			if(x==2) str=Statics.getStringOfScale(scale);
+			switch(x){
+			case 0:
+				str=getContext().getString(R.string.action_settings);
+				break;
+			case 1:
+				str=getContext().getString(R.string.darken);
+				break;
+			case 2:
+				str=Statics.getStringOfScale(scale);
+				break;
+			default:
+				str="";
+			}
 			w=textPaint.measureText(str);
 			canvas.drawText(str,rect.centerX()-w/2,rect.centerY()-(fontMetrics.ascent+fontMetrics.descent)/2,textPaint);
 		}
@@ -277,9 +288,9 @@ public class TapChordView extends View {
 				}if(shape.style==Shape.STYLE_CIRCLE){
 					float cx=shape.center.x;
 					float cy=shape.center.y;
-					canvas.drawCircle(cx,cy,(float)(height*(0.25f+(float)(Shape.MAX_LIFETIME-shape.lifetime)/Shape.MAX_LIFETIME)*0.75f),paint);
+					canvas.drawCircle(cx,cy,(float)(height*(0.3f+(float)(Shape.MAX_LIFETIME-shape.lifetime)/Shape.MAX_LIFETIME)*0.7f),paint);
 				}if(shape.style==Shape.STYLE_TRIANGLE){
-					float l=(float)(height*(0.25f+(float)(Shape.MAX_LIFETIME-shape.lifetime)/Shape.MAX_LIFETIME)*0.75f);
+					float l=(float)(height*(0.3f+(float)(Shape.MAX_LIFETIME-shape.lifetime)/Shape.MAX_LIFETIME)*0.7f);
 					float ax=shape.center.x+(float)(Math.cos((shape.rad)/360.0*Math.PI*2)*l);
 					float ay=shape.center.y+(float)(Math.sin((shape.rad)/360.0*Math.PI*2)*l);
 					float bx=shape.center.x+(float)(Math.cos((shape.rad+120)/360.0*Math.PI*2)*l);
@@ -290,7 +301,7 @@ public class TapChordView extends View {
 					canvas.drawLine(bx,by,cx,cy,paint);
 					canvas.drawLine(cx,cy,ax,ay,paint);
 				}if(shape.style==Shape.STYLE_SQUARE){
-					float l=(float)(height*(0.25f+(float)(Shape.MAX_LIFETIME-shape.lifetime)/Shape.MAX_LIFETIME)*0.75f);
+					float l=(float)(height*(0.3f+(float)(Shape.MAX_LIFETIME-shape.lifetime)/Shape.MAX_LIFETIME)*0.7f);
 					float ax=shape.center.x+(float)(Math.cos((shape.rad)/360.0*Math.PI*2)*l);
 					float ay=shape.center.y+(float)(Math.sin((shape.rad)/360.0*Math.PI*2)*l);
 					float bx=shape.center.x+(float)(Math.cos((shape.rad+90)/360.0*Math.PI*2)*l);
