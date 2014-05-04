@@ -16,6 +16,7 @@ import android.graphics.RectF;
 import android.os.Handler;
 import android.os.Vibrator;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.util.SparseIntArray;
 import android.view.MotionEvent;
 import android.view.View;
@@ -360,14 +361,14 @@ public class TapChordView extends View {
 				toolbarPressed=0;
 				taps.put(id,Statics.TOOLBAR_BUTTON);
 				if(vibration>0) vib.vibrate(Statics.VIBRATION_LENGTH);
-				return true;
+				return false;
 			}
 			rect=Statics.getRectOfToolbarTransposingButton(0,0,width,height,1.0f);
 			if(rect.contains(x, y)){
 				toolbarPressed=1;
 				taps.put(id,Statics.TOOLBAR_BUTTON);
 				if(vibration>0) vib.vibrate(Statics.VIBRATION_LENGTH);
-				return true;
+				return false;
 			}
 		}else{
 			for(i=0;i<3;i++){
@@ -376,7 +377,7 @@ public class TapChordView extends View {
 					toolbarPressed=i;
 					taps.put(id,Statics.TOOLBAR_BUTTON);
 					if(vibration>0) vib.vibrate(Statics.VIBRATION_LENGTH);
-					return true;
+					return false;
 				}
 			}
 		}
@@ -388,7 +389,7 @@ public class TapChordView extends View {
 					scalePressed=i;
 					taps.put(id,Statics.TRANSPOSE_SCALE_BUTTON);
 					if(vibration>0) vib.vibrate(Statics.VIBRATION_LENGTH);
-					return true;
+					return false;
 				}
 			}
 		}else{
@@ -398,7 +399,7 @@ public class TapChordView extends View {
 					statusbarFlags[i]=1;
 					taps.put(id,Statics.STATUSBAR_BUTTON);
 					if(vibration>0) vib.vibrate(Statics.VIBRATION_LENGTH);
-					return true;
+					return false;
 				}
 			}
 			if(Statics.getRectOfScrollNob(scroll,upper,width,height).contains(x,y)){
@@ -407,12 +408,12 @@ public class TapChordView extends View {
 				originalScroll=scroll;
 				taps.put(id,Statics.SCROLL_NOB);
 				if(vibration>0) vib.vibrate(Statics.VIBRATION_LENGTH);
-				return true;
+				return false;
 			}else if(Statics.getRectOfToolbar(width,height,1.0f).contains(x,y)){
 				scroll=0;
 				taps.put(id,Statics.SCROLL_BAR);
 				if(vibration>0) vib.vibrate(Statics.VIBRATION_LENGTH);
-				return true;
+				return false;
 			}
 		}
 
@@ -440,7 +441,7 @@ public class TapChordView extends View {
 	}
 
 	public boolean actionMove(int x,int y,int id){
-		int i,j;
+		int i;
 		boolean chordPressed=false;
 		RectF rect;
 		int kind;
@@ -449,6 +450,7 @@ public class TapChordView extends View {
 		switch(kind){
 		case Statics.SCROLL_NOB:
 			if(-y+originalY>height/5){
+				if(vibration>0&&scroll!=0) vib.vibrate(Statics.VIBRATION_LENGTH);
 				scroll=0;
 				upper=height/35/5*2;
 			}else{
@@ -461,7 +463,10 @@ public class TapChordView extends View {
 		case Statics.STATUSBAR_BUTTON:
 			for(i=0;i<4;i++){
 				rect=Statics.getRectOfStatusBarButton(i,0,width,height,barsShowingRate);
-				if(rect.contains(x, y)) statusbarFlags[i]=1;
+				if(rect.contains(x, y)){
+					if(vibration>0&&statusbarFlags[i]==0) vib.vibrate(Statics.VIBRATION_LENGTH);
+					statusbarFlags[i]=1;
+				}
 			}
 			break;
 		case Statics.TOOLBAR_BUTTON:
@@ -511,27 +516,8 @@ public class TapChordView extends View {
 				}
 				chordPressed=true;
 				break;
-			}
-			if(playing<=0){
-				for(j=-6;j<=6;j++){
-					for(i=-1;i<=1;i++){
-						rect=Statics.getRectOfButton(j,i,width,height,scroll);
-						if(rect.contains(x, y)){
-							play(j,i);
-							chordPressed=true;
-							originalScroll=scroll;
-							tappedX=x;
-							playingID=id;
-							taps.put(playingID,Statics.CHORD_BUTTON);
-							if(darken>0){
-								shapes.add(new Shape(new PointF(x,y)));
-							}
-							break;
-						}
-					}
-				}
 			}else{
-				chordPressed=true;
+				chordPressed=actionDown(x,y,id);
 			}
 			break;
 		case Statics.SCROLL_BAR:
@@ -539,7 +525,7 @@ public class TapChordView extends View {
 		case Statics.TRANSPOSE_SCALE_BUTTON:
 			break;
 		default:
-			actionDown(x,y,id);
+			chordPressed=actionDown(x,y,id);
 			break;
 		}
 		return chordPressed;

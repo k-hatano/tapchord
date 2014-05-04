@@ -52,7 +52,7 @@ public class Statics {
 	public static final String PREF_SAMPLING_RATE = "sampling_rate";
 	public static final String PREF_WAVEFORM = "waveform";
 	
-	public static final int VIBRATION_LENGTH = 50;
+	public static final int VIBRATION_LENGTH = 40;
 
 	public static int getColor(int which,int pressed,int dark){
 		int r,g,b;
