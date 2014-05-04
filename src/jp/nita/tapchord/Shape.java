@@ -5,6 +5,7 @@ import android.graphics.PointF;
 public class Shape {
 	public int style;
 	public int rad;
+	public int radDelta;
 	public int lifetime;
 	public PointF center;
 	
@@ -18,6 +19,8 @@ public class Shape {
 	Shape(PointF pf){
 		style=(int)(Math.random()*4);
 		rad=(int)(Math.random()*360);
+		radDelta=(int)(Math.random()*9)-4;
+		if(style==0) radDelta=0;
 		lifetime=MAX_LIFETIME;
 		center=pf;
 	}

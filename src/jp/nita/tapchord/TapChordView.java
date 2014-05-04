@@ -703,6 +703,7 @@ public class TapChordView extends View {
 		}
 		if(shapes.size()>0){
 			for(int i=shapes.size()-1;i>=0;i--){
+				shapes.get(i).rad+=shapes.get(i).radDelta;
 				shapes.get(i).lifetime--;
 				if(shapes.get(i).lifetime<=0) shapes.remove(i);
 			}
