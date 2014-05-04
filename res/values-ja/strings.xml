@@ -29,5 +29,6 @@
     <string name="off">オフ</string>
     <string name="settings_darken">あの楽器</string>
     <string name="settings_scale">調</string>
+    <string name="settings_vibration">バイブレーション</string>
 
 </resources>

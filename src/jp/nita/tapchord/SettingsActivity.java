@@ -27,6 +27,7 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 	int volume;
 	int samplingRate;
 	int waveform;
+	int vibration;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +47,7 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 	public void getPreferenceValues(){
 		scale=Statics.getPreferenceValue(this,Statics.PREF_SCALE,0);
 		darken=Statics.getPreferenceValue(this,Statics.PREF_DARKEN,0);
+		vibration=Statics.getPreferenceValue(this,Statics.PREF_VIBRATION,0);
 		volume=Statics.getPreferenceValue(this,Statics.PREF_VOLUME,0);
 		samplingRate=Statics.getPreferenceValue(this,Statics.PREF_SAMPLING_RATE,0);
 		waveform=Statics.getPreferenceValue(this,Statics.PREF_WAVEFORM,0);
@@ -65,6 +67,11 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 			map=new HashMap<String,String>();
 			map.put("key", getString(R.string.settings_darken));
 			map.put("value", Statics.getOnOrOffString(this,darken));
+			list.add(map);
+			
+			map=new HashMap<String,String>();
+			map.put("key", getString(R.string.settings_vibration));
+			map.put("value", Statics.getOnOrOffString(this,vibration));
 			list.add(map);
 
 			map=new HashMap<String,String>();
@@ -186,6 +193,33 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 			break;
 		}
 		case 2:{
+			CharSequence list[]=new String[2];
+			list[0]=getString(R.string.off);
+			list[1]=getString(R.string.on);
+			new AlertDialog.Builder(SettingsActivity.this)
+			.setTitle(getString(R.string.settings_vibration))
+			.setSingleChoiceItems(list,vibration,new DialogInterface.OnClickListener(){
+				@Override
+				public void onClick(DialogInterface arg0, int arg1) {
+					selected=arg1;
+				}
+			})
+			.setPositiveButton(getString(R.string.ok),new DialogInterface.OnClickListener(){
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					if(selected>=0) setVibration(selected);
+				}
+			})
+			.setNegativeButton(getString(R.string.cancel),new DialogInterface.OnClickListener(){
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+
+				}
+			})
+			.show();
+			break;
+		}
+		case 3:{
 			CharSequence list[]=new String[5];
 			for(int i=-1;i<4;i++){
 				list[i+1]=""+Statics.getValueOfVolume(i);
@@ -213,7 +247,7 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 			.show();
 			break;
 		}
-		case 3:{
+		case 4:{
 			CharSequence list[]=new String[6];
 			for(int i=0;i<6;i++){
 				list[i]=Statics.getValueOfWaveform(i,this);
@@ -241,7 +275,7 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 			.show();
 			break;
 		}
-		case 4:{
+		case 5:{
 			CharSequence list[]=new String[4];
 			for(int i=0;i<4;i++){
 				list[i]=""+Statics.getValueOfSamplingRate(i)+" "+getString(R.string.settings_sampling_rate_hz);
@@ -287,7 +321,12 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 		getPreferenceValues();
 		updateSettingsListView();
 	}
-
+	public void setVibration(int v){
+		vibration=v;
+		Statics.setPreferenceValue(this,Statics.PREF_VIBRATION,vibration);
+		getPreferenceValues();
+		updateSettingsListView();
+	}
 	public void setSamplingRate(int sr){
 		samplingRate=sr;
 		Statics.setPreferenceValue(this,Statics.PREF_SAMPLING_RATE,samplingRate);

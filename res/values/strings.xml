@@ -29,5 +29,6 @@
     <string name="off">Off</string>
     <string name="settings_darken">Darken</string>
     <string name="settings_scale">Scale</string>
+    <string name="settings_vibration">Vibration</string>
 
 </resources>

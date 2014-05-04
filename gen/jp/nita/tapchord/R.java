@@ -56,6 +56,7 @@ public final class R {
         public static final int settings_sampling_rate=0x7f050007;
         public static final int settings_sampling_rate_hz=0x7f05000f;
         public static final int settings_scale=0x7f050018;
+        public static final int settings_vibration=0x7f050019;
         public static final int settings_volume=0x7f050013;
         public static final int settings_waveform=0x7f050008;
         public static final int settings_waveform_eighth_pulse_wave=0x7f05000e;

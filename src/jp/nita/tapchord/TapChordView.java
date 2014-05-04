@@ -14,6 +14,7 @@ import android.graphics.Paint.Style;
 import android.graphics.PointF;
 import android.graphics.RectF;
 import android.os.Handler;
+import android.os.Vibrator;
 import android.util.AttributeSet;
 import android.util.SparseIntArray;
 import android.view.MotionEvent;
@@ -27,6 +28,7 @@ public class TapChordView extends View {
 	int playingID;
 
 	int scale=0;
+	int vibration=0;
 	int pulling=0;
 
 	int statusbarFlags[]={0,0,0,0};
@@ -34,6 +36,8 @@ public class TapChordView extends View {
 	int scalePressed=Statics.FARAWAY;
 
 	float barsShowingRate=1.0f;
+	
+	private Vibrator vib;
 
 	List<Shape> shapes=new ArrayList<Shape>();
 
@@ -53,6 +57,7 @@ public class TapChordView extends View {
 		scroll=0;
 		upper=0;
 		darken=0;
+		vib = (Vibrator)context.getSystemService(Context.VIBRATOR_SERVICE);
 	}
 
 	public void init(Context context){
@@ -354,12 +359,14 @@ public class TapChordView extends View {
 			if(rect.contains(x, y)){
 				toolbarPressed=0;
 				taps.put(id,Statics.TOOLBAR_BUTTON);
+				if(vibration>0) vib.vibrate(Statics.VIBRATION_LENGTH);
 				return true;
 			}
 			rect=Statics.getRectOfToolbarTransposingButton(0,0,width,height,1.0f);
 			if(rect.contains(x, y)){
 				toolbarPressed=1;
 				taps.put(id,Statics.TOOLBAR_BUTTON);
+				if(vibration>0) vib.vibrate(Statics.VIBRATION_LENGTH);
 				return true;
 			}
 		}else{
@@ -368,6 +375,7 @@ public class TapChordView extends View {
 				if(rect.contains(x, y)){
 					toolbarPressed=i;
 					taps.put(id,Statics.TOOLBAR_BUTTON);
+					if(vibration>0) vib.vibrate(Statics.VIBRATION_LENGTH);
 					return true;
 				}
 			}
@@ -379,6 +387,7 @@ public class TapChordView extends View {
 				if(rect.contains(x, y)){
 					scalePressed=i;
 					taps.put(id,Statics.TRANSPOSE_SCALE_BUTTON);
+					if(vibration>0) vib.vibrate(Statics.VIBRATION_LENGTH);
 					return true;
 				}
 			}
@@ -388,6 +397,7 @@ public class TapChordView extends View {
 				if(rect.contains(x, y)){
 					statusbarFlags[i]=1;
 					taps.put(id,Statics.STATUSBAR_BUTTON);
+					if(vibration>0) vib.vibrate(Statics.VIBRATION_LENGTH);
 					return true;
 				}
 			}
@@ -396,10 +406,12 @@ public class TapChordView extends View {
 				originalY=y;
 				originalScroll=scroll;
 				taps.put(id,Statics.SCROLL_NOB);
+				if(vibration>0) vib.vibrate(Statics.VIBRATION_LENGTH);
 				return true;
 			}else if(Statics.getRectOfToolbar(width,height,1.0f).contains(x,y)){
 				scroll=0;
 				taps.put(id,Statics.SCROLL_BAR);
+				if(vibration>0) vib.vibrate(Statics.VIBRATION_LENGTH);
 				return true;
 			}
 		}
@@ -414,6 +426,7 @@ public class TapChordView extends View {
 						tappedX=x;
 						playingID=id;
 						taps.put(playingID,Statics.CHORD_BUTTON);
+						if(vibration>0) vib.vibrate(Statics.VIBRATION_LENGTH);
 						if(darken>0){
 							shapes.add(new Shape(new PointF(x,y)));
 						}
@@ -751,5 +764,6 @@ public class TapChordView extends View {
 	public void getPreferenceValues(){
 		scale=Statics.getPreferenceValue(this.getContext(),Statics.PREF_SCALE,0);
 		darken=Statics.getPreferenceValue(this.getContext(),Statics.PREF_DARKEN,0);
+		vibration=Statics.getPreferenceValue(this.getContext(),Statics.PREF_VIBRATION,0);
 	}
 }
