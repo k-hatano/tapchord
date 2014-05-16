@@ -22,27 +22,25 @@ public class Sound {
 				sampleRate,
 				AudioFormat.CHANNEL_CONFIGURATION_MONO,
 		        AudioFormat.ENCODING_PCM_16BIT,
-		        sampleRate,
+		        sampleRate*2,
 		        AudioTrack.MODE_STATIC);
 		
-		byte[] wave=new byte[sampleRate];
-		double t=0;
-		double dt=1.0/sampleRate;
+		short[] wave=new short[sampleRate];
 		for(int i=0;i<sampleRate;i++){
 			double ss=0;
+			double t=(double)i/sampleRate;
 			for(int j=0;j<freqs.length;j++){
-				double s=wave(2.0*Math.PI*t*freqs[j],waveform);
+				double s=wave(t*freqs[j],waveform);
 				ss+=s;
 			}
-			double sss=(Byte.MAX_VALUE*ss*(volume/400.0));
-			if(sss>=127) sss=127;
-			if(sss<=-127) sss=-127;
-			wave[i]=(byte)sss;
-			t=dt*i;
+			double sss=(Short.MAX_VALUE*ss*volume/400.0);
+			if(sss>=Short.MAX_VALUE) sss=(double)Short.MAX_VALUE;
+			if(sss<=-Short.MAX_VALUE) sss=(double)(-Short.MAX_VALUE);
+			wave[i]=(short)sss;
 		}
 		track.write(wave,0,wave.length);
-		waveLength=wave.length/2;
-		track.setLoopPoints(0,waveLength,-1);
+		waveLength=wave.length;
+		track.setLoopPoints(0,waveLength-1,-1);
 	}
 	
 	public void play(){
@@ -64,14 +62,14 @@ public class Sound {
 	public double wave(double t,int which){
 		switch(which){
 		case 0:
-			return Math.sin(t);
+			return Math.sin(2.0*Math.PI*t);
 		case 1:
-			return (t/(2*Math.PI)-Math.floor(t/(Math.PI*2)+1/2.0))*2;
+			return (t-Math.floor(t+1/2.0));
 		case 2:
-			return Math.sin(t)>0?1:-1;
+			return Math.sin(2.0*Math.PI*t)>0?0.5:-0.5;
 		case 3:
 		{
-			double tt=t/Math.PI/2-Math.floor(t/Math.PI/2);
+			double tt=t-Math.floor(t);
 			if(tt<0.25){
 				return tt*4;
 			}else if(tt<0.50){
@@ -83,11 +81,11 @@ public class Sound {
 			}
 		}
 		case 4:
-			return (t/Math.PI/2)-Math.floor(t/Math.PI/2)<1.0/4.0?1:-1;
+			return t-Math.floor(t)<1.0/4.0?0.5:-0.5;
 		case 5:
-			return (t/Math.PI/2)-Math.floor(t/Math.PI/2)<1.0/8.0?1:-1;
+			return t-Math.floor(t)<1.0/8.0?0.5:-0.5;
 		default:
-			return Math.sin(t);
+			return Math.sin(2.0*Math.PI*t);
 		}
 	}
 	
