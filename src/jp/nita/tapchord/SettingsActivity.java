@@ -28,6 +28,8 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 	int samplingRate;
 	int waveform;
 	int vibration;
+	
+	int selection;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -154,12 +156,13 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 				@Override
 				public void onClick(DialogInterface dialog, int which) {
 					if(selected>=0) setScale(selected-7);
+					((ListView)findViewById(R.id.settings_items)).setSelection(0);
 				}
 			})
 			.setNegativeButton(getString(R.string.cancel),new DialogInterface.OnClickListener(){
 				@Override
 				public void onClick(DialogInterface dialog, int which) {
-
+					((ListView)findViewById(R.id.settings_items)).setSelection(0);
 				}
 			})
 			.show();
@@ -181,12 +184,13 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 				@Override
 				public void onClick(DialogInterface dialog, int which) {
 					if(selected>=0) setDarken(selected);
+					((ListView)findViewById(R.id.settings_items)).setSelection(1);
 				}
 			})
 			.setNegativeButton(getString(R.string.cancel),new DialogInterface.OnClickListener(){
 				@Override
 				public void onClick(DialogInterface dialog, int which) {
-
+					((ListView)findViewById(R.id.settings_items)).setSelection(1);
 				}
 			})
 			.show();
@@ -208,12 +212,13 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 				@Override
 				public void onClick(DialogInterface dialog, int which) {
 					if(selected>=0) setVibration(selected);
+					((ListView)findViewById(R.id.settings_items)).setSelection(2);
 				}
 			})
 			.setNegativeButton(getString(R.string.cancel),new DialogInterface.OnClickListener(){
 				@Override
 				public void onClick(DialogInterface dialog, int which) {
-
+					((ListView)findViewById(R.id.settings_items)).setSelection(2);
 				}
 			})
 			.show();
@@ -236,12 +241,13 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 				@Override
 				public void onClick(DialogInterface dialog, int which) {
 					if(selected>=0) setVolume(selected-1);
+					((ListView)findViewById(R.id.settings_items)).setSelection(3);
 				}
 			})
 			.setNegativeButton(getString(R.string.cancel),new DialogInterface.OnClickListener(){
 				@Override
 				public void onClick(DialogInterface dialog, int which) {
-
+					((ListView)findViewById(R.id.settings_items)).setSelection(3);
 				}
 			})
 			.show();
@@ -264,12 +270,13 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 				@Override
 				public void onClick(DialogInterface dialog, int which) {
 					if(selected>=0) setWaveform(selected);
+					((ListView)findViewById(R.id.settings_items)).setSelection(4);
 				}
 			})
 			.setNegativeButton(getString(R.string.cancel),new DialogInterface.OnClickListener(){
 				@Override
 				public void onClick(DialogInterface dialog, int which) {
-
+					((ListView)findViewById(R.id.settings_items)).setSelection(4);
 				}
 			})
 			.show();
@@ -292,12 +299,13 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 				@Override
 				public void onClick(DialogInterface dialog, int which) {
 					if(selected>=0) setSamplingRate(selected);
+					((ListView)findViewById(R.id.settings_items)).setSelection(5);
 				}
 			})
 			.setNegativeButton(getString(R.string.cancel),new DialogInterface.OnClickListener(){
 				@Override
 				public void onClick(DialogInterface dialog, int which) {
-
+					((ListView)findViewById(R.id.settings_items)).setSelection(5);
 				}
 			})
 			.show();

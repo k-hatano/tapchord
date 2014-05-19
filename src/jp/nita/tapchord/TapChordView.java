@@ -277,6 +277,31 @@ public class TapChordView extends View {
 		rect=Statics.getRectOfScrollNob(scroll, upper, width, height);
 		canvas.drawRect(rect,paint);
 
+		paint.setStyle(Style.FILL);
+		paint.setColor(Statics.getColor(Statics.COLOR_PASTELGRAY,0,darken));
+		canvas.drawRect(Statics.getRectOfToolbar(width, height,1.0f-barsShowingRate),paint);
+
+		if(situation==Statics.SITUATION_TRANSPOSE||situation==Statics.SITUATION_TRANSPOSING){
+			int d;
+			d=0;
+			if(toolbarPressed==0) d=1;
+			paint.setColor(Statics.getColor(Statics.COLOR_PURPLE,d,darken));
+			rect=Statics.getRectOfToolbarButton(0,0,width,height,1.0f-barsShowingRate);
+			canvas.drawOval(rect, paint);
+			str=getContext().getString(R.string.ok);
+			w=textPaint.measureText(str);
+			canvas.drawText(str,rect.centerX()-w/2,rect.centerY()-(fontMetrics.ascent+fontMetrics.descent)/2,textPaint);
+
+			d=0;
+			if(toolbarPressed==1) d=1;
+			paint.setColor(Statics.getColor(Statics.COLOR_PURPLE,d,darken));
+			rect=Statics.getRectOfToolbarTransposingButton(0,0,width,height,1.0f-barsShowingRate);
+			canvas.drawOval(rect, paint);
+			str=Statics.SCALES[7];
+			w=textPaint.measureText(str);
+			canvas.drawText(str,rect.centerX()-w/2,rect.centerY()-(fontMetrics.ascent+fontMetrics.descent)/2,textPaint);
+		}
+		
 		if(darken>0){
 			paint.setStyle(Style.STROKE);
 			paint.setStrokeWidth(height/25);
@@ -322,31 +347,6 @@ public class TapChordView extends View {
 					canvas.drawLine(dx,dy,ax,ay,paint);
 				}
 			}
-		}
-
-		paint.setStyle(Style.FILL);
-		paint.setColor(Statics.getColor(Statics.COLOR_PASTELGRAY,0,darken));
-		canvas.drawRect(Statics.getRectOfToolbar(width, height,1.0f-barsShowingRate),paint);
-
-		if(situation==Statics.SITUATION_TRANSPOSE||situation==Statics.SITUATION_TRANSPOSING){
-			int d;
-			d=0;
-			if(toolbarPressed==0) d=1;
-			paint.setColor(Statics.getColor(Statics.COLOR_PURPLE,d,darken));
-			rect=Statics.getRectOfToolbarButton(0,0,width,height,1.0f-barsShowingRate);
-			canvas.drawOval(rect, paint);
-			str=getContext().getString(R.string.ok);
-			w=textPaint.measureText(str);
-			canvas.drawText(str,rect.centerX()-w/2,rect.centerY()-(fontMetrics.ascent+fontMetrics.descent)/2,textPaint);
-
-			d=0;
-			if(toolbarPressed==1) d=1;
-			paint.setColor(Statics.getColor(Statics.COLOR_PURPLE,d,darken));
-			rect=Statics.getRectOfToolbarTransposingButton(0,0,width,height,1.0f-barsShowingRate);
-			canvas.drawOval(rect, paint);
-			str=Statics.SCALES[7];
-			w=textPaint.measureText(str);
-			canvas.drawText(str,rect.centerX()-w/2,rect.centerY()-(fontMetrics.ascent+fontMetrics.descent)/2,textPaint);
 		}
 
 	}

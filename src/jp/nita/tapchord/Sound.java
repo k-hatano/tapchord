@@ -66,8 +66,6 @@ public class Sound {
 		case 1:
 			return (t-Math.floor(t+1/2.0));
 		case 2:
-			return Math.sin(2.0*Math.PI*t)>0?0.5:-0.5;
-		case 3:
 		{
 			double tt=t-Math.floor(t);
 			if(tt<0.25){
@@ -80,6 +78,8 @@ public class Sound {
 				return (-1+tt)*4;
 			}
 		}
+		case 3:
+			return Math.sin(2.0*Math.PI*t)>0?0.5:-0.5;
 		case 4:
 			return t-Math.floor(t)<1.0/4.0?0.5:-0.5;
 		case 5:

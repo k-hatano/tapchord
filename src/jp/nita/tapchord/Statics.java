@@ -74,9 +74,9 @@ public class Statics {
 				b=0x80;
 				break;
 			case COLOR_PASTELGRAY:
-				r=0xA0;
-				g=0xA0;
-				b=0xA0;
+				r=0xD0;
+				g=0xD0;
+				b=0xD0;
 				break;
 			case COLOR_LIGHTGRAY:
 				r=0xE0;
@@ -142,8 +142,8 @@ public class Statics {
 			switch(which){
 			case COLOR_BLACK:
 				r=0;
-				g=64;
-				b=64;
+				g=80;
+				b=80;
 				break;
 			case COLOR_DARKGRAY:
 				r=0;
@@ -157,8 +157,8 @@ public class Statics {
 				break;
 			case COLOR_PASTELGRAY:
 				r=0;
-				g=16;
-				b=16;
+				g=12;
+				b=12;
 				break;
 			case COLOR_LIGHTGRAY:
 				r=0;
@@ -515,9 +515,9 @@ public class Statics {
 		case 1:
 			return context.getString(R.string.settings_waveform_sawtooth_wave);
 		case 2:
-			return context.getString(R.string.settings_waveform_square_wave);
-		case 3:
 			return context.getString(R.string.settings_waveform_triangle_wave);
+		case 3:
+			return context.getString(R.string.settings_waveform_square_wave);
 		case 4:
 			return context.getString(R.string.settings_waveform_fourth_pulse_wave);
 		case 5:
