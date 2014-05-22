@@ -74,9 +74,9 @@ public class Statics {
 				b=0x80;
 				break;
 			case COLOR_PASTELGRAY:
-				r=0xD0;
-				g=0xD0;
-				b=0xD0;
+				r=0xF0;
+				g=0xF0;
+				b=0xF0;
 				break;
 			case COLOR_LIGHTGRAY:
 				r=0xE0;
@@ -157,8 +157,8 @@ public class Statics {
 				break;
 			case COLOR_PASTELGRAY:
 				r=0;
-				g=12;
-				b=12;
+				g=16;
+				b=16;
 				break;
 			case COLOR_LIGHTGRAY:
 				r=0;
@@ -239,18 +239,20 @@ public class Statics {
 		return (int)(max-nob)/2;
 	}
 
-	public static RectF getRectOfScrollBar(int width,int height){
+	public static RectF getRectOfScrollBar(int width,int height,float showingRate){
 		float vert=height/35f;
 		float max=(vert*7)*13;
-		return new RectF(vert*2,vert*30.5f,vert*2+max/5,vert*32.5f);
+		float hidingDelta=vert*(1.0f-showingRate)*7;
+		return new RectF(vert*2,vert*30.5f+hidingDelta,vert*2+max/5,vert*32.5f+hidingDelta);
 	}
 
-	public static RectF getRectOfScrollNob(int pos,int upper,int width,int height){
+	public static RectF getRectOfScrollNob(int pos,int upper,int width,int height,float showingRate){
 		float vert=height/35f;
 		float max=(vert*7)*13;
 		float nob=width/5;
 		float x=vert*2+max/10-pos/5;
-		return new RectF(x-nob/2,vert*30f-upper,x+nob/2,vert*33f-upper);
+		float hidingDelta=vert*(1.0f-showingRate)*7;
+		return new RectF(x-nob/2,vert*30f-upper+hidingDelta,x+nob/2,vert*33f-upper+hidingDelta);
 	}
 
 	public static int getRadiusOfButton(int height){

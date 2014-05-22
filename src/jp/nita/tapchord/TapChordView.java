@@ -90,6 +90,32 @@ public class TapChordView extends View {
 		rect=new RectF(0,0,width,height);
 		paint.setColor(Statics.getColor(Statics.COLOR_WHITE,0,darken));
 		canvas.drawRect(rect,paint);
+		
+		if(situation==Statics.SITUATION_TRANSPOSE||situation==Statics.SITUATION_TRANSPOSING
+				||destination==Statics.SITUATION_TRANSPOSE||destination==Statics.SITUATION_TRANSPOSING){
+			paint.setStyle(Style.FILL);
+			paint.setColor(Statics.getColor(Statics.COLOR_PASTELGRAY,0,darken));
+			canvas.drawRect(Statics.getRectOfToolbar(width, height,1.0f),paint);
+			
+			int d;
+			d=0;
+			if(toolbarPressed==0) d=1;
+			paint.setColor(Statics.getColor(Statics.COLOR_PURPLE,d,darken));
+			rect=Statics.getRectOfToolbarButton(0,0,width,height,1.0f);
+			canvas.drawOval(rect, paint);
+			str=getContext().getString(R.string.ok);
+			w=textPaint.measureText(str);
+			canvas.drawText(str,rect.centerX()-w/2,rect.centerY()-(fontMetrics.ascent+fontMetrics.descent)/2,textPaint);
+
+			d=0;
+			if(toolbarPressed==1) d=1;
+			paint.setColor(Statics.getColor(Statics.COLOR_PURPLE,d,darken));
+			rect=Statics.getRectOfToolbarTransposingButton(0,0,width,height,1.0f);
+			canvas.drawOval(rect, paint);
+			str=Statics.SCALES[7];
+			w=textPaint.measureText(str);
+			canvas.drawText(str,rect.centerX()-w/2,rect.centerY()-(fontMetrics.ascent+fontMetrics.descent)/2,textPaint);
+		}
 
 		delta=scroll/(height/5);
 		for(x=-6-delta;x<=6-delta;x++){
@@ -170,7 +196,7 @@ public class TapChordView extends View {
 
 		if(situation==Statics.SITUATION_TRANSPOSE || destination==Statics.SITUATION_TRANSPOSE){
 			paint.setStyle(Style.STROKE);
-			paint.setStrokeWidth(height/200);
+			paint.setStrokeWidth(height/128);
 			for(x=-6;x<=6;x++){
 				int xx=(x+360)%12;
 				for(y=-1;y<=1;y++){
@@ -212,7 +238,7 @@ public class TapChordView extends View {
 		canvas.drawRect(Statics.getRectOfStatusBar(width, height,barsShowingRate),paint);
 
 		paint.setColor(Statics.getColor(Statics.COLOR_LIGHTGRAY,0,darken));
-		canvas.drawRect(Statics.getRectOfToolbar(width, height,1.0f),paint);
+		canvas.drawRect(Statics.getRectOfToolbar(width, height,barsShowingRate),paint);
 
 		for(x=0;x<4;x++){
 			int d=0;
@@ -232,7 +258,7 @@ public class TapChordView extends View {
 			int d=0;
 			if(toolbarPressed==x) d=1;
 			paint.setColor(Statics.getColor(Statics.COLOR_PURPLE,d,darken));
-			rect=Statics.getRectOfToolbarButton(x,0,width,height,1.0f);
+			rect=Statics.getRectOfToolbarButton(x,0,width,height,barsShowingRate);
 			canvas.drawOval(rect, paint);
 
 			switch(x){
@@ -270,37 +296,12 @@ public class TapChordView extends View {
 		}
 
 		paint.setColor(Statics.getColor(Statics.COLOR_GRAY,0,darken));
-		rect=Statics.getRectOfScrollBar(width, height);
+		rect=Statics.getRectOfScrollBar(width, height, barsShowingRate);
 		canvas.drawRect(rect,paint);
 
 		paint.setColor(Statics.getColor(Statics.COLOR_DARKGRAY,0,darken));
-		rect=Statics.getRectOfScrollNob(scroll, upper, width, height);
+		rect=Statics.getRectOfScrollNob(scroll, upper, width, height, barsShowingRate);
 		canvas.drawRect(rect,paint);
-
-		paint.setStyle(Style.FILL);
-		paint.setColor(Statics.getColor(Statics.COLOR_PASTELGRAY,0,darken));
-		canvas.drawRect(Statics.getRectOfToolbar(width, height,1.0f-barsShowingRate),paint);
-
-		if(situation==Statics.SITUATION_TRANSPOSE||situation==Statics.SITUATION_TRANSPOSING){
-			int d;
-			d=0;
-			if(toolbarPressed==0) d=1;
-			paint.setColor(Statics.getColor(Statics.COLOR_PURPLE,d,darken));
-			rect=Statics.getRectOfToolbarButton(0,0,width,height,1.0f-barsShowingRate);
-			canvas.drawOval(rect, paint);
-			str=getContext().getString(R.string.ok);
-			w=textPaint.measureText(str);
-			canvas.drawText(str,rect.centerX()-w/2,rect.centerY()-(fontMetrics.ascent+fontMetrics.descent)/2,textPaint);
-
-			d=0;
-			if(toolbarPressed==1) d=1;
-			paint.setColor(Statics.getColor(Statics.COLOR_PURPLE,d,darken));
-			rect=Statics.getRectOfToolbarTransposingButton(0,0,width,height,1.0f-barsShowingRate);
-			canvas.drawOval(rect, paint);
-			str=Statics.SCALES[7];
-			w=textPaint.measureText(str);
-			canvas.drawText(str,rect.centerX()-w/2,rect.centerY()-(fontMetrics.ascent+fontMetrics.descent)/2,textPaint);
-		}
 		
 		if(darken>0){
 			paint.setStyle(Style.STROKE);
@@ -402,7 +403,7 @@ public class TapChordView extends View {
 					return false;
 				}
 			}
-			if(Statics.getRectOfScrollNob(scroll,upper,width,height).contains(x,y)){
+			if(Statics.getRectOfScrollNob(scroll,upper,width,height,barsShowingRate).contains(x,y)){
 				originalX=x;
 				originalY=y;
 				originalScroll=scroll;
