@@ -30,6 +30,7 @@ public class TapChordView extends View {
 
 	int scale=0;
 	int vibration=0;
+	int soundRange=0;
 	int pulling=0;
 
 	int statusbarFlags[]={0,0,0,0};
@@ -183,11 +184,11 @@ public class TapChordView extends View {
 
 				switch(y){
 				case -1:
-					str=Statics.NOTES[maj]+Statics.SUS4; break;
+					str=Statics.NOTES_5TH[maj]+Statics.SUS4; break;
 				case 0:
-					str=Statics.NOTES[maj]; break;
+					str=Statics.NOTES_5TH[maj]; break;
 				case 1:
-					str=Statics.NOTES[min]+Statics.MINOR; break;
+					str=Statics.NOTES_5TH[min]+Statics.MINOR; break;
 				}
 				w=textPaint.measureText(str);
 				canvas.drawText(str,rect.centerX()-w/2,rect.centerY()-(fontMetrics.ascent+fontMetrics.descent)/2,textPaint);
@@ -620,7 +621,7 @@ public class TapChordView extends View {
 
 	public void play(int x,int y){
 		notesOfChord=Statics.getNotesOfChord(x+scale,y,statusbarFlags);
-		Integer f[]=(Statics.convertNotesToFrequencies(notesOfChord));
+		Integer f[]=(Statics.convertNotesToFrequencies(notesOfChord,soundRange));
 		sound=new Sound(f,this.getContext());
 		sound.play();
 		switch(y){
@@ -751,6 +752,7 @@ public class TapChordView extends View {
 	public void getPreferenceValues(){
 		scale=Statics.getPreferenceValue(this.getContext(),Statics.PREF_SCALE,0);
 		darken=Statics.getPreferenceValue(this.getContext(),Statics.PREF_DARKEN,0);
+		soundRange=Statics.getPreferenceValue(this.getContext(),Statics.PREF_SOUND_RANGE,0);
 		vibration=Statics.getPreferenceValue(this.getContext(),Statics.PREF_VIBRATION,0);
 	}
 }

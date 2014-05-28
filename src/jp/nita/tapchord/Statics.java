@@ -51,8 +51,19 @@ public class Statics {
 	public static final String PREF_VOLUME = "volume";
 	public static final String PREF_SAMPLING_RATE = "sampling_rate";
 	public static final String PREF_WAVEFORM = "waveform";
+	public static final String PREF_SOUND_RANGE = "sound_range";
 	
 	public static final int VIBRATION_LENGTH = 40;
+	
+	public static final String NOTES_C2B[] = {"C","C#","D","D#","E","F","F#","G","G#","A","A#","B"};
+	
+	public static String NOTES_5TH[]={"Fbb","Cbb","Gbb","Dbb","Abb","Ebb","Bbb","Fb","Cb","Gb","Db","Ab","Eb","Bb","F",
+		"C","G","D","A","E","B","F#","C#","G#","D#","A#","E#",
+		"B#","F#","Cx","Gx","Dx","Ax","Ex","Gx","Fx"};
+
+	public static String SCALES[]={"b7","b6","b5","b4","b3","b2","b1","#b0","#1","#2","#3","#4","#5","#6","#7"};
+
+	public static String TENSIONS[]={"add9","-5/aug","7","M7"};
 
 	public static int getColor(int which,int pressed,int dark){
 		int r,g,b;
@@ -217,14 +228,6 @@ public class Statics {
 		return Color.argb(255,r,g,b);
 	}
 
-	public static String NOTES[]={"Fbb","Cbb","Gbb","Dbb","Abb","Ebb","Bbb","Fb","Cb","Gb","Db","Ab","Eb","Bb","F",
-		"C","G","D","A","E","B","F#","C#","G#","D#","A#","E#",
-		"B#","F#","Cx","Gx","Dx","Ax","Ex","Gx","Fx"};
-
-	public static String SCALES[]={"b7","b6","b5","b4","b3","b2","b1","#b0","#1","#2","#3","#4","#5","#6","#7"};
-
-	public static String TENSIONS[]={"add9","-5/aug","7","M7"};
-
 	public static RectF getRectOfButton(int x,int y,int width,int height,int scroll){
 		float vert=height*7/35f;
 		float pX=width/2+x*vert;
@@ -353,10 +356,14 @@ public class Statics {
 		return r;
 	}
 
-	public static int getFrequencyOfNote(int note){
+	public static int getFrequencyOfNote(int note,int soundRange){
 		double f=440.0;
-		int n=note-9;
-		return (int)(f*Math.pow(2,n/12.0));
+		int n=note;
+		while(n<soundRange||n>=soundRange+12){
+			if(n<soundRange) n+=12;
+			if(n>=soundRange+12) n-=12;
+		}
+		return (int)(f*Math.pow(2,(n-9)/12.0));
 	}
 
 	public static Integer[] getNotesOfChord(int x,int y,int[] tensions){
@@ -408,11 +415,11 @@ public class Statics {
 		return ns;
 	}
 
-	public static Integer[] convertNotesToFrequencies(Integer[] notes){
+	public static Integer[] convertNotesToFrequencies(Integer[] notes,int soundRange){
 		List<Integer> freqs=new ArrayList<Integer>();
 
 		for(int i=0;i<notes.length;i++){
-			freqs.add(getFrequencyOfNote(notes[i]));
+			freqs.add(getFrequencyOfNote(notes[i],soundRange));
 		}
 
 		Integer fs[]=freqs.toArray(new Integer[0]);
@@ -514,5 +521,24 @@ public class Statics {
 		default:
 			return "";
 		}
+	}
+	
+	public static String getStringOfSoundRange(int soundRange){
+		return getShortStringOfSoundRange(soundRange)+" - "+getShortStringOfSoundRange(soundRange+11);
+	}
+	
+	public static String getShortStringOfSoundRange(int soundRange){
+		int octave=4;
+		while(soundRange<0||soundRange>=12){
+			if(soundRange<0){
+				octave--;
+				soundRange+=12;
+			}
+			if(soundRange>=12){
+				octave++;
+				soundRange-=12;
+			}
+		}
+		return ""+NOTES_C2B[soundRange]+octave;
 	}
 }

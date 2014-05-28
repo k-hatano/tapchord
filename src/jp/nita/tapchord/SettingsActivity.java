@@ -34,6 +34,7 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 	int samplingRate;
 	int waveform;
 	int vibration;
+	int soundRange;
 
 	int selection;
 
@@ -59,6 +60,7 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 		volume=Statics.getPreferenceValue(this,Statics.PREF_VOLUME,0);
 		samplingRate=Statics.getPreferenceValue(this,Statics.PREF_SAMPLING_RATE,0);
 		waveform=Statics.getPreferenceValue(this,Statics.PREF_WAVEFORM,0);
+		soundRange=Statics.getPreferenceValue(this,Statics.PREF_SOUND_RANGE,0);
 	}
 
 	public void updateSettingsListView(){
@@ -85,6 +87,11 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 			map=new HashMap<String,String>();
 			map.put("key", getString(R.string.settings_volume));
 			map.put("value", ""+Statics.getValueOfVolume(volume));
+			list.add(map);
+			
+			map=new HashMap<String,String>();
+			map.put("key", getString(R.string.settings_sound_range));
+			map.put("value", ""+Statics.getStringOfSoundRange(soundRange));
 			list.add(map);
 
 			map=new HashMap<String,String>();
@@ -283,6 +290,57 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 			break;
 		}
 		case 4:{
+			final TextView rangeView = new TextView(this);
+			rangeView.setText(""+Statics.getStringOfSoundRange(soundRange));
+			rangeView.setTextAppearance(this,android.R.style.TextAppearance_Inverse);
+			final SeekBar seekBar = new SeekBar(this);
+			seekBar.setProgress(soundRange+12);
+			seekBar.setMax(24);
+			seekBar.setOnSeekBarChangeListener(new OnSeekBarChangeListener(){
+				@Override
+				public void onProgressChanged(SeekBar seekBar, int progress,
+						boolean fromUser) {
+					rangeView.setText(""+Statics.getStringOfSoundRange(seekBar.getProgress()-12));
+				}
+
+				@Override
+				public void onStartTrackingTouch(SeekBar seekBar) {
+					// TODO Auto-generated method stub
+
+				}
+
+				@Override
+				public void onStopTrackingTouch(SeekBar seekBar) {
+					// TODO Auto-generated method stub
+
+				}
+
+			});
+			final LinearLayout layout = new LinearLayout(this);
+			layout.setOrientation(LinearLayout.VERTICAL);
+			layout.addView(rangeView);
+			layout.addView(seekBar);
+			layout.setPadding(8,8,8,8);
+			new AlertDialog.Builder(SettingsActivity.this)
+			.setTitle(getString(R.string.settings_sound_range))
+			.setView(layout)
+			.setPositiveButton(getString(R.string.ok),new DialogInterface.OnClickListener(){
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					setSoundRange(seekBar.getProgress()-12);
+					((ListView)findViewById(R.id.settings_items)).setSelection(4);
+				}
+			})
+			.setNegativeButton(getString(R.string.cancel),new DialogInterface.OnClickListener(){
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					((ListView)findViewById(R.id.settings_items)).setSelection(4);
+				}
+			})
+			.show();
+			break;
+		}
+		case 5:{
 			CharSequence list[]=new String[6];
 			for(int i=0;i<6;i++){
 				list[i]=Statics.getValueOfWaveform(i,this);
@@ -311,7 +369,7 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 			.show();
 			break;
 		}
-		case 5:{
+		case 6:{
 			CharSequence list[]=new String[4];
 			for(int i=0;i<4;i++){
 				list[i]=""+Statics.getValueOfSamplingRate(i)+" "+getString(R.string.settings_sampling_rate_hz);
@@ -374,6 +432,13 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 	public void setVolume(int v){
 		volume=v;
 		Statics.setPreferenceValue(this,Statics.PREF_VOLUME,volume);
+		getPreferenceValues();
+		updateSettingsListView();
+	}
+	
+	public void setSoundRange(int sr){
+		soundRange=sr;
+		Statics.setPreferenceValue(this,Statics.PREF_SOUND_RANGE,sr);
 		getPreferenceValues();
 		updateSettingsListView();
 	}

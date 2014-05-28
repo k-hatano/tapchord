@@ -11,10 +11,12 @@ public class Sound {
 	int sampleRate=4000;
 	int waveform;
 	int waveLength;
+	int soundRange;
 	static AudioTrack lastTrack=null;
 	
 	public Sound(Integer[] freqs,Context context){
 		volume=Statics.getValueOfVolume(Statics.getPreferenceValue(context,Statics.PREF_VOLUME,0));
+		soundRange=Statics.getValueOfVolume(Statics.getPreferenceValue(context,Statics.PREF_SOUND_RANGE,0));
 		sampleRate=Statics.getValueOfSamplingRate(Statics.getPreferenceValue(context,Statics.PREF_SAMPLING_RATE,0));
 		waveform=Statics.getPreferenceValue(context,Statics.PREF_WAVEFORM,0);
 		
