@@ -14,8 +14,9 @@
     <string name="settings_waveform_sawtooth_wave">のこぎり波</string>
     <string name="settings_waveform_square_wave">矩形波</string>
     <string name="settings_waveform_triangle_wave">三角波</string>
-    <string name="settings_waveform_fourth_pulse_wave">1:3 パルス波</string>
-    <string name="settings_waveform_eighth_pulse_wave">1:7 パルス波</string>
+    <string name="settings_waveform_fourth_pulse_wave">1:3 パルス</string>
+    <string name="settings_waveform_eighth_pulse_wave">1:7 パルス</string>
+    <string name="settings_sound_range">音域</string>
 
     <string name="settings_sampling_rate_hz"> Hz</string>
     <string name="special_thanks">Special Thanks to\nAkiyoshi Kamide</string>
@@ -29,6 +30,6 @@
     <string name="off">オフ</string>
     <string name="settings_darken">あの楽器</string>
     <string name="settings_scale">調</string>
-    <string name="settings_vibration">バイブレーション</string>
+    <string name="settings_vibration">振動</string>
 
 </resources>

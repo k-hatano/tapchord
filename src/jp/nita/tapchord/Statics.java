@@ -477,6 +477,10 @@ public class Statics {
 		if(v>0) return context.getString(R.string.on);
 		else return context.getString(R.string.off);
 	}
+	
+	public static int getValueOfVolume(int i){
+		return i+40;
+	}
 
 	public static int getValueOfSamplingRate(int i){
 		switch(i){
@@ -488,23 +492,6 @@ public class Statics {
 			return 22050;
 		case 3:
 			return 44100;
-		default:
-			return 0;
-		}
-	}
-	
-	public static int getValueOfVolume(int i){
-		switch(i){
-		case -1:
-			return 20;
-		case 0:
-			return 40;
-		case 1:
-			return 60;
-		case 2:
-			return 80;
-		case 3:
-			return 100;
 		default:
 			return 0;
 		}

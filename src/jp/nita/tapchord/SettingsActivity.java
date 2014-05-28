@@ -9,6 +9,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -17,8 +18,13 @@ import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.SeekBar;
+import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.SimpleAdapter;
+import android.widget.TextView;
 
 public class SettingsActivity extends Activity implements OnClickListener,OnItemClickListener {
 
@@ -28,7 +34,7 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 	int samplingRate;
 	int waveform;
 	int vibration;
-	
+
 	int selection;
 
 	@Override
@@ -70,7 +76,7 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 			map.put("key", getString(R.string.settings_darken));
 			map.put("value", Statics.getOnOrOffString(this,darken));
 			list.add(map);
-			
+
 			map=new HashMap<String,String>();
 			map.put("key", getString(R.string.settings_vibration));
 			map.put("value", Statics.getOnOrOffString(this,vibration));
@@ -225,22 +231,45 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 			break;
 		}
 		case 3:{
-			CharSequence list[]=new String[5];
-			for(int i=-1;i<4;i++){
-				list[i+1]=""+Statics.getValueOfVolume(i);
-			}
+			int vol=volume+40;
+			final TextView volumeView = new TextView(this);
+			volumeView.setText(""+vol);
+			volumeView.setTextAppearance(this,android.R.style.TextAppearance_Inverse);
+			final SeekBar seekBar = new SeekBar(this);
+			seekBar.setProgress(vol);
+			seekBar.setMax(100);
+			seekBar.setOnSeekBarChangeListener(new OnSeekBarChangeListener(){
+				@Override
+				public void onProgressChanged(SeekBar seekBar, int progress,
+						boolean fromUser) {
+					volumeView.setText(""+progress);
+				}
+
+				@Override
+				public void onStartTrackingTouch(SeekBar seekBar) {
+					// TODO Auto-generated method stub
+
+				}
+
+				@Override
+				public void onStopTrackingTouch(SeekBar seekBar) {
+					// TODO Auto-generated method stub
+
+				}
+
+			});
+			final LinearLayout layout = new LinearLayout(this);
+			layout.setOrientation(LinearLayout.VERTICAL);
+			layout.addView(volumeView);
+			layout.addView(seekBar);
+			layout.setPadding(8,8,8,8);
 			new AlertDialog.Builder(SettingsActivity.this)
 			.setTitle(getString(R.string.settings_volume))
-			.setSingleChoiceItems(list,volume+1,new DialogInterface.OnClickListener(){
-				@Override
-				public void onClick(DialogInterface arg0, int arg1) {
-					selected=arg1;
-				}
-			})
+			.setView(layout)
 			.setPositiveButton(getString(R.string.ok),new DialogInterface.OnClickListener(){
 				@Override
 				public void onClick(DialogInterface dialog, int which) {
-					if(selected>=0) setVolume(selected-1);
+					setVolume(seekBar.getProgress()-40);
 					((ListView)findViewById(R.id.settings_items)).setSelection(3);
 				}
 			})
