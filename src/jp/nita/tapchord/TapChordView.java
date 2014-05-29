@@ -34,6 +34,8 @@ public class TapChordView extends View {
 	int pulling=0;
 
 	int statusbarFlags[]={0,0,0,0};
+	int lastTapped=-1;
+	long lastTappedTime=-1;
 	int toolbarPressed=-1;
 	int scalePressed=Statics.FARAWAY;
 
@@ -248,12 +250,16 @@ public class TapChordView extends View {
 			rect=Statics.getRectOfStatusBarButton(x,0,width,height,barsShowingRate);
 			canvas.drawOval(rect, paint);
 
+			if(statusbarFlags[x]>=2)	textPaint.setColor(Statics.getColor(Statics.COLOR_ORANGE,0,darken));
+			else 						textPaint.setColor(Statics.getColor(Statics.COLOR_BLACK,0,darken));
 			str=Statics.TENSIONS[x];
 			if(x==2&&statusbarFlags[3]>0) str="6";
 			if(x==3&&statusbarFlags[2]>0) str="6";
 			w=textPaint.measureText(str);
 			canvas.drawText(str,rect.centerX()-w/2,rect.centerY()-(fontMetrics.ascent+fontMetrics.descent)/2,textPaint);
 		}
+		
+		textPaint.setColor(Statics.getColor(Statics.COLOR_BLACK,0,darken));
 
 		for(x=0;x<3;x++){
 			int d=0;
@@ -398,9 +404,12 @@ public class TapChordView extends View {
 			for(i=0;i<4;i++){
 				rect=Statics.getRectOfStatusBarButton(i,0,width,height,barsShowingRate);
 				if(rect.contains(x, y)){
-					statusbarFlags[i]=1;
+					if(lastTapped==i&&System.currentTimeMillis()-lastTappedTime<500) statusbarFlags[i]=2;
+					else statusbarFlags[i]=1;
 					taps.put(id,Statics.STATUSBAR_BUTTON);
 					if(vibration>0) vib.vibrate(Statics.VIBRATION_LENGTH);
+					lastTapped=i;
+					lastTappedTime=System.currentTimeMillis();
 					return false;
 				}
 			}
@@ -561,7 +570,9 @@ public class TapChordView extends View {
 		case MotionEvent.ACTION_UP:
 			// Log.i("TapChordView","UP Count:"+event.getPointerCount());
 			stop();
-			for(int l=0;l<4;l++) statusbarFlags[l]=0;
+			for(int l=0;l<4;l++){
+				if(statusbarFlags[l]==1) statusbarFlags[l]=0;
+			}
 			if(toolbarPressed>=0) toolbarReleased(toolbarPressed);
 			if(scalePressed!=Statics.FARAWAY) scaleReleased(scalePressed);
 			toolbarPressed=-1;
