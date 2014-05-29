@@ -16,7 +16,6 @@ import android.graphics.RectF;
 import android.os.Handler;
 import android.os.Vibrator;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.util.SparseIntArray;
 import android.view.MotionEvent;
 import android.view.View;
@@ -475,6 +474,7 @@ public class TapChordView extends View {
 			for(i=0;i<4;i++){
 				rect=Statics.getRectOfStatusBarButton(i,0,width,height,barsShowingRate);
 				if(rect.contains(x, y)){
+					if(statusbarFlags[i]>=2&&lastTapped==i) continue;
 					if(vibration>0&&statusbarFlags[i]==0) vib.vibrate(Statics.VIBRATION_LENGTH);
 					statusbarFlags[i]=1;
 				}
