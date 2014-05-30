@@ -85,9 +85,9 @@ public class Statics {
 				b=0x80;
 				break;
 			case COLOR_PASTELGRAY:
-				r=0xF0;
-				g=0xF0;
-				b=0xF0;
+				r=0xF8;
+				g=0xF8;
+				b=0xF8;
 				break;
 			case COLOR_LIGHTGRAY:
 				r=0xE0;

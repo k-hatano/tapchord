@@ -198,7 +198,7 @@ public class TapChordView extends View {
 
 		if(situation==Statics.SITUATION_TRANSPOSE || destination==Statics.SITUATION_TRANSPOSE){
 			paint.setStyle(Style.STROKE);
-			paint.setStrokeWidth(height/128);
+			paint.setStrokeWidth(height/160.0f);
 			for(x=-6;x<=6;x++){
 				int xx=(x+360)%12;
 				for(y=-1;y<=1;y++){
@@ -326,7 +326,7 @@ public class TapChordView extends View {
 				}if(shape.style==Shape.STYLE_CIRCLE){
 					float cx=shape.center.x;
 					float cy=shape.center.y;
-					canvas.drawCircle(cx,cy,(float)(height*(0.3f+(float)(Shape.MAX_LIFETIME-shape.lifetime)/Shape.MAX_LIFETIME)*0.7f),paint);
+					canvas.drawCircle(cx,cy,(float)(height*(0.2f+(float)(Shape.MAX_LIFETIME-shape.lifetime)/Shape.MAX_LIFETIME)*0.8f),paint);
 				}if(shape.style==Shape.STYLE_TRIANGLE){
 					float l=(float)(height*(0.3f+(float)(Shape.MAX_LIFETIME-shape.lifetime)/Shape.MAX_LIFETIME)*0.7f);
 					float ax=shape.center.x+(float)(Math.cos((shape.rad)/360.0*Math.PI*2)*l);
@@ -682,8 +682,8 @@ public class TapChordView extends View {
 			if(situation==Statics.SITUATION_NORMAL){
 				switch(destination){
 				case Statics.SITUATION_TRANSPOSE:
-					scroll=(int)(originalScroll*step/10.0f);
-					barsShowingRate=step/10.0f;
+					scroll=(int)(originalScroll*step/20.0f);
+					barsShowingRate=step/20.0f;
 					break;
 				case Statics.SITUATION_PULLING:
 					break;
@@ -691,13 +691,13 @@ public class TapChordView extends View {
 			}else if(situation==Statics.SITUATION_TRANSPOSE){
 				switch(destination){
 				case Statics.SITUATION_NORMAL:
-					barsShowingRate=(10-step)/10.0f;
+					barsShowingRate=(20-step)/20.0f;
 					break;
 				}
 			}else if(situation==Statics.SITUATION_TRANSPOSING){
 				switch(destination){
 				case Statics.SITUATION_TRANSPOSE:
-					scroll=((scale-destScale)*(height/5)*(10-step)/10);
+					scroll=((scale-destScale)*(height/5)*(20-step)/20);
 					break;
 				}
 			}
@@ -732,18 +732,18 @@ public class TapChordView extends View {
 
 	public void startAnimation(int dest){
 		destination=dest;
-		step=10;
+		step=20;
 	}
 
 	public void startTransposingAnimation(int ds){
 		situation=Statics.SITUATION_TRANSPOSING;
-		step=10;
+		step=20;
 		destScale=ds;
 	}
 
 	public void startPullingAnimation(){
 		situation=Statics.SITUATION_PULLING;
-		step=10;
+		step=20;
 	}
 
 	public int getDarken(){

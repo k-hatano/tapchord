@@ -75,7 +75,7 @@ public class MainActivity extends Activity {
 			TapChordView view=((TapChordView)findViewById(R.id.tapChordView));
 			while(alive){
 				try{
-					Thread.sleep(10);
+					Thread.sleep(5);
 					if(awake) view.heartbeat();
 				}catch(InterruptedException e){
 					die();
