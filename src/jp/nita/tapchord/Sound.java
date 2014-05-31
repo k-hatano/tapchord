@@ -50,11 +50,13 @@ public class Sound {
 		track.stop();
 		track.reloadStaticData();
 		track.setLoopPoints(0,waveLength,-1);
+		track.setStereoVolume(0,0);
 		track.play();
 		lastTrack=track;
 	}
 	
 	public void stop(){
+		track.setStereoVolume(0,0);
 		track.pause();
 		track.stop();
 		track.release();
@@ -89,6 +91,10 @@ public class Sound {
 		default:
 			return Math.sin(2.0*Math.PI*t);
 		}
+	}
+	
+	public void setVolume(float v){
+		track.setStereoVolume(v,v);
 	}
 	
 }

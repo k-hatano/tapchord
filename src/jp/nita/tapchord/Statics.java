@@ -52,6 +52,9 @@ public class Statics {
 	public static final String PREF_SAMPLING_RATE = "sampling_rate";
 	public static final String PREF_WAVEFORM = "waveform";
 	public static final String PREF_SOUND_RANGE = "sound_range";
+	public static final String PREF_ATTACK_TIME = "attack_time";
+	public static final String PREF_DECAY_TIME = "decay_time";
+	public static final String PREF_RELEASE_TIME = "release_time";
 	
 	public static final int VIBRATION_LENGTH = 40;
 	
@@ -491,13 +494,13 @@ public class Statics {
 
 	public static int getValueOfSamplingRate(int i){
 		switch(i){
-		case 0:
+		case -3:
 			return 8000;
-		case 1:
+		case -2:
 			return 16000;
-		case 2:
+		case -1:
 			return 22050;
-		case 3:
+		case 0:
 			return 44100;
 		default:
 			return 0;
@@ -523,8 +526,16 @@ public class Statics {
 		}
 	}
 	
+	public static float getValueOfAttackDecayReleaseTime(int i){
+		return i/1000.0f;
+	}
+	
 	public static String getStringOfSoundRange(int soundRange){
 		return getShortStringOfSoundRange(soundRange)+" - "+getShortStringOfSoundRange(soundRange+11);
+	}
+	
+	public static String getStringOfAttackDecayReleaseTime(int i,Context context){
+		return ""+i/1000.0f+" "+context.getString(R.string.settings_attack_decay_release_time_seconds);
 	}
 	
 	public static String getShortStringOfSoundRange(int soundRange){

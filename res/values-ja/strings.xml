@@ -17,10 +17,14 @@
     <string name="settings_waveform_fourth_pulse_wave">1:3 パルス</string>
     <string name="settings_waveform_eighth_pulse_wave">1:7 パルス</string>
     <string name="settings_sound_range">音域</string>
+    <string name="settings_attack_time">アタックタイム</string>
+    <string name="settings_decay_time">ディケイタイム</string>
+    <string name="settings_release_time">リリースタイム</string>
+    <string name="settings_attack_decay_release_time_seconds">秒</string>
 
     <string name="settings_sampling_rate_hz"> Hz</string>
     <string name="special_thanks">Special Thanks to\nAkiyoshi Kamide</string>
-    <string name="copyright">Version 1.0 (c) Nita</string>
+    <string name="copyright">Version 1.0 © Nita</string>
     <string name="tapchord_settings">tapchord - 設定</string>
     
     <string name="settings_volume">ボリューム</string>

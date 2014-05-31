@@ -20,7 +20,6 @@ import android.util.SparseIntArray;
 import android.view.MotionEvent;
 import android.view.View;
 
-
 public class TapChordView extends View {
 	int width,height,originalX,originalY,originalScroll;
 	int situation,destination,step,scroll,upper,darken,destScale;
@@ -30,6 +29,9 @@ public class TapChordView extends View {
 	int scale=0;
 	int vibration=0;
 	int soundRange=0;
+	int attackTime=0;
+	int decayTime=0;
+	int releaseTime=0;
 	int pulling=0;
 
 	int statusbarFlags[]={0,0,0,0};
@@ -37,9 +39,15 @@ public class TapChordView extends View {
 	long lastTappedTime=-1;
 	int toolbarPressed=-1;
 	int scalePressed=Statics.FARAWAY;
+	int heartBeatInterval=MainActivity.heartBeatInterval;
+	float stepMax=100.0f/heartBeatInterval;
+	int fading;
 
+	float volumeRate;
 	float barsShowingRate=1.0f;
-	
+
+	Object fadingProcess = new Object();
+
 	private Vibrator vib;
 
 	List<Shape> shapes=new ArrayList<Shape>();
@@ -60,6 +68,7 @@ public class TapChordView extends View {
 		scroll=0;
 		upper=0;
 		darken=0;
+		fading=0;
 		vib = (Vibrator)context.getSystemService(Context.VIBRATOR_SERVICE);
 	}
 
@@ -92,13 +101,13 @@ public class TapChordView extends View {
 		rect=new RectF(0,0,width,height);
 		paint.setColor(Statics.getColor(Statics.COLOR_WHITE,0,darken));
 		canvas.drawRect(rect,paint);
-		
+
 		if(situation==Statics.SITUATION_TRANSPOSE||situation==Statics.SITUATION_TRANSPOSING
 				||destination==Statics.SITUATION_TRANSPOSE||destination==Statics.SITUATION_TRANSPOSING){
 			paint.setStyle(Style.FILL);
 			paint.setColor(Statics.getColor(Statics.COLOR_PASTELGRAY,0,darken));
 			canvas.drawRect(Statics.getRectOfToolbar(width, height,1.0f),paint);
-			
+
 			int d;
 			d=0;
 			if(toolbarPressed==0) d=1;
@@ -257,7 +266,7 @@ public class TapChordView extends View {
 			w=textPaint.measureText(str);
 			canvas.drawText(str,rect.centerX()-w/2,rect.centerY()-(fontMetrics.ascent+fontMetrics.descent)/2,textPaint);
 		}
-		
+
 		textPaint.setColor(Statics.getColor(Statics.COLOR_BLACK,0,darken));
 
 		for(x=0;x<3;x++){
@@ -308,7 +317,7 @@ public class TapChordView extends View {
 		paint.setColor(Statics.getColor(Statics.COLOR_DARKGRAY,0,darken));
 		rect=Statics.getRectOfScrollNob(scroll, upper, width, height, barsShowingRate);
 		canvas.drawRect(rect,paint);
-		
+
 		if(darken>0){
 			paint.setStyle(Style.STROKE);
 			paint.setStrokeWidth(height/25);
@@ -318,10 +327,11 @@ public class TapChordView extends View {
 				paint.setAlpha(255*shape.lifetime/Shape.MAX_LIFETIME);
 
 				if(shape.style==Shape.STYLE_LINE){
-					float ax=shape.center.x-(float)(Math.cos(shape.rad)*width);
-					float ay=shape.center.y-(float)(Math.sin(shape.rad)*width);
-					float bx=shape.center.x+(float)(Math.cos(shape.rad)*width);
-					float by=shape.center.y+(float)(Math.sin(shape.rad)*width);
+					float r=shape.rad;
+					float ax=shape.center.x-(float)(Math.cos(r/360.0*Math.PI*2)*width);
+					float ay=shape.center.y-(float)(Math.sin(r/360.0*Math.PI*2)*width);
+					float bx=shape.center.x+(float)(Math.cos(r/360.0*Math.PI*2)*width);
+					float by=shape.center.y+(float)(Math.sin(r/360.0*Math.PI*2)*width);
 					canvas.drawLine(ax,ay,bx,by,paint);
 				}if(shape.style==Shape.STYLE_CIRCLE){
 					float cx=shape.center.x;
@@ -329,25 +339,27 @@ public class TapChordView extends View {
 					canvas.drawCircle(cx,cy,(float)(height*(0.2f+(float)(Shape.MAX_LIFETIME-shape.lifetime)/Shape.MAX_LIFETIME)*0.8f),paint);
 				}if(shape.style==Shape.STYLE_TRIANGLE){
 					float l=(float)(height*(0.3f+(float)(Shape.MAX_LIFETIME-shape.lifetime)/Shape.MAX_LIFETIME)*0.7f);
-					float ax=shape.center.x+(float)(Math.cos((shape.rad)/360.0*Math.PI*2)*l);
-					float ay=shape.center.y+(float)(Math.sin((shape.rad)/360.0*Math.PI*2)*l);
-					float bx=shape.center.x+(float)(Math.cos((shape.rad+120)/360.0*Math.PI*2)*l);
-					float by=shape.center.y+(float)(Math.sin((shape.rad+120)/360.0*Math.PI*2)*l);
-					float cx=shape.center.x+(float)(Math.cos((shape.rad+240)/360.0*Math.PI*2)*l);
-					float cy=shape.center.y+(float)(Math.sin((shape.rad+240)/360.0*Math.PI*2)*l);
+					float r=((shape.rad*shape.lifetime)+(shape.radDelta*(Shape.MAX_LIFETIME-shape.lifetime)))/Shape.MAX_LIFETIME;
+					float ax=shape.center.x+(float)(Math.cos((r)/360.0*Math.PI*2)*l);
+					float ay=shape.center.y+(float)(Math.sin((r)/360.0*Math.PI*2)*l);
+					float bx=shape.center.x+(float)(Math.cos((r+120)/360.0*Math.PI*2)*l);
+					float by=shape.center.y+(float)(Math.sin((r+120)/360.0*Math.PI*2)*l);
+					float cx=shape.center.x+(float)(Math.cos((r+240)/360.0*Math.PI*2)*l);
+					float cy=shape.center.y+(float)(Math.sin((r+240)/360.0*Math.PI*2)*l);
 					canvas.drawLine(ax,ay,bx,by,paint);
 					canvas.drawLine(bx,by,cx,cy,paint);
 					canvas.drawLine(cx,cy,ax,ay,paint);
 				}if(shape.style==Shape.STYLE_SQUARE){
 					float l=(float)(height*(0.3f+(float)(Shape.MAX_LIFETIME-shape.lifetime)/Shape.MAX_LIFETIME)*0.7f);
-					float ax=shape.center.x+(float)(Math.cos((shape.rad)/360.0*Math.PI*2)*l);
-					float ay=shape.center.y+(float)(Math.sin((shape.rad)/360.0*Math.PI*2)*l);
-					float bx=shape.center.x+(float)(Math.cos((shape.rad+90)/360.0*Math.PI*2)*l);
-					float by=shape.center.y+(float)(Math.sin((shape.rad+90)/360.0*Math.PI*2)*l);
-					float cx=shape.center.x+(float)(Math.cos((shape.rad+180)/360.0*Math.PI*2)*l);
-					float cy=shape.center.y+(float)(Math.sin((shape.rad+180)/360.0*Math.PI*2)*l);
-					float dx=shape.center.x+(float)(Math.cos((shape.rad+270)/360.0*Math.PI*2)*l);
-					float dy=shape.center.y+(float)(Math.sin((shape.rad+270)/360.0*Math.PI*2)*l);
+					float r=((shape.rad*shape.lifetime)+(shape.radDelta*(Shape.MAX_LIFETIME-shape.lifetime)))/Shape.MAX_LIFETIME;
+					float ax=shape.center.x+(float)(Math.cos((r)/360.0*Math.PI*2)*l);
+					float ay=shape.center.y+(float)(Math.sin((r)/360.0*Math.PI*2)*l);
+					float bx=shape.center.x+(float)(Math.cos((r+90)/360.0*Math.PI*2)*l);
+					float by=shape.center.y+(float)(Math.sin((r+90)/360.0*Math.PI*2)*l);
+					float cx=shape.center.x+(float)(Math.cos((r+180)/360.0*Math.PI*2)*l);
+					float cy=shape.center.y+(float)(Math.sin((r+180)/360.0*Math.PI*2)*l);
+					float dx=shape.center.x+(float)(Math.cos((r+270)/360.0*Math.PI*2)*l);
+					float dy=shape.center.y+(float)(Math.sin((r+270)/360.0*Math.PI*2)*l);
 					canvas.drawLine(ax,ay,bx,by,paint);
 					canvas.drawLine(bx,by,cx,cy,paint);
 					canvas.drawLine(cx,cy,dx,dy,paint);
@@ -631,40 +643,27 @@ public class TapChordView extends View {
 	}
 
 	public void play(int x,int y){
-		notesOfChord=Statics.getNotesOfChord(x+scale,y,statusbarFlags);
-		Integer f[]=(Statics.convertNotesToFrequencies(notesOfChord,soundRange));
-		sound=new Sound(f,this.getContext());
-		sound.play();
-		switch(y){
-		case -1:
+		synchronized(fadingProcess){
+			notesOfChord=Statics.getNotesOfChord(x+scale,y,statusbarFlags);
+			Integer f[]=(Statics.convertNotesToFrequencies(notesOfChord,soundRange));
+			sound=new Sound(f,this.getContext());
 			playing=1;
 			playingX=x;
 			playingY=y;
-			break;
-		case 0:
-			playing=1;
-			playingX=x;
-			playingY=y;
-			break;
-		case 1:
-			playing=1;
-			playingX=x;
-			playingY=y;
-			break;
-		default:
-			break;
+			fading=2;
+			volumeRate=0.0f;
+			sound.play();
+			invalidate();
 		}
-		invalidate();
 	}
 
 	public void stop(){
-		if(sound!=null){
-			sound.stop();
-			sound=null;
+		synchronized(fadingProcess){
+			fading=-1;
+			playing=0;
+			notesOfChord=new Integer[0];
+			invalidate();
 		}
-		playing=0;
-		notesOfChord=new Integer[0];
-		invalidate();
 	}
 
 	public void activityPaused(){
@@ -676,14 +675,14 @@ public class TapChordView extends View {
 		invalidate();
 	}
 
-	public void heartbeat(){
+	public void heartbeat(int interval){
 		if(step>0){
 			step--;
 			if(situation==Statics.SITUATION_NORMAL){
 				switch(destination){
 				case Statics.SITUATION_TRANSPOSE:
-					scroll=(int)(originalScroll*step/20.0f);
-					barsShowingRate=step/20.0f;
+					scroll=(int)(originalScroll*step/stepMax);
+					barsShowingRate=step/stepMax;
 					break;
 				case Statics.SITUATION_PULLING:
 					break;
@@ -691,13 +690,13 @@ public class TapChordView extends View {
 			}else if(situation==Statics.SITUATION_TRANSPOSE){
 				switch(destination){
 				case Statics.SITUATION_NORMAL:
-					barsShowingRate=(20-step)/20.0f;
+					barsShowingRate=(stepMax-step)/stepMax;
 					break;
 				}
 			}else if(situation==Statics.SITUATION_TRANSPOSING){
 				switch(destination){
 				case Statics.SITUATION_TRANSPOSE:
-					scroll=((scale-destScale)*(height/5)*(20-step)/20);
+					scroll=(int)((scale-destScale)*(height/5)*(stepMax-step)/stepMax);
 					break;
 				}
 			}
@@ -715,11 +714,47 @@ public class TapChordView extends View {
 		}
 		if(shapes.size()>0){
 			for(int i=shapes.size()-1;i>=0;i--){
-				shapes.get(i).rad+=shapes.get(i).radDelta;
 				shapes.get(i).lifetime--;
 				if(shapes.get(i).lifetime<=0) shapes.remove(i);
 			}
 			handler.post(new Repainter());
+		}
+		if(sound!=null){
+			synchronized(fadingProcess){
+				if(fading==2){
+					if(attackTime==0){
+						if(decayTime==0) volumeRate=0.5f;
+						else volumeRate=1.0f;
+					}else volumeRate+=(float)(interval/1000.0f)/(attackTime/1000.0f);
+					if(volumeRate>=1.0f){
+						volumeRate=1.0f;
+						fading=1;
+					}
+					sound.setVolume(volumeRate);
+				}else if(fading==1){
+					if(decayTime==0) volumeRate=0.5f;
+					else volumeRate-=(float)(interval/1000.0f)/(decayTime/1000.0f);
+					if(volumeRate<=0.5f){
+						volumeRate=0.5f;
+						fading=0;
+					}
+					sound.setVolume(volumeRate);
+				}else if(fading<0){
+					if(releaseTime==0) volumeRate=0.0f;
+					else volumeRate-=(float)(interval/1000.0f)/(releaseTime/100.0f);
+					if(volumeRate<=0.0f){
+						volumeRate=0.0f;
+						fading=0;
+					}
+					sound.setVolume(volumeRate);
+					if(volumeRate<=0.0f){
+						if(sound!=null){
+							sound.stop();
+							sound=null;
+						}
+					}
+				}
+			}
 		}
 	}
 
@@ -732,18 +767,18 @@ public class TapChordView extends View {
 
 	public void startAnimation(int dest){
 		destination=dest;
-		step=20;
+		step=(int)stepMax;
 	}
 
 	public void startTransposingAnimation(int ds){
 		situation=Statics.SITUATION_TRANSPOSING;
-		step=20;
+		step=(int)stepMax;
 		destScale=ds;
 	}
 
 	public void startPullingAnimation(){
 		situation=Statics.SITUATION_PULLING;
-		step=20;
+		step=(int)stepMax;
 	}
 
 	public int getDarken(){
@@ -765,5 +800,10 @@ public class TapChordView extends View {
 		darken=Statics.getPreferenceValue(this.getContext(),Statics.PREF_DARKEN,0);
 		soundRange=Statics.getPreferenceValue(this.getContext(),Statics.PREF_SOUND_RANGE,0);
 		vibration=Statics.getPreferenceValue(this.getContext(),Statics.PREF_VIBRATION,0);
+		attackTime=Statics.getPreferenceValue(this.getContext(),Statics.PREF_ATTACK_TIME,0);
+		decayTime=Statics.getPreferenceValue(this.getContext(),Statics.PREF_DECAY_TIME,0);
+		releaseTime=Statics.getPreferenceValue(this.getContext(),Statics.PREF_RELEASE_TIME,0);
 	}
+
+
 }

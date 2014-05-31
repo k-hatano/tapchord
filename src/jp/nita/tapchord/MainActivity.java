@@ -10,6 +10,8 @@ import android.view.MenuItem;
 
 public class MainActivity extends Activity {
 	
+	public static int heartBeatInterval=1;
+	
 	private Heart heart=null;
 
 	@Override
@@ -75,8 +77,8 @@ public class MainActivity extends Activity {
 			TapChordView view=((TapChordView)findViewById(R.id.tapChordView));
 			while(alive){
 				try{
-					Thread.sleep(5);
-					if(awake) view.heartbeat();
+					Thread.sleep(heartBeatInterval);
+					if(awake) view.heartbeat(heartBeatInterval);
 				}catch(InterruptedException e){
 					die();
 				}
