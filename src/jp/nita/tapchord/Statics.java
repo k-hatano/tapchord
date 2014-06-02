@@ -230,6 +230,11 @@ public class Statics {
 		
 		return Color.argb(255,r,g,b);
 	}
+	
+	public static RectF getRectOfButtonArea(int width,int height){
+		float vert=height*7/35f;
+		return new RectF(0, vert, width, height-vert);
+	}
 
 	public static RectF getRectOfButton(int x,int y,int width,int height,int scroll){
 		float vert=height*7/35f;

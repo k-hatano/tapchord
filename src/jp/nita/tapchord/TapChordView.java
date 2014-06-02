@@ -440,34 +440,31 @@ public class TapChordView extends View {
 		}
 
 		if(playing<=0){
-			for(j=-7;j<=7;j++){
-				for(i=-1;i<=1;i++){
-					rect=Statics.getRectOfButton(j,i,width,height,scroll);
-					if(rect.contains(x, y)){
-						play(j,i);
-						originalScroll=scroll;
-						tappedX=x;
-						playingID=id;
-						taps.put(playingID,Statics.CHORD_BUTTON);
-						if(vibration>0) vib.vibrate(Statics.VIBRATION_LENGTH);
-						if(darken>0){
-							shapes.add(new Shape(new PointF(x,y)));
+			if(Statics.getRectOfButtonArea(width,height).contains(x, y)){
+				for(j=-7;j<=7;j++){
+					for(i=-1;i<=1;i++){
+						rect=Statics.getRectOfButton(j,i,width,height,scroll);
+						if(rect.contains(x, y)){
+							play(j,i);
+							originalScroll=scroll;
+							tappedX=x;
+							playingID=id;
+							taps.put(playingID,Statics.CHORD_BUTTON);
+							if(vibration>0) vib.vibrate(Statics.VIBRATION_LENGTH);
+							if(darken>0){
+								shapes.add(new Shape(new PointF(x,y)));
+							}
+							return true;
 						}
-						return true;
 					}
 				}
 			}
 		}else{
-			for(j=-7;j<=7;j++){
-				for(i=-1;i<=1;i++){
-					rect=Statics.getRectOfButton(j,i,width,height,scroll);
-					if(rect.contains(x, y)){
-						virtualScroll=originalScroll+(x-tappedX);
-						pulling=1;
-						startPullingAnimation();
-						return true;
-					}
-				}
+			if(Statics.getRectOfButtonArea(width,height).contains(x, y)){
+				virtualScroll=originalScroll+(x-tappedX);
+				pulling=1;
+				startPullingAnimation();
+				return true;
 			}
 		}
 
