@@ -129,7 +129,7 @@ public class TapChordView extends View {
 		}
 
 		delta=scroll/(height/5);
-		for(x=-6-delta;x<=6-delta;x++){
+		for(x=-7-delta;x<=7-delta;x++){
 			int d=0;
 			if(x==scalePressed) d=1;
 			paint.setColor(Statics.getColor(Statics.COLOR_LIGHTGRAY,d,darken));
@@ -158,7 +158,7 @@ public class TapChordView extends View {
 		textPaint.setColor(Statics.getColor(Statics.COLOR_BLACK,0,darken));
 
 		delta=scroll/(height/5);
-		for(x=-6-delta;x<=6-delta;x++){
+		for(x=-7-delta;x<=7-delta;x++){
 			int maj=x+15+scale;
 			if(maj<0) maj+=12;
 			if(maj>=36) maj-=12;
@@ -208,7 +208,7 @@ public class TapChordView extends View {
 		if(situation==Statics.SITUATION_TRANSPOSE || destination==Statics.SITUATION_TRANSPOSE){
 			paint.setStyle(Style.STROKE);
 			paint.setStrokeWidth(height/160.0f);
-			for(x=-6;x<=6;x++){
+			for(x=-7;x<=7;x++){
 				int xx=(x+360)%12;
 				for(y=-1;y<=1;y++){
 					int c=0;
@@ -402,7 +402,7 @@ public class TapChordView extends View {
 		}
 
 		if(situation==Statics.SITUATION_TRANSPOSE){
-			for(i=-6;i<=6;i++){
+			for(i=-7;i<=7;i++){
 				rect=Statics.getRectOfButton(i,-2,width,height,scroll);
 				if(rect.contains(x, y)){
 					scalePressed=i;
@@ -440,7 +440,7 @@ public class TapChordView extends View {
 		}
 
 		if(playing<=0){
-			for(j=-6;j<=6;j++){
+			for(j=-7;j<=7;j++){
 				for(i=-1;i<=1;i++){
 					rect=Statics.getRectOfButton(j,i,width,height,scroll);
 					if(rect.contains(x, y)){
@@ -453,6 +453,18 @@ public class TapChordView extends View {
 						if(darken>0){
 							shapes.add(new Shape(new PointF(x,y)));
 						}
+						return true;
+					}
+				}
+			}
+		}else{
+			for(j=-7;j<=7;j++){
+				for(i=-1;i<=1;i++){
+					rect=Statics.getRectOfButton(j,i,width,height,scroll);
+					if(rect.contains(x, y)){
+						virtualScroll=originalScroll+(x-tappedX);
+						pulling=1;
+						startPullingAnimation();
 						return true;
 					}
 				}

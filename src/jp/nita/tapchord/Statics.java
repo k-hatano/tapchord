@@ -240,21 +240,21 @@ public class Statics {
 
 	public static int getScrollMax(int width,int height){
 		float vert=height/35f;
-		float max=(vert*7)*13;
+		float max=(vert*7)*15;
 		float nob=width;
 		return (int)(max-nob)/2;
 	}
 
 	public static RectF getRectOfScrollBar(int width,int height,float showingRate){
 		float vert=height/35f;
-		float max=(vert*7)*13;
+		float max=(vert*7)*15;
 		float hidingDelta=vert*(1.0f-showingRate)*7;
 		return new RectF(vert*2,vert*30.5f+hidingDelta,vert*2+max/5,vert*32.5f+hidingDelta);
 	}
 
 	public static RectF getRectOfScrollNob(int pos,int upper,int width,int height,float showingRate){
 		float vert=height/35f;
-		float max=(vert*7)*13;
+		float max=(vert*7)*15;
 		float nob=width/5;
 		float x=vert*2+max/10-pos/5;
 		float hidingDelta=vert*(1.0f-showingRate)*7;

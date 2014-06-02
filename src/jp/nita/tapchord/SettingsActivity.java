@@ -92,7 +92,7 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 			map.put("key", getString(R.string.settings_volume));
 			map.put("value", ""+Statics.getValueOfVolume(volume));
 			list.add(map);
-			
+
 			map=new HashMap<String,String>();
 			map.put("key", getString(R.string.settings_sound_range));
 			map.put("value", ""+Statics.getStringOfSoundRange(soundRange));
@@ -102,17 +102,17 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 			map.put("key", getString(R.string.settings_waveform));
 			map.put("value", Statics.getValueOfWaveform(waveform,this));
 			list.add(map);
-			
+
 			map=new HashMap<String,String>();
 			map.put("key", getString(R.string.settings_attack_time));
 			map.put("value", ""+Statics.getStringOfAttackDecayReleaseTime(attackTime,this));
 			list.add(map);
-			
+
 			map=new HashMap<String,String>();
 			map.put("key", getString(R.string.settings_decay_time));
 			map.put("value", ""+Statics.getStringOfAttackDecayReleaseTime(decayTime,this));
 			list.add(map);
-			
+
 			map=new HashMap<String,String>();
 			map.put("key", getString(R.string.settings_release_time));
 			map.put("value", ""+Statics.getStringOfAttackDecayReleaseTime(releaseTime,this));
@@ -607,28 +607,28 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 		getPreferenceValues();
 		updateSettingsListView();
 	}
-	
+
 	public void setSoundRange(int sr){
 		soundRange=sr;
 		Statics.setPreferenceValue(this,Statics.PREF_SOUND_RANGE,sr);
 		getPreferenceValues();
 		updateSettingsListView();
 	}
-	
+
 	public void setAttackTime(int at){
 		attackTime=at;
 		Statics.setPreferenceValue(this,Statics.PREF_ATTACK_TIME,at);
 		getPreferenceValues();
 		updateSettingsListView();
 	}
-	
+
 	public void setDecayTime(int dt){
 		decayTime=dt;
 		Statics.setPreferenceValue(this,Statics.PREF_DECAY_TIME,dt);
 		getPreferenceValues();
 		updateSettingsListView();
 	}
-	
+
 	public void setReleaseTime(int rt){
 		releaseTime=rt;
 		Statics.setPreferenceValue(this,Statics.PREF_RELEASE_TIME,rt);
