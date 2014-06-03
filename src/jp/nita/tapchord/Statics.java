@@ -2,11 +2,13 @@ package jp.nita.tapchord;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import android.content.SharedPreferences.Editor;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.graphics.Point;
 import android.graphics.RectF;
 
 public class Statics {
@@ -60,9 +62,12 @@ public class Statics {
 	
 	public static final String NOTES_C2B[] = {"C","C#","D","D#","E","F","F#","G","G#","A","A#","B"};
 	
-	public static String NOTES_5TH[]={"Fbb","Cbb","Gbb","Dbb","Abb","Ebb","Bbb","Fb","Cb","Gb","Db","Ab","Eb","Bb","F",
-		"C","G","D","A","E","B","F#","C#","G#","D#","A#","E#",
-		"B#","F#","Cx","Gx","Dx","Ax","Ex","Gx","Fx"};
+	public static String NOTES_5TH[]={
+		"Fbb","Cbb","Gbb","Dbb","Abb","Ebb","Bbb",
+		"Fb","Cb","Gb","Db","Ab","Eb","Bb",
+		"F","C","G","D","A","E","B",
+		"F#","C#","G#","D#","A#","E#","B#",
+		"Fx","Cx","Gx","Dx","Ax","Ex","Bx"};
 
 	public static String SCALES[]={"b7","b6","b5","b4","b3","b2","b1","#b0","#1","#2","#3","#4","#5","#6","#7"};
 
@@ -241,6 +246,13 @@ public class Statics {
 		float pX=width/2+x*vert;
 		float pY=height/2+y*vert;
 		return new RectF(pX-vert/2+vert/14+scroll, pY-vert/2+vert/14, pX+vert/2-vert/14+scroll, pY+vert/2-vert/14);
+	}
+	
+	public static Point getXYOfButton(int x,int y,int width,int height,int scroll){
+		int vert=(int)(height*7/35f);
+		int resX = (int)Math.floor((float)(x-width/2+scroll)/vert+0.5);
+		int resY = (int)Math.floor((float)(y-height/2)/vert+0.5);
+		return new Point(resX,resY);
 	}
 
 	public static int getScrollMax(int width,int height){

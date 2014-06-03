@@ -11,6 +11,7 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Paint.FontMetrics;
 import android.graphics.Paint.Style;
+import android.graphics.Point;
 import android.graphics.PointF;
 import android.graphics.RectF;
 import android.os.Handler;
@@ -371,7 +372,7 @@ public class TapChordView extends View {
 	}
 
 	public boolean actionDown(int x,int y,int id){
-		int i,j;
+		int i;
 		RectF rect;
 
 		if(situation==Statics.SITUATION_TRANSPOSE||situation==Statics.SITUATION_TRANSPOSING){
@@ -441,22 +442,18 @@ public class TapChordView extends View {
 
 		if(playing<=0){
 			if(Statics.getRectOfButtonArea(width,height).contains(x, y)){
-				for(j=-7;j<=7;j++){
-					for(i=-1;i<=1;i++){
-						rect=Statics.getRectOfButton(j,i,width,height,scroll);
-						if(rect.contains(x, y)){
-							play(j,i);
-							originalScroll=scroll;
-							tappedX=x;
-							playingID=id;
-							taps.put(playingID,Statics.CHORD_BUTTON);
-							if(vibration>0) vib.vibrate(Statics.VIBRATION_LENGTH);
-							if(darken>0){
-								shapes.add(new Shape(new PointF(x,y)));
-							}
-							return true;
-						}
+				Point buttonXY=Statics.getXYOfButton(x,y,width,height,scroll);
+				if(buttonXY.y>=-1&&buttonXY.y<=1){
+					play(buttonXY.x,buttonXY.y);
+					originalScroll=scroll;
+					tappedX=x;
+					playingID=id;
+					taps.put(playingID,Statics.CHORD_BUTTON);
+					if(vibration>0) vib.vibrate(Statics.VIBRATION_LENGTH);
+					if(darken>0){
+						shapes.add(new Shape(new PointF(x,y)));
 					}
+					return true;
 				}
 			}
 		}else{
