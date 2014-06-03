@@ -67,7 +67,8 @@ public class Statics {
 		"Fb","Cb","Gb","Db","Ab","Eb","Bb",
 		"F","C","G","D","A","E","B",
 		"F#","C#","G#","D#","A#","E#","B#",
-		"Fx","Cx","Gx","Dx","Ax","Ex","Bx"};
+		"Fx","Cx","Gx","Dx","Ax","Ex","Bx",
+		"F#x"};
 
 	public static String SCALES[]={"b7","b6","b5","b4","b3","b2","b1","#b0","#1","#2","#3","#4","#5","#6","#7"};
 
@@ -250,7 +251,7 @@ public class Statics {
 	
 	public static Point getXYOfButton(int x,int y,int width,int height,int scroll){
 		int vert=(int)(height*7/35f);
-		int resX = (int)Math.floor((float)(x-width/2+scroll)/vert+0.5);
+		int resX = (int)Math.floor((float)(x-width/2-scroll)/vert+0.5);
 		int resY = (int)Math.floor((float)(y-height/2)/vert+0.5);
 		return new Point(resX,resY);
 	}

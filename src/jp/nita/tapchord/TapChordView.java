@@ -433,7 +433,13 @@ public class TapChordView extends View {
 				if(vibration>0) vib.vibrate(Statics.VIBRATION_LENGTH);
 				return false;
 			}else if(Statics.getRectOfToolbar(width,height,1.0f).contains(x,y)){
-				scroll=0;
+				if(scroll==0){
+					for(i=0;i<4;i++){
+						if(statusbarFlags[i]>=2) statusbarFlags[i]=0;
+					}
+				}else{
+					scroll=0;
+				}
 				taps.put(id,Statics.SCROLL_BAR);
 				if(vibration>0) vib.vibrate(Statics.VIBRATION_LENGTH);
 				return false;
