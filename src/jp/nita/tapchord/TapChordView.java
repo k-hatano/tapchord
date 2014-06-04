@@ -24,7 +24,7 @@ import android.view.View;
 public class TapChordView extends View {
 	int width,height,originalX,originalY,originalScroll;
 	int situation,destination,step,scroll,upper,darken,destScale;
-	int playing,playingX,playingY,tappedX,virtualScroll;
+	int playing,playingX,playingY,tappedX,destinationScroll;
 	int playingID;
 
 	int scale=0;
@@ -279,7 +279,8 @@ public class TapChordView extends View {
 
 			switch(x){
 			case 0:
-				str=getContext().getString(R.string.action_settings);
+				if(pulling>0) str=""+scroll+" "+destinationScroll;
+				else str=getContext().getString(R.string.action_settings);
 				break;
 			case 1:
 				str=getContext().getString(R.string.darken);
@@ -464,7 +465,7 @@ public class TapChordView extends View {
 			}
 		}else{
 			if(Statics.getRectOfButtonArea(width,height).contains(x, y)){
-				virtualScroll=originalScroll+(x-tappedX);
+				destinationScroll=originalScroll+(x-tappedX);
 				pulling=1;
 				startPullingAnimation();
 				return true;
@@ -539,12 +540,10 @@ public class TapChordView extends View {
 						if(scroll<-Statics.getScrollMax(width,height)) scroll=-Statics.getScrollMax(width,height);
 						if(scroll>Statics.getScrollMax(width,height)) scroll=Statics.getScrollMax(width,height);
 					}else if(pulling==1){
-						virtualScroll=originalScroll+(x-tappedX);
-						scroll=(virtualScroll+scroll)/2;
-						if(scroll<-Statics.getScrollMax(width,height)) scroll=-Statics.getScrollMax(width,height);
-						if(scroll>Statics.getScrollMax(width,height)) scroll=Statics.getScrollMax(width,height);
+						destinationScroll=originalScroll+(x-tappedX);
 					}else if(Math.abs(x-tappedX)>height/5){
-						virtualScroll=originalScroll+(x-tappedX);
+						originalScroll=scroll;
+						destinationScroll=originalScroll+(x-tappedX);
 						pulling=1;
 						startPullingAnimation();
 					}
@@ -719,7 +718,14 @@ public class TapChordView extends View {
 				}
 				situation=destination;
 			}
-			if(step==0&&pulling==1){
+			handler.post(new Repainter());
+		}
+		if(pulling==1){
+			scroll=(destinationScroll+scroll)/2;
+			if(scroll<-Statics.getScrollMax(width,height)) scroll=-Statics.getScrollMax(width,height);
+			if(scroll>Statics.getScrollMax(width,height)) scroll=Statics.getScrollMax(width,height);
+			if(Math.abs(destinationScroll-scroll)<=3){
+				scroll=destinationScroll;
 				pulling=2;
 			}
 			handler.post(new Repainter());

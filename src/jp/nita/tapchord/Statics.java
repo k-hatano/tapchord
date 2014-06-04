@@ -255,6 +255,20 @@ public class Statics {
 		int resY = (int)Math.floor((float)(y-height/2)/vert+0.5);
 		return new Point(resX,resY);
 	}
+	
+	public static Point getTopLeftOfButton(int x,int y,int width,int height,int scroll){
+		int vert=(int)(height*7/35f);
+		int resL = x/vert;
+		int resT = y/vert;
+		return new Point(resL,resT);
+	}
+	
+	public static Point getBottomRightButton(int x,int y,int width,int height,int scroll){
+		int vert=(int)(height*7/35f);
+		int resB = (width-x)/vert;
+		int resR = (height-y)/vert;
+		return new Point(resB,resR);
+	}
 
 	public static int getScrollMax(int width,int height){
 		float vert=height/35f;
