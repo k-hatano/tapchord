@@ -507,7 +507,7 @@ public class Statics {
 	}
 	
 	public static int getValueOfVolume(int i){
-		return i+40;
+		return i+50;
 	}
 
 	public static int getValueOfSamplingRate(int i){
@@ -552,8 +552,10 @@ public class Statics {
 		return getShortStringOfSoundRange(soundRange)+" - "+getShortStringOfSoundRange(soundRange+11);
 	}
 	
-	public static String getStringOfAttackDecayReleaseTime(int i,Context context){
-		return ""+i/1000.0f+" "+context.getString(R.string.settings_attack_decay_release_time_seconds);
+	public static String getStringOfAttackDecayReleaseTime(int a,int d,int r,Context context){
+		return ""+a/1000.0f+context.getString(R.string.settings_attack_decay_release_time_seconds)+" - "
+				+d/1000.0f+context.getString(R.string.settings_attack_decay_release_time_seconds)+" - "
+				+r/1000.0f+context.getString(R.string.settings_attack_decay_release_time_seconds);
 	}
 	
 	public static String getShortStringOfSoundRange(int soundRange){
