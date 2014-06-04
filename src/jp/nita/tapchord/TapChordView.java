@@ -545,6 +545,7 @@ public class TapChordView extends View {
 						originalScroll=scroll;
 						destinationScroll=originalScroll+(x-tappedX);
 						pulling=1;
+						step=100/heartBeatInterval;
 						startPullingAnimation();
 					}
 				}
@@ -721,13 +722,10 @@ public class TapChordView extends View {
 			handler.post(new Repainter());
 		}
 		if(pulling==1){
-			scroll=(destinationScroll+scroll)/2;
+			int max=100/heartBeatInterval;
+			scroll=(destinationScroll*(max-step)+scroll*step)/max;
 			if(scroll<-Statics.getScrollMax(width,height)) scroll=-Statics.getScrollMax(width,height);
 			if(scroll>Statics.getScrollMax(width,height)) scroll=Statics.getScrollMax(width,height);
-			if(Math.abs(destinationScroll-scroll)<=3){
-				scroll=destinationScroll;
-				pulling=2;
-			}
 			handler.post(new Repainter());
 		}
 		if(shapes.size()>0){
