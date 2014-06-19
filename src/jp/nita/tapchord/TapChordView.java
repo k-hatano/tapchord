@@ -275,8 +275,7 @@ public class TapChordView extends View {
 
 			switch(x){
 			case 0:
-				if(pulling>0) str=""+scroll+" "+destinationScroll;
-				else str=getContext().getString(R.string.action_settings);
+				str=getContext().getString(R.string.action_settings);
 				break;
 			case 1:
 				str=getContext().getString(R.string.darken);

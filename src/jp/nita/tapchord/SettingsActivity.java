@@ -13,15 +13,20 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup.LayoutParams;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.SimpleAdapter;
+import android.widget.TableLayout;
+import android.widget.TableRow;
 import android.widget.TextView;
 
 public class SettingsActivity extends Activity implements OnClickListener,OnItemClickListener {
@@ -430,12 +435,40 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 				@Override
 				public void onStopTrackingTouch(SeekBar seekBar) {}
 			});
-			final LinearLayout layout = new LinearLayout(this);
-			layout.setOrientation(LinearLayout.VERTICAL);
-			layout.addView(timeView);
-			layout.addView(attackSeekBar);
-			layout.addView(decaySeekBar);
-			layout.addView(releaseSeekBar);
+			final TableLayout layout = new TableLayout(this);
+			TableRow row1=new TableRow(SettingsActivity.this);
+			row1.addView(timeView);
+			layout.addView(row1);
+			TableRow row2=new TableRow(SettingsActivity.this);
+			TextView attackLabel = new TextView(this);
+			attackLabel.setText(getString(R.string.settings_attack));
+			attackLabel.setTextAppearance(this,android.R.style.TextAppearance_Inverse);
+			row2.addView(attackLabel);
+			row2.addView(attackSeekBar);
+			layout.addView(row2);
+			TableRow row3=new TableRow(SettingsActivity.this);
+			TextView decayLabel = new TextView(this);
+			decayLabel.setText(getString(R.string.settings_decay));
+			decayLabel.setTextAppearance(this,android.R.style.TextAppearance_Inverse);
+			row3.addView(decayLabel);
+			row3.addView(decaySeekBar);
+			layout.addView(row3);
+			TableRow row4=new TableRow(SettingsActivity.this);
+			TextView releaseLabel = new TextView(this);
+			releaseLabel.setText(getString(R.string.settings_release));
+			releaseLabel.setTextAppearance(this,android.R.style.TextAppearance_Inverse);
+			row4.addView(releaseLabel);
+			layout.addView(row4);
+			row4.addView(releaseSeekBar);
+			
+			TableRow.LayoutParams timeViewParams=(TableRow.LayoutParams)timeView.getLayoutParams();
+			timeViewParams.span = 2;
+			timeView.setLayoutParams(timeViewParams);
+			FrameLayout.LayoutParams layoutParams=(FrameLayout.LayoutParams)layout.getLayoutParams();
+			layoutParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT,ViewGroup.LayoutParams.FILL_PARENT);
+			layout.setLayoutParams(layoutParams);
+			layout.setStretchAllColumns(true);
+			
 			layout.setPadding(8,8,8,8);
 			new AlertDialog.Builder(SettingsActivity.this)
 			.setTitle(getString(R.string.settings_envelope))
