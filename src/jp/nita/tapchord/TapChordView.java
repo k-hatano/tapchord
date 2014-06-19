@@ -662,6 +662,10 @@ public class TapChordView extends View {
 	}
 
 	public void stop(){
+		if(sound!=null){
+			sound.stop();
+			sound=null;
+		}
 		playing=0;
 		notesOfChord=new Integer[0];
 		invalidate();
