@@ -42,12 +42,9 @@ public class TapChordView extends View {
 	int scalePressed=Statics.FARAWAY;
 	int heartBeatInterval=MainActivity.heartBeatInterval;
 	float stepMax=100.0f/heartBeatInterval;
-	int fading;
 
 	float volumeRate;
 	float barsShowingRate=1.0f;
-
-	Object fadingProcess = new Object();
 
 	private Vibrator vib;
 
@@ -69,7 +66,6 @@ public class TapChordView extends View {
 		scroll=0;
 		upper=0;
 		darken=0;
-		fading=0;
 		vib = (Vibrator)context.getSystemService(Context.VIBRATOR_SERVICE);
 	}
 
@@ -655,27 +651,21 @@ public class TapChordView extends View {
 	}
 
 	public void play(int x,int y){
-		synchronized(fadingProcess){
-			notesOfChord=Statics.getNotesOfChord(x+scale,y,statusbarFlags);
-			Integer f[]=(Statics.convertNotesToFrequencies(notesOfChord,soundRange));
-			sound=new Sound(f,this.getContext());
-			playing=1;
-			playingX=x;
-			playingY=y;
-			fading=2;
-			volumeRate=0.0f;
-			sound.play();
-			invalidate();
-		}
+		notesOfChord=Statics.getNotesOfChord(x+scale,y,statusbarFlags);
+		Integer f[]=(Statics.convertNotesToFrequencies(notesOfChord,soundRange));
+		sound=new Sound(f,this.getContext());
+		playing=1;
+		playingX=x;
+		playingY=y;
+		volumeRate=1.0f;
+		sound.play();
+		invalidate();
 	}
 
 	public void stop(){
-		synchronized(fadingProcess){
-			fading=-1;
-			playing=0;
-			notesOfChord=new Integer[0];
-			invalidate();
-		}
+		playing=0;
+		notesOfChord=new Integer[0];
+		invalidate();
 	}
 
 	public void activityPaused(){
@@ -734,43 +724,6 @@ public class TapChordView extends View {
 				if(shapes.get(i).lifetime<=0) shapes.remove(i);
 			}
 			handler.post(new Repainter());
-		}
-		if(sound!=null){
-			synchronized(fadingProcess){
-				if(fading==2){
-					if(attackTime==0){
-						if(decayTime==0) volumeRate=0.5f;
-						else volumeRate=1.0f;
-					}else volumeRate+=(float)(interval/1000.0f)/(attackTime/1000.0f);
-					if(volumeRate>=1.0f){
-						volumeRate=1.0f;
-						fading=1;
-					}
-					sound.setVolume(volumeRate);
-				}else if(fading==1){
-					if(decayTime==0) volumeRate=0.5f;
-					else volumeRate-=(float)(interval/1000.0f)/(decayTime/1000.0f);
-					if(volumeRate<=0.5f){
-						volumeRate=0.5f;
-						fading=0;
-					}
-					sound.setVolume(volumeRate);
-				}else if(fading<0){
-					if(releaseTime==0) volumeRate=0.0f;
-					else volumeRate-=(float)(interval/1000.0f)/(releaseTime/100.0f);
-					if(volumeRate<=0.0f){
-						volumeRate=0.0f;
-						fading=0;
-					}
-					sound.setVolume(volumeRate);
-					if(volumeRate<=0.0f){
-						if(sound!=null){
-							sound.stop();
-							sound=null;
-						}
-					}
-				}
-			}
 		}
 	}
 

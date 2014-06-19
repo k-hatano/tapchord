@@ -69,8 +69,6 @@ public class Sound {
 		if(lastTrack!=null) lastTrack.release();
 		track.stop();
 		track.reloadStaticData();
-		track.setLoopPoints(0,waveLength,-1);
-		track.setStereoVolume(0,0);
 		track.play();
 		lastTrack=track;
 	}
