@@ -12,6 +12,10 @@ public class Sound {
 	int waveform;
 	int waveLength;
 	int soundRange;
+	
+	int attack=0;
+	int decay=0;
+	int release=0;
 	static AudioTrack lastTrack=null;
 	
 	public Sound(Integer[] freqs,Context context){
@@ -20,6 +24,16 @@ public class Sound {
 		sampleRate=Statics.getValueOfSamplingRate(Statics.getPreferenceValue(context,Statics.PREF_SAMPLING_RATE,0));
 		waveform=Statics.getPreferenceValue(context,Statics.PREF_WAVEFORM,0);
 		
+		attack=Statics.getPreferenceValue(context,Statics.PREF_ATTACK_TIME,0);
+		decay=Statics.getPreferenceValue(context,Statics.PREF_DECAY_TIME,0);
+		release=Statics.getPreferenceValue(context,Statics.PREF_RELEASE_TIME,0);
+		
+		int attackLength=attack*sampleRate/1000;
+		// int decayLength=decay*sampleRate/1000;
+		int sustainLength=sampleRate;
+		int releaseLength=release*sampleRate/1000;
+		int length=attackLength+sustainLength+releaseLength;
+		
 		track = new AudioTrack(AudioManager.STREAM_MUSIC,
 				sampleRate,
 				AudioFormat.CHANNEL_CONFIGURATION_MONO,
@@ -27,8 +41,8 @@ public class Sound {
 		        sampleRate*2,
 		        AudioTrack.MODE_STATIC);
 		
-		short[] wave=new short[sampleRate];
-		for(int i=0;i<sampleRate;i++){
+		short[] wave=new short[length];
+		for(int i=0;i<length;i++){
 			double ss=0;
 			double t=(double)i/sampleRate;
 			for(int j=0;j<freqs.length;j++){
@@ -38,11 +52,17 @@ public class Sound {
 			double sss=(Short.MAX_VALUE*ss*volume/400.0);
 			if(sss>=Short.MAX_VALUE) sss=(double)Short.MAX_VALUE;
 			if(sss<=-Short.MAX_VALUE) sss=(double)(-Short.MAX_VALUE);
+			if(i<attackLength){
+				sss=(sss*i/attackLength);
+			}
+			if(i>attackLength+sustainLength){
+				sss=(sss*(length-i)/(releaseLength));
+			}
 			wave[i]=(short)sss;
 		}
 		track.write(wave,0,wave.length);
 		waveLength=wave.length;
-		track.setLoopPoints(0,waveLength-1,-1);
+		track.setLoopPoints(attackLength,attackLength+sustainLength-1,-1);
 	}
 	
 	public void play(){
