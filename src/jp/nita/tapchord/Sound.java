@@ -16,6 +16,12 @@ public class Sound {
 	int attack=0;
 	int decay=0;
 	int release=0;
+	
+	int attackLength;
+	int sustainLength;
+	int releaseLength;
+	int length;
+	
 	static AudioTrack lastTrack=null;
 	
 	public Sound(Integer[] freqs,Context context){
@@ -28,11 +34,11 @@ public class Sound {
 		decay=Statics.getPreferenceValue(context,Statics.PREF_DECAY_TIME,0);
 		release=Statics.getPreferenceValue(context,Statics.PREF_RELEASE_TIME,0);
 		
-		int attackLength=attack*sampleRate/1000;
+		attackLength=attack*sampleRate/1000;
 		// int decayLength=decay*sampleRate/1000;
-		int sustainLength=sampleRate;
-		int releaseLength=release*sampleRate/1000;
-		int length=attackLength+sustainLength+releaseLength;
+		sustainLength=sampleRate;
+		releaseLength=release*sampleRate/1000;
+		length=attackLength+sustainLength+releaseLength;
 		
 		track = new AudioTrack(AudioManager.STREAM_MUSIC,
 				sampleRate,
@@ -63,6 +69,21 @@ public class Sound {
 		track.write(wave,0,wave.length);
 		waveLength=wave.length;
 		track.setLoopPoints(attackLength,attackLength+sustainLength-1,-1);
+		
+		track.setPlaybackPositionUpdateListener(new AudioTrack.OnPlaybackPositionUpdateListener(){
+			@Override
+			public void onMarkerReached(AudioTrack track) {
+				// TODO Auto-generated method stub
+				
+			}
+			@Override
+			public void onPeriodicNotification(AudioTrack track) {
+				if(track.getPlayState()==AudioTrack.PLAYSTATE_PLAYING){
+					track.stop();
+				}
+			}
+		});
+		track.setNotificationMarkerPosition(length-1);
 	}
 	
 	public void play(){
@@ -74,6 +95,14 @@ public class Sound {
 	}
 	
 	public void stop(){
+		track.setStereoVolume(0,0);
+		track.pause();
+		track.stop();
+		track.release();
+		lastTrack=null;
+	}
+	
+	public void release(){
 		track.setStereoVolume(0,0);
 		track.pause();
 		track.stop();
