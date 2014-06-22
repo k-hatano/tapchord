@@ -395,6 +395,7 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 			final SeekBar releaseSeekBar = new SeekBar(this);
 			attackSeekBar.setProgress(attackTime);
 			attackSeekBar.setMax(100);
+			attackSeekBar.setPadding(0,0,0,4);
 			attackSeekBar.setOnSeekBarChangeListener(new OnSeekBarChangeListener(){
 				@Override
 				public void onProgressChanged(SeekBar seekBar, int progress,
@@ -409,6 +410,7 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 			});
 			decaySeekBar.setProgress(decayTime);
 			decaySeekBar.setMax(100);
+			decaySeekBar.setPadding(0,0,0,4);
 			decaySeekBar.setOnSeekBarChangeListener(new OnSeekBarChangeListener(){
 				@Override
 				public void onProgressChanged(SeekBar seekBar, int progress,
@@ -423,6 +425,7 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 			});
 			releaseSeekBar.setProgress(releaseTime);
 			releaseSeekBar.setMax(100);
+			releaseSeekBar.setPadding(0,0,0,4);
 			releaseSeekBar.setOnSeekBarChangeListener(new OnSeekBarChangeListener(){
 				@Override
 				public void onProgressChanged(SeekBar seekBar, int progress,

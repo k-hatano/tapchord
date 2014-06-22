@@ -10,7 +10,7 @@ import android.view.MenuItem;
 
 public class MainActivity extends Activity {
 	
-	public static int heartBeatInterval=1;
+	public static int heartBeatInterval=5;
 	
 	private Heart heart=null;
 

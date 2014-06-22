@@ -4,6 +4,7 @@ import android.content.Context;
 import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioTrack;
+import android.util.Log;
 
 public class Sound {
 	AudioTrack track=null;
@@ -40,12 +41,20 @@ public class Sound {
 		releaseLength=release*sampleRate/1000;
 		length=attackLength+sustainLength+releaseLength;
 		
+		if(lastTrack!=null){
+			lastTrack.setStereoVolume(0,0);
+			lastTrack.pause();
+			lastTrack.stop();
+			lastTrack.release();
+			lastTrack=null;
+		}
 		track = new AudioTrack(AudioManager.STREAM_MUSIC,
 				sampleRate,
 				AudioFormat.CHANNEL_CONFIGURATION_MONO,
 		        AudioFormat.ENCODING_PCM_16BIT,
 		        length*2,
 		        AudioTrack.MODE_STATIC);
+		lastTrack=track;
 		
 		short[] wave=new short[length];
 		for(int i=0;i<length;i++){
@@ -68,42 +77,18 @@ public class Sound {
 		}
 		track.write(wave,0,wave.length);
 		waveLength=wave.length;
-		track.setLoopPoints(attackLength,attackLength+sustainLength-1,-1);
-		
-		track.setPlaybackPositionUpdateListener(new AudioTrack.OnPlaybackPositionUpdateListener(){
-			@Override
-			public void onMarkerReached(AudioTrack track) {
-				// TODO Auto-generated method stub
-				
-			}
-			@Override
-			public void onPeriodicNotification(AudioTrack track) {
-				if(track.getPlayState()==AudioTrack.PLAYSTATE_PLAYING){
-					track.stop();
-				}
-			}
-		});
-		track.setNotificationMarkerPosition(length-1);
+		track.setLoopPoints(attackLength,attackLength+sustainLength,-1);
 	}
 	
 	public void play(){
-		if(lastTrack!=null) lastTrack.release();
-		track.stop();
-		track.reloadStaticData();
 		track.play();
-		lastTrack=track;
 	}
 	
 	public void stop(){
-		track.setStereoVolume(0,0);
-		track.pause();
 		track.stop();
-		track.release();
-		lastTrack=null;
 	}
 	
 	public void release(){
-		track.setStereoVolume(0,0);
 		track.pause();
 		track.stop();
 		track.release();
@@ -138,10 +123,6 @@ public class Sound {
 		default:
 			return Math.sin(2.0*Math.PI*t);
 		}
-	}
-	
-	public void setVolume(float v){
-		track.setStereoVolume(v,v);
 	}
 	
 }
