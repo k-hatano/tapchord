@@ -398,7 +398,7 @@ public class Statics {
 			if(n<soundRange) n+=12;
 			if(n>=soundRange+12) n-=12;
 		}
-		return (int)(f*Math.pow(2,(n-9)/12.0));
+		return (int)Math.round(f*Math.pow(2,(n-9)/12.0));
 	}
 
 	public static Integer[] getNotesOfChord(int x,int y,int[] tensions){
@@ -564,6 +564,10 @@ public class Statics {
 	
 	public static String getStringOfSoundRange(int soundRange){
 		return getShortStringOfSoundRange(soundRange)+" - "+getShortStringOfSoundRange(soundRange+11);
+	}
+	
+	public static String getStringOfSingleTime(int t,Context context){
+		return ""+t/1000.0f+context.getString(R.string.settings_attack_decay_release_time_seconds);
 	}
 	
 	public static String getStringOfAttackDecayReleaseTime(int a,int d,int r,Context context){

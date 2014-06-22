@@ -4,7 +4,6 @@ import android.content.Context;
 import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioTrack;
-import android.util.Log;
 
 public class Sound {
 	AudioTrack track=null;
@@ -13,49 +12,49 @@ public class Sound {
 	int waveform;
 	int waveLength;
 	int soundRange;
-	
+
 	int attack=0;
 	int decay=0;
 	int release=0;
-	
+
 	int attackLength;
 	int sustainLength;
 	int releaseLength;
 	int length;
-	
+
 	static AudioTrack lastTrack=null;
-	
+
 	public Sound(Integer[] freqs,Context context){
 		volume=Statics.getValueOfVolume(Statics.getPreferenceValue(context,Statics.PREF_VOLUME,0));
 		soundRange=Statics.getValueOfVolume(Statics.getPreferenceValue(context,Statics.PREF_SOUND_RANGE,0));
 		sampleRate=Statics.getValueOfSamplingRate(Statics.getPreferenceValue(context,Statics.PREF_SAMPLING_RATE,0));
 		waveform=Statics.getPreferenceValue(context,Statics.PREF_WAVEFORM,0);
-		
+
 		attack=Statics.getPreferenceValue(context,Statics.PREF_ATTACK_TIME,0);
 		decay=Statics.getPreferenceValue(context,Statics.PREF_DECAY_TIME,0);
 		release=Statics.getPreferenceValue(context,Statics.PREF_RELEASE_TIME,0);
-		
+
 		attackLength=attack*sampleRate/1000;
 		// int decayLength=decay*sampleRate/1000;
 		sustainLength=sampleRate;
 		releaseLength=release*sampleRate/1000;
 		length=attackLength+sustainLength+releaseLength;
-		
+
 		if(lastTrack!=null){
-			lastTrack.setStereoVolume(0,0);
 			lastTrack.pause();
 			lastTrack.stop();
 			lastTrack.release();
 			lastTrack=null;
 		}
+
 		track = new AudioTrack(AudioManager.STREAM_MUSIC,
 				sampleRate,
 				AudioFormat.CHANNEL_CONFIGURATION_MONO,
-		        AudioFormat.ENCODING_PCM_16BIT,
-		        length*2,
-		        AudioTrack.MODE_STATIC);
+				AudioFormat.ENCODING_PCM_16BIT,
+				length*2,
+				AudioTrack.MODE_STATIC);
 		lastTrack=track;
-		
+
 		short[] wave=new short[length];
 		for(int i=0;i<length;i++){
 			double ss=0;
@@ -78,23 +77,38 @@ public class Sound {
 		track.write(wave,0,wave.length);
 		waveLength=wave.length;
 		track.setLoopPoints(attackLength,attackLength+sustainLength,-1);
+
+		track.setPlaybackPositionUpdateListener(new AudioTrack.OnPlaybackPositionUpdateListener(){
+			@Override
+			public void onMarkerReached(AudioTrack track) {
+				// TODO Auto-generated method stub
+
+			}
+			@Override
+			public void onPeriodicNotification(AudioTrack track) {
+				if(track.getPlayState()==AudioTrack.PLAYSTATE_PLAYING){
+					track.stop();
+				}
+			}
+		});
+		track.setNotificationMarkerPosition(length-1);
 	}
-	
+
 	public void play(){
 		track.play();
 	}
-	
+
 	public void stop(){
 		track.stop();
 	}
-	
+
 	public void release(){
 		track.pause();
 		track.stop();
 		track.release();
 		lastTrack=null;
 	}
-	
+
 	public double wave(double t,int which){
 		switch(which){
 		case 0:
@@ -124,5 +138,5 @@ public class Sound {
 			return Math.sin(2.0*Math.PI*t);
 		}
 	}
-	
+
 }

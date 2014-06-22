@@ -15,7 +15,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.View.OnClickListener;
-import android.view.ViewGroup.LayoutParams;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
@@ -384,15 +383,12 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 			break;
 		}
 		case 6:{
-			final TextView timeView = new TextView(this);
-			int tmpAttackTime=attackTime;
-			int tmpDecayTime=decayTime;
-			int tmpReleaseTime=releaseTime;
-			timeView.setText(""+Statics.getStringOfAttackDecayReleaseTime(tmpAttackTime,tmpDecayTime,tmpReleaseTime,this));
-			timeView.setTextAppearance(this,android.R.style.TextAppearance_Inverse);
 			final SeekBar attackSeekBar = new SeekBar(this);
 			final SeekBar decaySeekBar = new SeekBar(this);
 			final SeekBar releaseSeekBar = new SeekBar(this);
+			final TextView attackLabel = new TextView(this);
+			final TextView decayLabel = new TextView(this);
+			final TextView releaseLabel = new TextView(this);
 			attackSeekBar.setProgress(attackTime);
 			attackSeekBar.setMax(100);
 			attackSeekBar.setPadding(0,0,0,4);
@@ -400,8 +396,7 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 				@Override
 				public void onProgressChanged(SeekBar seekBar, int progress,
 						boolean fromUser) {
-					timeView.setText(""+Statics.getStringOfAttackDecayReleaseTime(
-							attackSeekBar.getProgress(),decaySeekBar.getProgress(),releaseSeekBar.getProgress(),SettingsActivity.this));
+					attackLabel.setText(getString(R.string.settings_attack)+" : "+Statics.getStringOfSingleTime(progress,SettingsActivity.this));
 				}
 				@Override
 				public void onStartTrackingTouch(SeekBar seekBar) {}
@@ -415,8 +410,7 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 				@Override
 				public void onProgressChanged(SeekBar seekBar, int progress,
 						boolean fromUser) {
-					timeView.setText(""+Statics.getStringOfAttackDecayReleaseTime(
-							attackSeekBar.getProgress(),decaySeekBar.getProgress(),releaseSeekBar.getProgress(),SettingsActivity.this));
+					decayLabel.setText(getString(R.string.settings_decay)+" : "+Statics.getStringOfSingleTime(progress,SettingsActivity.this));
 				}
 				@Override
 				public void onStartTrackingTouch(SeekBar seekBar) {}
@@ -430,8 +424,7 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 				@Override
 				public void onProgressChanged(SeekBar seekBar, int progress,
 						boolean fromUser) {
-					timeView.setText(""+Statics.getStringOfAttackDecayReleaseTime(
-							attackSeekBar.getProgress(),decaySeekBar.getProgress(),releaseSeekBar.getProgress(),SettingsActivity.this));
+					releaseLabel.setText(getString(R.string.settings_release)+" : "+Statics.getStringOfSingleTime(progress,SettingsActivity.this));
 				}
 				@Override
 				public void onStartTrackingTouch(SeekBar seekBar) {}
@@ -440,33 +433,24 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 			});
 			final TableLayout layout = new TableLayout(this);
 			TableRow row1=new TableRow(SettingsActivity.this);
-			row1.addView(timeView);
+			attackLabel.setText(getString(R.string.settings_attack)+" : "+Statics.getStringOfSingleTime(attackTime,SettingsActivity.this));
+			attackLabel.setTextAppearance(this,android.R.style.TextAppearance_Inverse);
+			row1.addView(attackLabel);
+			row1.addView(attackSeekBar);
 			layout.addView(row1);
 			TableRow row2=new TableRow(SettingsActivity.this);
-			TextView attackLabel = new TextView(this);
-			attackLabel.setText(getString(R.string.settings_attack));
-			attackLabel.setTextAppearance(this,android.R.style.TextAppearance_Inverse);
-			row2.addView(attackLabel);
-			row2.addView(attackSeekBar);
-			layout.addView(row2);
-			TableRow row3=new TableRow(SettingsActivity.this);
-			TextView decayLabel = new TextView(this);
-			decayLabel.setText(getString(R.string.settings_decay));
+			decayLabel.setText(getString(R.string.settings_decay)+" : "+Statics.getStringOfSingleTime(decayTime,SettingsActivity.this));
 			decayLabel.setTextAppearance(this,android.R.style.TextAppearance_Inverse);
-			row3.addView(decayLabel);
-			row3.addView(decaySeekBar);
-			layout.addView(row3);
+			row2.addView(decayLabel);
+			row2.addView(decaySeekBar);
+			layout.addView(row2);
 			TableRow row4=new TableRow(SettingsActivity.this);
-			TextView releaseLabel = new TextView(this);
-			releaseLabel.setText(getString(R.string.settings_release));
+			releaseLabel.setText(getString(R.string.settings_release)+" : "+Statics.getStringOfSingleTime(releaseTime,SettingsActivity.this));
 			releaseLabel.setTextAppearance(this,android.R.style.TextAppearance_Inverse);
 			row4.addView(releaseLabel);
 			layout.addView(row4);
 			row4.addView(releaseSeekBar);
 			
-			TableRow.LayoutParams timeViewParams=(TableRow.LayoutParams)timeView.getLayoutParams();
-			timeViewParams.span = 2;
-			timeView.setLayoutParams(timeViewParams);
 			FrameLayout.LayoutParams layoutParams=(FrameLayout.LayoutParams)layout.getLayoutParams();
 			layoutParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT,ViewGroup.LayoutParams.FILL_PARENT);
 			layout.setLayoutParams(layoutParams);
