@@ -1,12 +1,17 @@
 package jp.nita.tapchord;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import android.content.Context;
 import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioTrack;
+import android.util.Log;
 
 public class Sound {
-	AudioTrack track=null;
+	static List<AudioTrack> tracks=new ArrayList<AudioTrack>();
+
 	int volume=0;
 	int sampleRate=4000;
 	int waveform;
@@ -16,13 +21,6 @@ public class Sound {
 	int attack=0;
 	int decay=0;
 	int release=0;
-
-	int attackLength;
-	int sustainLength;
-	int releaseLength;
-	int length;
-
-	static AudioTrack lastTrack=null;
 
 	public Sound(Integer[] freqs,Context context){
 		volume=Statics.getValueOfVolume(Statics.getPreferenceValue(context,Statics.PREF_VOLUME,0));
@@ -34,79 +32,72 @@ public class Sound {
 		decay=Statics.getPreferenceValue(context,Statics.PREF_DECAY_TIME,0);
 		release=Statics.getPreferenceValue(context,Statics.PREF_RELEASE_TIME,0);
 
-		attackLength=attack*sampleRate/1000;
-		// int decayLength=decay*sampleRate/1000;
-		sustainLength=sampleRate;
-		releaseLength=release*sampleRate/1000;
-		length=attackLength+sustainLength+releaseLength;
-
-		if(lastTrack!=null){
-			lastTrack.pause();
-			lastTrack.stop();
-			lastTrack.release();
-			lastTrack=null;
+		if(tracks.size()>0){
+			for(int j=0;j<tracks.size();j++){
+				tracks.get(j).pause();
+				tracks.get(j).stop();
+				tracks.get(j).release();
+			}
+			tracks=new ArrayList<AudioTrack>();
 		}
 
-		track = new AudioTrack(AudioManager.STREAM_MUSIC,
-				sampleRate,
-				AudioFormat.CHANNEL_CONFIGURATION_MONO,
-				AudioFormat.ENCODING_PCM_16BIT,
-				length*2,
-				AudioTrack.MODE_STATIC);
-		lastTrack=track;
+		for(int j=0;j<freqs.length;j++){
+			int attackLength=attack*sampleRate/1000;
+			// int decayLength=decay*sampleRate/1000;
+			int sustainLength=sampleRate/freqs[j];
+			int releaseLength=release*sampleRate/1000;
+			int length=attackLength+sustainLength+releaseLength;
 
-		short[] wave=new short[length];
-		for(int i=0;i<length;i++){
-			double ss=0;
-			double t=(double)i/sampleRate;
-			for(int j=0;j<freqs.length;j++){
+			AudioTrack track = new AudioTrack(AudioManager.STREAM_MUSIC,
+					sampleRate,
+					AudioFormat.CHANNEL_CONFIGURATION_MONO,
+					AudioFormat.ENCODING_PCM_16BIT,
+					length*2,
+					AudioTrack.MODE_STATIC);
+
+			short[] wave=new short[length];
+			for(int i=0;i<length;i++){
+				double t=(double)i/sampleRate;
 				double s=wave(t*freqs[j],waveform);
-				ss+=s;
-			}
-			double sss=(Short.MAX_VALUE*ss*volume/400.0);
-			if(sss>=Short.MAX_VALUE) sss=(double)Short.MAX_VALUE;
-			if(sss<=-Short.MAX_VALUE) sss=(double)(-Short.MAX_VALUE);
-			if(i<attackLength){
-				sss=(sss*i/attackLength);
-			}
-			if(i>attackLength+sustainLength){
-				sss=(sss*(length-i)/(releaseLength));
-			}
-			wave[i]=(short)sss;
-		}
-		track.write(wave,0,wave.length);
-		waveLength=wave.length;
-		track.setLoopPoints(attackLength,attackLength+sustainLength,-1);
-
-		track.setPlaybackPositionUpdateListener(new AudioTrack.OnPlaybackPositionUpdateListener(){
-			@Override
-			public void onMarkerReached(AudioTrack track) {
-				// TODO Auto-generated method stub
-
-			}
-			@Override
-			public void onPeriodicNotification(AudioTrack track) {
-				if(track.getPlayState()==AudioTrack.PLAYSTATE_PLAYING){
-					track.stop();
+				double ss=(Short.MAX_VALUE*s*volume/400.0);
+				if(ss>=Short.MAX_VALUE) ss=(double)Short.MAX_VALUE;
+				if(ss<=-Short.MAX_VALUE) ss=(double)(-Short.MAX_VALUE);
+				if(i<attackLength){
+					ss=(ss*i/attackLength);
 				}
+				if(i>attackLength+sustainLength){
+					ss=(ss*(length-i)/(releaseLength));
+				}
+				wave[i]=(short)ss;
 			}
-		});
-		track.setNotificationMarkerPosition(length-1);
+			track.write(wave,0,wave.length);
+			waveLength=wave.length;
+			Log.i("tapchord.Sound",""+attackLength+","+sustainLength+","+releaseLength+";"+waveLength);
+			track.setLoopPoints(attackLength,attackLength+sustainLength,-1);
+
+			tracks.add(track);
+		}
 	}
 
 	public void play(){
-		track.play();
+		for(int j=0;j<tracks.size();j++){
+			tracks.get(j).play();
+		}
 	}
 
 	public void stop(){
-		track.stop();
+		for(int j=0;j<tracks.size();j++){
+			tracks.get(j).stop();
+		}
 	}
 
 	public void release(){
-		track.pause();
-		track.stop();
-		track.release();
-		lastTrack=null;
+		for(int j=0;j<tracks.size();j++){
+			tracks.get(j).pause();
+			tracks.get(j).stop();
+			tracks.get(j).release();
+		}
+		tracks=new ArrayList<AudioTrack>();
 	}
 
 	public double wave(double t,int which){
