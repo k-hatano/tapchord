@@ -39,6 +39,7 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 	int soundRange;
 	int attackTime;
 	int decayTime;
+	int sustainLevel;
 	int releaseTime;
 
 	int selection;
@@ -68,6 +69,7 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 		soundRange=Statics.getPreferenceValue(this,Statics.PREF_SOUND_RANGE,0);
 		attackTime=Statics.getPreferenceValue(this,Statics.PREF_ATTACK_TIME,0);
 		decayTime=Statics.getPreferenceValue(this,Statics.PREF_DECAY_TIME,0);
+		sustainLevel=Statics.getPreferenceValue(this,Statics.PREF_SUSTAIN_LEVEL,0);
 		releaseTime=Statics.getPreferenceValue(this,Statics.PREF_RELEASE_TIME,0);
 	}
 
@@ -109,7 +111,7 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 
 			map=new HashMap<String,String>();
 			map.put("key", getString(R.string.settings_envelope));
-			map.put("value", ""+Statics.getStringOfAttackDecayReleaseTime(attackTime,decayTime,releaseTime,this));
+			map.put("value", ""+Statics.getStringOfEnvelope(attackTime,decayTime,sustainLevel,releaseTime,this));
 			list.add(map);
 
 			map=new HashMap<String,String>();
@@ -385,13 +387,15 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 		case 6:{
 			final SeekBar attackSeekBar = new SeekBar(this);
 			final SeekBar decaySeekBar = new SeekBar(this);
+			final SeekBar sustainSeekBar = new SeekBar(this);
 			final SeekBar releaseSeekBar = new SeekBar(this);
 			final TextView attackLabel = new TextView(this);
 			final TextView decayLabel = new TextView(this);
+			final TextView sustainLabel = new TextView(this);
 			final TextView releaseLabel = new TextView(this);
 			attackSeekBar.setProgress(attackTime);
 			attackSeekBar.setMax(100);
-			attackSeekBar.setPadding(0,0,0,4);
+			attackSeekBar.setPadding(0,0,0,8);
 			attackSeekBar.setOnSeekBarChangeListener(new OnSeekBarChangeListener(){
 				@Override
 				public void onProgressChanged(SeekBar seekBar, int progress,
@@ -405,7 +409,7 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 			});
 			decaySeekBar.setProgress(decayTime);
 			decaySeekBar.setMax(100);
-			decaySeekBar.setPadding(0,0,0,4);
+			decaySeekBar.setPadding(0,0,0,8);
 			decaySeekBar.setOnSeekBarChangeListener(new OnSeekBarChangeListener(){
 				@Override
 				public void onProgressChanged(SeekBar seekBar, int progress,
@@ -417,9 +421,23 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 				@Override
 				public void onStopTrackingTouch(SeekBar seekBar) {}
 			});
+			sustainSeekBar.setProgress(sustainLevel+100);
+			sustainSeekBar.setMax(100);
+			sustainSeekBar.setPadding(0,0,0,8);
+			sustainSeekBar.setOnSeekBarChangeListener(new OnSeekBarChangeListener(){
+				@Override
+				public void onProgressChanged(SeekBar seekBar, int progress,
+						boolean fromUser) {
+					sustainLabel.setText(getString(R.string.settings_sustain)+" : "+Statics.getStringOfSustainLevel(progress-100,SettingsActivity.this));
+				}
+				@Override
+				public void onStartTrackingTouch(SeekBar seekBar) {}
+				@Override
+				public void onStopTrackingTouch(SeekBar seekBar) {}
+			});
 			releaseSeekBar.setProgress(releaseTime);
 			releaseSeekBar.setMax(100);
-			releaseSeekBar.setPadding(0,0,0,4);
+			releaseSeekBar.setPadding(0,0,0,8);
 			releaseSeekBar.setOnSeekBarChangeListener(new OnSeekBarChangeListener(){
 				@Override
 				public void onProgressChanged(SeekBar seekBar, int progress,
@@ -444,6 +462,12 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 			row2.addView(decayLabel);
 			row2.addView(decaySeekBar);
 			layout.addView(row2);
+			TableRow row3=new TableRow(SettingsActivity.this);
+			sustainLabel.setText(getString(R.string.settings_sustain)+" : "+Statics.getStringOfSustainLevel(sustainLevel,SettingsActivity.this));
+			sustainLabel.setTextAppearance(this,android.R.style.TextAppearance_Inverse);
+			row3.addView(sustainLabel);
+			row3.addView(sustainSeekBar);
+			layout.addView(row3);
 			TableRow row4=new TableRow(SettingsActivity.this);
 			releaseLabel.setText(getString(R.string.settings_release)+" : "+Statics.getStringOfSingleTime(releaseTime,SettingsActivity.this));
 			releaseLabel.setTextAppearance(this,android.R.style.TextAppearance_Inverse);
@@ -465,6 +489,7 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 				public void onClick(DialogInterface dialog, int which) {
 					setAttackTime(attackSeekBar.getProgress());
 					setDecayTime(decaySeekBar.getProgress());
+					setSustainLevel(sustainSeekBar.getProgress());
 					setReleaseTime(releaseSeekBar.getProgress());
 					((ListView)findViewById(R.id.settings_items)).setSelection(6);
 				}
@@ -562,6 +587,13 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 	public void setDecayTime(int dt){
 		decayTime=dt;
 		Statics.setPreferenceValue(this,Statics.PREF_DECAY_TIME,dt);
+		getPreferenceValues();
+		updateSettingsListView();
+	}
+	
+	public void setSustainLevel(int sl){
+		sustainLevel=sl;
+		Statics.setPreferenceValue(this,Statics.PREF_SUSTAIN_LEVEL,sl-100);
 		getPreferenceValues();
 		updateSettingsListView();
 	}

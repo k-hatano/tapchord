@@ -56,6 +56,7 @@ public class Statics {
 	public static final String PREF_SOUND_RANGE = "sound_range";
 	public static final String PREF_ATTACK_TIME = "attack_time";
 	public static final String PREF_DECAY_TIME = "decay_time";
+	public static final String PREF_SUSTAIN_LEVEL = "sustain_level";
 	public static final String PREF_RELEASE_TIME = "release_time";
 	
 	public static final int VIBRATION_LENGTH = 40;
@@ -570,9 +571,14 @@ public class Statics {
 		return ""+t/1000.0f+context.getString(R.string.settings_attack_decay_release_time_seconds);
 	}
 	
-	public static String getStringOfAttackDecayReleaseTime(int a,int d,int r,Context context){
+	public static String getStringOfSustainLevel(int s,Context context){
+		return ""+(s+100)+context.getString(R.string.settings_sustain_level_percent);
+	}
+	
+	public static String getStringOfEnvelope(int a,int d,int s,int r,Context context){
 		return ""+a/1000.0f+context.getString(R.string.settings_attack_decay_release_time_seconds)+" - "
 				+d/1000.0f+context.getString(R.string.settings_attack_decay_release_time_seconds)+" - "
+				+(s+100)+context.getString(R.string.settings_sustain_level_percent)+" - "
 				+r/1000.0f+context.getString(R.string.settings_attack_decay_release_time_seconds);
 	}
 	

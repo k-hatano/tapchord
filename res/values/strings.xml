@@ -20,11 +20,14 @@
     <string name="settings_envelope">Envelope</string>
     <string name="settings_attack_time">Attack Time</string>
     <string name="settings_decay_time">Decay Time</string>
+    <string name="settings_sustain_level">Sustain Level</string>
     <string name="settings_release_time">Release Time</string>
     <string name="settings_attack">Attack</string>
     <string name="settings_decay">Decay</string>
+    <string name="settings_sustain">Sustain</string>
     <string name="settings_release">Release</string>
     <string name="settings_attack_decay_release_time_seconds">s</string>
+    <string name="settings_sustain_level_percent">%</string>
 
     <string name="settings_sampling_rate_hz"> Hz</string>
     <string name="special_thanks">Special Thanks to\nAkiyoshi Kamide</string>
