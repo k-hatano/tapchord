@@ -31,7 +31,7 @@ public class Sound {
 
 		attack=Statics.getPreferenceValue(context,Statics.PREF_ATTACK_TIME,0);
 		decay=Statics.getPreferenceValue(context,Statics.PREF_DECAY_TIME,0);
-		sustain=Statics.getPreferenceValue(context,Statics.PREF_SUSTAIN_LEVEL,0)-100;
+		sustain=Statics.getPreferenceValue(context,Statics.PREF_SUSTAIN_LEVEL,0)+100;
 		release=Statics.getPreferenceValue(context,Statics.PREF_RELEASE_TIME,0);
 
 		if(tracks.size()>0){
@@ -62,20 +62,20 @@ public class Sound {
 				double t=(double)i/sampleRate;
 				double s=wave(t*freqs[j],waveform);
 				double ss=(Short.MAX_VALUE*s*volume/400.0);
-				if(ss>=Short.MAX_VALUE) ss=(double)Short.MAX_VALUE;
-				if(ss<=-Short.MAX_VALUE) ss=(double)(-Short.MAX_VALUE);
-				if(i<attackLength){
+				if(i<=attackLength){
 					ss=(ss*i/attackLength);
-				}else if(i<attackLength+decayLength){
-					ss=(ss*(i-attackLength)/decayLength)+
-							(ss*sustain/100*(attackLength+decayLength-i)/decayLength);
-				}else if(i<attackLength+decayLength+sustainLength){
-					ss=ss*sustain/100;
-				}else if(i<attackLength+decayLength+sustainLength+decayLength){
-					ss=(ss*sustain/100*(attackLength+decayLength+sustainLength+decayLength-i)/(releaseLength));
+				}else if(i<=attackLength+decayLength){
+					ss=(ss*(attackLength+decayLength-i)/decayLength)+
+							(ss*sustain/100.0*(i-attackLength)/decayLength);
+				}else if(i<=attackLength+decayLength+sustainLength){
+					ss=ss*sustain/100.0;
+				}else if(i<=attackLength+decayLength+sustainLength+releaseLength){
+					ss=(ss*sustain/100.0*(attackLength+decayLength+sustainLength+releaseLength-i)/releaseLength);
 				}else{
 					ss=0;
 				}
+				if(ss>=Short.MAX_VALUE) ss=(double)Short.MAX_VALUE;
+				if(ss<=-Short.MAX_VALUE) ss=(double)(-Short.MAX_VALUE);
 				wave[i]=(short)ss;
 			}
 			track.write(wave,0,wave.length);
