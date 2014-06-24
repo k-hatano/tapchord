@@ -20,6 +20,7 @@ public class Sound {
 
 	int attack=0;
 	int decay=0;
+	int sustain=0;
 	int release=0;
 
 	public Sound(Integer[] freqs,Context context){
@@ -30,6 +31,7 @@ public class Sound {
 
 		attack=Statics.getPreferenceValue(context,Statics.PREF_ATTACK_TIME,0);
 		decay=Statics.getPreferenceValue(context,Statics.PREF_DECAY_TIME,0);
+		sustain=Statics.getPreferenceValue(context,Statics.PREF_SUSTAIN_LEVEL,0)-100;
 		release=Statics.getPreferenceValue(context,Statics.PREF_RELEASE_TIME,0);
 
 		if(tracks.size()>0){
@@ -43,10 +45,10 @@ public class Sound {
 
 		for(int j=0;j<freqs.length;j++){
 			int attackLength=attack*sampleRate/1000;
-			// int decayLength=decay*sampleRate/1000;
+			int decayLength=decay*sampleRate/1000;
 			int sustainLength=sampleRate/freqs[j];
 			int releaseLength=release*sampleRate/1000;
-			int length=attackLength+sustainLength+releaseLength;
+			int length=attackLength+decayLength+sustainLength+releaseLength;
 
 			AudioTrack track = new AudioTrack(AudioManager.STREAM_MUSIC,
 					sampleRate,
@@ -64,9 +66,15 @@ public class Sound {
 				if(ss<=-Short.MAX_VALUE) ss=(double)(-Short.MAX_VALUE);
 				if(i<attackLength){
 					ss=(ss*i/attackLength);
-				}
-				if(i>attackLength+sustainLength){
-					ss=(ss*(length-i)/(releaseLength));
+				}else if(i<attackLength+decayLength){
+					ss=(ss*(i-attackLength)/decayLength)+
+							(ss*sustain/100*(attackLength+decayLength-i)/decayLength);
+				}else if(i<attackLength+decayLength+sustainLength){
+					ss=ss*sustain/100;
+				}else if(i<attackLength+decayLength+sustainLength+decayLength){
+					ss=(ss*sustain/100*(attackLength+decayLength+sustainLength+decayLength-i)/(releaseLength));
+				}else{
+					ss=0;
 				}
 				wave[i]=(short)ss;
 			}
