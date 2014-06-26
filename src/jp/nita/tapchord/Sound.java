@@ -48,6 +48,9 @@ public class Sound {
 			int decayLength=decay*sampleRate/1000;
 			int sustainLength=sampleRate/freqs[j];
 			int releaseLength=release*sampleRate/1000;
+			
+			double sustainLevel=sustain/100.0;
+			
 			int length=attackLength+decayLength+sustainLength+releaseLength;
 
 			AudioTrack track = new AudioTrack(AudioManager.STREAM_MUSIC,
@@ -62,26 +65,34 @@ public class Sound {
 				double t=(double)i/sampleRate;
 				double s=wave(t*freqs[j],waveform);
 				double ss=(Short.MAX_VALUE*s*volume/400.0);
+				double sss;
 				if(i<=attackLength){
-					ss=(ss*i/attackLength);
+					double dst=ss;
+					double dr=(double)i/(double)attackLength;
+					sss=dst*dr;
 				}else if(i<=attackLength+decayLength){
-					ss=(ss*(attackLength+decayLength-i)/decayLength)+
-							(ss*sustain/100.0*(i-attackLength)/decayLength);
+					double src=(double)ss;
+					double sr=(double)(attackLength+decayLength-i)/(double)decayLength;
+					double dst=(double)ss*sustainLevel;
+					double dr=(double)(i-attackLength)/(double)decayLength;
+					sss=src*sr+dst*dr;
 				}else if(i<=attackLength+decayLength+sustainLength){
-					ss=ss*sustain/100.0;
+					double src=(double)ss*sustainLevel;
+					sss=src;
 				}else if(i<=attackLength+decayLength+sustainLength+releaseLength){
-					ss=(ss*sustain/100.0*(attackLength+decayLength+sustainLength+releaseLength-i)/releaseLength);
+					double src=(double)ss*sustainLevel;
+					double sr=(double)(attackLength+decayLength+sustainLength+releaseLength-i)/(double)releaseLength;
+					sss=src*sr;
 				}else{
-					ss=0;
+					sss=0;
 				}
-				if(ss>=Short.MAX_VALUE) ss=(double)Short.MAX_VALUE;
-				if(ss<=-Short.MAX_VALUE) ss=(double)(-Short.MAX_VALUE);
-				wave[i]=(short)ss;
+				if(sss>=Short.MAX_VALUE) sss=(double)Short.MAX_VALUE;
+				if(sss<=-Short.MAX_VALUE) sss=(double)(-Short.MAX_VALUE);
+				wave[i]=(short)sss;
 			}
 			track.write(wave,0,wave.length);
 			waveLength=wave.length;
-			Log.i("tapchord.Sound",""+attackLength+","+sustainLength+","+releaseLength+";"+waveLength);
-			track.setLoopPoints(attackLength,attackLength+sustainLength,-1);
+			track.setLoopPoints(attackLength+decayLength,attackLength+decayLength+sustainLength,-1);
 
 			tracks.add(track);
 		}
