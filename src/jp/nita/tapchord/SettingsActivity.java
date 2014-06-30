@@ -21,6 +21,7 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.ScrollView;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.SimpleAdapter;
@@ -393,6 +394,7 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 			final TextView decayLabel = new TextView(this);
 			final TextView sustainLabel = new TextView(this);
 			final TextView releaseLabel = new TextView(this);
+			TableRow.LayoutParams tableRowParams;
 			attackSeekBar.setProgress(attackTime);
 			attackSeekBar.setMax(100);
 			attackSeekBar.setPadding(0,0,0,8);
@@ -449,41 +451,57 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 				@Override
 				public void onStopTrackingTouch(SeekBar seekBar) {}
 			});
-			final TableLayout layout = new TableLayout(this);
+			final TableLayout tableLayout = new TableLayout(this);
 			TableRow row1=new TableRow(SettingsActivity.this);
 			attackLabel.setText(getString(R.string.settings_attack)+" : "+Statics.getStringOfSingleTime(attackTime,SettingsActivity.this));
 			attackLabel.setTextAppearance(this,android.R.style.TextAppearance_Inverse);
 			row1.addView(attackLabel);
 			row1.addView(attackSeekBar);
-			layout.addView(row1);
+			tableLayout.addView(row1);
 			TableRow row2=new TableRow(SettingsActivity.this);
 			decayLabel.setText(getString(R.string.settings_decay)+" : "+Statics.getStringOfSingleTime(decayTime,SettingsActivity.this));
 			decayLabel.setTextAppearance(this,android.R.style.TextAppearance_Inverse);
 			row2.addView(decayLabel);
 			row2.addView(decaySeekBar);
-			layout.addView(row2);
+			tableLayout.addView(row2);
 			TableRow row3=new TableRow(SettingsActivity.this);
 			sustainLabel.setText(getString(R.string.settings_sustain)+" : "+Statics.getStringOfSustainLevel(sustainLevel,SettingsActivity.this));
 			sustainLabel.setTextAppearance(this,android.R.style.TextAppearance_Inverse);
 			row3.addView(sustainLabel);
 			row3.addView(sustainSeekBar);
-			layout.addView(row3);
+			tableLayout.addView(row3);
 			TableRow row4=new TableRow(SettingsActivity.this);
 			releaseLabel.setText(getString(R.string.settings_release)+" : "+Statics.getStringOfSingleTime(releaseTime,SettingsActivity.this));
 			releaseLabel.setTextAppearance(this,android.R.style.TextAppearance_Inverse);
 			row4.addView(releaseLabel);
-			layout.addView(row4);
+			tableLayout.addView(row4);
 			row4.addView(releaseSeekBar);
 			
-			FrameLayout.LayoutParams layoutParams=(FrameLayout.LayoutParams)layout.getLayoutParams();
-			layoutParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT,ViewGroup.LayoutParams.FILL_PARENT);
-			layout.setLayoutParams(layoutParams);
-			layout.setStretchAllColumns(true);
+			tableRowParams = (TableRow.LayoutParams)attackSeekBar.getLayoutParams();
+			tableRowParams.span = 3; 
+			attackSeekBar.setLayoutParams(tableRowParams);
+			tableRowParams = (TableRow.LayoutParams)decaySeekBar.getLayoutParams();
+			tableRowParams.span = 3; 
+			decaySeekBar.setLayoutParams(tableRowParams);
+			tableRowParams = (TableRow.LayoutParams)sustainSeekBar.getLayoutParams();
+			tableRowParams.span = 3; 
+			sustainSeekBar.setLayoutParams(tableRowParams);
+			tableRowParams = (TableRow.LayoutParams)releaseSeekBar.getLayoutParams();
+			tableRowParams.span = 3; 
+			releaseSeekBar.setLayoutParams(tableRowParams);
 			
-			layout.setPadding(8,8,8,8);
+			FrameLayout.LayoutParams layoutParams=(FrameLayout.LayoutParams)tableLayout.getLayoutParams();
+			layoutParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT,ViewGroup.LayoutParams.FILL_PARENT);
+			tableLayout.setLayoutParams(layoutParams);
+			tableLayout.setPadding(8,8,8,8);
+			tableLayout.setStretchAllColumns(true);
+			
+			ScrollView scrollView = new ScrollView(SettingsActivity.this);
+			scrollView.addView(tableLayout);
+			
 			new AlertDialog.Builder(SettingsActivity.this)
 			.setTitle(getString(R.string.settings_envelope))
-			.setView(layout)
+			.setView(scrollView)
 			.setPositiveButton(getString(R.string.ok),new DialogInterface.OnClickListener(){
 				@Override
 				public void onClick(DialogInterface dialog, int which) {
