@@ -623,6 +623,7 @@ public class TapChordView extends View {
 			switch(which){
 			case 0:
 				Intent intent=new Intent((Activity)this.getContext(),SettingsActivity.class);
+				intent.putExtra("darken",getDarken());
 				this.getContext().startActivity(intent);
 				break;
 			case 1:

@@ -49,11 +49,11 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		setContentView(R.layout.activity_settings);
-
 		Intent i=getIntent();
 		darken=i.getIntExtra("darken",0);
 		setTheme(darken>0?android.R.style.Theme_Black:android.R.style.Theme_Light);
+
+		setContentView(R.layout.activity_settings);
 
 		Button button;
 		button=(Button)findViewById(R.id.settings_ok);
@@ -212,8 +212,12 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 			.setPositiveButton(getString(R.string.ok),new DialogInterface.OnClickListener(){
 				@Override
 				public void onClick(DialogInterface dialog, int which) {
-					if(selected>=0) setDarken(selected);
+					if(selected>=0){
+						setDarken(selected);
+						SettingsActivity.this.finish();
+					}
 					((ListView)findViewById(R.id.settings_items)).setSelection(1);
+
 				}
 			})
 			.setNegativeButton(getString(R.string.cancel),new DialogInterface.OnClickListener(){
@@ -476,7 +480,7 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 			row4.addView(releaseLabel);
 			tableLayout.addView(row4);
 			row4.addView(releaseSeekBar);
-			
+
 			tableRowParams = (TableRow.LayoutParams)attackSeekBar.getLayoutParams();
 			tableRowParams.span = 3; 
 			attackSeekBar.setLayoutParams(tableRowParams);
@@ -489,16 +493,16 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 			tableRowParams = (TableRow.LayoutParams)releaseSeekBar.getLayoutParams();
 			tableRowParams.span = 3; 
 			releaseSeekBar.setLayoutParams(tableRowParams);
-			
+
 			FrameLayout.LayoutParams layoutParams=(FrameLayout.LayoutParams)tableLayout.getLayoutParams();
 			layoutParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT,ViewGroup.LayoutParams.FILL_PARENT);
 			tableLayout.setLayoutParams(layoutParams);
 			tableLayout.setPadding(8,8,8,8);
 			tableLayout.setStretchAllColumns(true);
-			
+
 			ScrollView scrollView = new ScrollView(SettingsActivity.this);
 			scrollView.addView(tableLayout);
-			
+
 			new AlertDialog.Builder(SettingsActivity.this)
 			.setTitle(getString(R.string.settings_envelope))
 			.setView(scrollView)
@@ -608,7 +612,7 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 		getPreferenceValues();
 		updateSettingsListView();
 	}
-	
+
 	public void setSustainLevel(int sl){
 		sustainLevel=sl;
 		Statics.setPreferenceValue(this,Statics.PREF_SUSTAIN_LEVEL,sl-100);
