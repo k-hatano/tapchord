@@ -43,6 +43,7 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 	int decayTime;
 	int sustainLevel;
 	int releaseTime;
+	int animationQuality;
 
 	int selection;
 
@@ -73,6 +74,7 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 		decayTime=Statics.getPreferenceValue(this,Statics.PREF_DECAY_TIME,0);
 		sustainLevel=Statics.getPreferenceValue(this,Statics.PREF_SUSTAIN_LEVEL,0);
 		releaseTime=Statics.getPreferenceValue(this,Statics.PREF_RELEASE_TIME,0);
+		animationQuality=Statics.getPreferenceValue(this,Statics.PREF_ANIMATION_QUALITY,0);
 	}
 
 	public void updateSettingsListView(){
@@ -119,6 +121,11 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 			map=new HashMap<String,String>();
 			map.put("key", getString(R.string.settings_sampling_rate));
 			map.put("value", ""+Statics.getValueOfSamplingRate(samplingRate)+" "+getString(R.string.settings_sampling_rate_hz));
+			list.add(map);
+
+			map=new HashMap<String,String>();
+			map.put("key", getString(R.string.settings_animation_quality));
+			map.put("value", Statics.getStringOfAnimationQuality(this,animationQuality));
 			list.add(map);
 		}
 
@@ -523,6 +530,24 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 			.show();
 			break;
 		}
+		case 8:{
+			CharSequence list[]=new String[3];
+			for(int i=0;i<3;i++){
+				list[i]=""+Statics.getStringOfAnimationQuality(SettingsActivity.this,i-1);
+			}
+			new AlertDialog.Builder(SettingsActivity.this)
+			.setTitle(getString(R.string.settings_animation_quality))
+			.setSingleChoiceItems(list,animationQuality+1,new DialogInterface.OnClickListener(){
+				@Override
+				public void onClick(DialogInterface arg0, int arg1) {
+					setAnimationQuality(arg1-1);
+					arg0.dismiss();
+					((ListView)findViewById(R.id.settings_items)).setSelection(7);
+				}
+			})
+			.show();
+			break;
+		}
 		default:
 			return;
 		}
@@ -599,6 +624,14 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 	public void setWaveform(int wf){
 		waveform=wf;
 		Statics.setPreferenceValue(this,Statics.PREF_WAVEFORM,waveform);
+		getPreferenceValues();
+		updateSettingsListView();
+	}
+	
+	public void setAnimationQuality(int aq){
+		animationQuality=aq;
+		Statics.setPreferenceValue(this,Statics.PREF_ANIMATION_QUALITY,animationQuality);
+		MainActivity.setAnimationQuality(aq);
 		getPreferenceValues();
 		updateSettingsListView();
 	}

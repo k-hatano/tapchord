@@ -28,6 +28,10 @@
     <string name="settings_release">Release</string>
     <string name="settings_attack_decay_release_time_seconds">s</string>
     <string name="settings_sustain_level_percent">%</string>
+    <string name="settings_animation_quality">Animation Quality</string>
+    <string name="settings_animation_quality_low">Low</string>
+    <string name="settings_animation_quality_medium">Medium</string>
+    <string name="settings_animation_quality_high">High</string>
 
     <string name="settings_sampling_rate_hz"> Hz</string>
     <string name="special_thanks">Special Thanks to\nAkiyoshi Kamide</string>

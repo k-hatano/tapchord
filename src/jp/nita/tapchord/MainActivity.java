@@ -18,6 +18,7 @@ public class MainActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+		updatePreferenceValues();
 		heart=new Heart();
 		heart.start();
 	}
@@ -70,6 +71,23 @@ public class MainActivity extends Activity {
 	    return false;
 	}
 	
+	public static void setAnimationQuality(int aq){
+		switch(aq){
+		case -1:
+			heartBeatInterval=25;
+			break;
+		case 0:
+			heartBeatInterval=5;
+			break;
+		case 1:
+			heartBeatInterval=1;
+			break;
+		default:
+			heartBeatInterval=5;
+			break;
+		}
+	}
+	
 	class Heart extends Thread implements Runnable{
 		private boolean awake=true;
 		private boolean alive=true;
@@ -93,6 +111,11 @@ public class MainActivity extends Activity {
 		public void die(){
 			alive=false;
 		}
+	}
+	
+	public void updatePreferenceValues(){
+		int animationQuality=Statics.getPreferenceValue(this,Statics.PREF_ANIMATION_QUALITY,0);
+		setAnimationQuality(animationQuality);
 	}
 
 }
