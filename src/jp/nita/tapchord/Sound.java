@@ -7,7 +7,6 @@ import android.content.Context;
 import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioTrack;
-import android.util.Log;
 
 public class Sound {
 	static List<AudioTrack> tracks=new ArrayList<AudioTrack>();
@@ -49,7 +48,7 @@ public class Sound {
 			int sustainLength=sampleRate/freqs[j];
 			int releaseLength=release*sampleRate/1000;
 			
-			double sustainLevel=sustain/100.0;
+			double sustainLevel=(double)sustain/100.0;
 			
 			int length=attackLength+decayLength+sustainLength+releaseLength;
 
@@ -58,7 +57,7 @@ public class Sound {
 					AudioFormat.CHANNEL_CONFIGURATION_MONO,
 					AudioFormat.ENCODING_PCM_16BIT,
 					length*2,
-					AudioTrack.MODE_STATIC);
+					AudioTrack.MODE_STREAM);
 
 			short[] wave=new short[length];
 			for(int i=0;i<length;i++){
