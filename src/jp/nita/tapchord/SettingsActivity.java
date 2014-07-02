@@ -8,7 +8,6 @@ import java.util.Map;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.content.DialogInterface.OnMultiChoiceClickListener;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
@@ -45,7 +44,8 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 	int releaseTime;
 	int animationQuality;
 
-	int selection;
+	int position=0;
+	int selected;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -172,11 +172,9 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 		}
 	}
 
-	int selected=-1;
-
 	@Override
 	public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
-		selected=-1;
+		position = ((ListView)arg0).getFirstVisiblePosition();
 		switch(arg2){
 		case 0:{
 			CharSequence list[]=new String[15];
@@ -188,81 +186,44 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 				public void onClick(DialogInterface arg0, int arg1) {
 					setScale(arg1-7);
 					arg0.dismiss();
+					((ListView)findViewById(R.id.settings_items)).setSelection(position);
 				}
 			}).show();
 			break;
 		}
 		case 1:{
-			CharSequence list[]=new String[1];
-			list[0]=getString(R.string.on);
-			boolean checks[]=new boolean[1];
-			checks[0]=darken>0;
+			CharSequence list[]=new String[2];
+			list[0]=getString(R.string.off);
+			list[1]=getString(R.string.on);
 			new AlertDialog.Builder(SettingsActivity.this)
 			.setTitle(getString(R.string.settings_darken))
-			.setMultiChoiceItems(list,checks,new OnMultiChoiceClickListener(){
+			.setSingleChoiceItems(list,darken,new DialogInterface.OnClickListener(){
 				@Override
-				public void onClick(DialogInterface arg0, int arg1, boolean arg2) {
-					switch(arg1){
-					case 0:
-						selected=arg2?1:0;
-						break;
-					default:
-						break;
-					}
-				}
-			})
-			.setPositiveButton(getString(R.string.ok),new DialogInterface.OnClickListener(){
-				@Override
-				public void onClick(DialogInterface dialog, int which) {
-					if(selected>=0&&selected!=darken){
-						setDarken(selected);
+				public void onClick(DialogInterface arg0, int arg1) {
+					if(arg1!=darken){
+						setDarken(arg1);
 						SettingsActivity.this.finish();
 					}
-					((ListView)findViewById(R.id.settings_items)).setSelection(0);
+					arg0.dismiss();
+					((ListView)findViewById(R.id.settings_items)).setSelection(position);
 				}
-			})
-			.setNegativeButton(getString(R.string.cancel),new DialogInterface.OnClickListener(){
-				@Override
-				public void onClick(DialogInterface dialog, int which) {
-					((ListView)findViewById(R.id.settings_items)).setSelection(0);
-				}
-			})
-			.show();
+			}).show();
 			break;
 		}
 		case 2:{
-			CharSequence list[]=new String[1];
-			list[0]=getString(R.string.on);
-			boolean checks[]=new boolean[1];
-			checks[0]=vibration>0;
+			CharSequence list[]=new String[2];
+			list[0]=getString(R.string.off);
+			list[1]=getString(R.string.on);
 			new AlertDialog.Builder(SettingsActivity.this)
 			.setTitle(getString(R.string.settings_vibration))
-			.setMultiChoiceItems(list,checks,new OnMultiChoiceClickListener(){
+			.setSingleChoiceItems(list,vibration,new DialogInterface.OnClickListener(){
 				@Override
-				public void onClick(DialogInterface arg0, int arg1, boolean arg2) {
-					switch(arg1){
-					case 0:
-						selected=arg2?1:0;
-						break;
-					default:
-						break;
-					}
+				public void onClick(DialogInterface arg0, int arg1) {
+					setVibration(arg1);
+					arg0.dismiss();
+					((ListView)findViewById(R.id.settings_items)).setSelection(position);
 				}
-			})
-			.setPositiveButton(getString(R.string.ok),new DialogInterface.OnClickListener(){
-				@Override
-				public void onClick(DialogInterface dialog, int which) {
-					if(selected>=0) setVibration(selected);
-					((ListView)findViewById(R.id.settings_items)).setSelection(1);
-				}
-			})
-			.setNegativeButton(getString(R.string.cancel),new DialogInterface.OnClickListener(){
-				@Override
-				public void onClick(DialogInterface dialog, int which) {
-					((ListView)findViewById(R.id.settings_items)).setSelection(1);
-				}
-			})
-			.show();
+			}).show();
 			break;
 		}
 		case 3:{
@@ -300,13 +261,13 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 				@Override
 				public void onClick(DialogInterface dialog, int which) {
 					setVolume(seekBar.getProgress()-50);
-					((ListView)findViewById(R.id.settings_items)).setSelection(2);
+					((ListView)findViewById(R.id.settings_items)).setSelection(position);
 				}
 			})
 			.setNegativeButton(getString(R.string.cancel),new DialogInterface.OnClickListener(){
 				@Override
 				public void onClick(DialogInterface dialog, int which) {
-					((ListView)findViewById(R.id.settings_items)).setSelection(2);
+					((ListView)findViewById(R.id.settings_items)).setSelection(position);
 				}
 			})
 			.show();
@@ -346,13 +307,13 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 				@Override
 				public void onClick(DialogInterface dialog, int which) {
 					setSoundRange(seekBar.getProgress()-24);
-					((ListView)findViewById(R.id.settings_items)).setSelection(3);
+					((ListView)findViewById(R.id.settings_items)).setSelection(position);
 				}
 			})
 			.setNegativeButton(getString(R.string.cancel),new DialogInterface.OnClickListener(){
 				@Override
 				public void onClick(DialogInterface dialog, int which) {
-					((ListView)findViewById(R.id.settings_items)).setSelection(3);
+					((ListView)findViewById(R.id.settings_items)).setSelection(position);
 				}
 			})
 			.show();
@@ -370,7 +331,7 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 				public void onClick(DialogInterface arg0, int arg1) {
 					setWaveform(arg1);
 					arg0.dismiss();
-					((ListView)findViewById(R.id.settings_items)).setSelection(4);
+					((ListView)findViewById(R.id.settings_items)).setSelection(position);
 				}
 			})
 			.show();
@@ -500,13 +461,13 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 					setDecayTime(decaySeekBar.getProgress());
 					setSustainLevel(sustainSeekBar.getProgress());
 					setReleaseTime(releaseSeekBar.getProgress());
-					((ListView)findViewById(R.id.settings_items)).setSelection(5);
+					((ListView)findViewById(R.id.settings_items)).setSelection(position);
 				}
 			})
 			.setNegativeButton(getString(R.string.cancel),new DialogInterface.OnClickListener(){
 				@Override
 				public void onClick(DialogInterface dialog, int which) {
-					((ListView)findViewById(R.id.settings_items)).setSelection(5);
+					((ListView)findViewById(R.id.settings_items)).setSelection(position);
 				}
 			})
 			.show();
@@ -524,7 +485,7 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 				public void onClick(DialogInterface arg0, int arg1) {
 					setSamplingRate(arg1-3);
 					arg0.dismiss();
-					((ListView)findViewById(R.id.settings_items)).setSelection(6);
+					((ListView)findViewById(R.id.settings_items)).setSelection(position);
 				}
 			})
 			.show();
@@ -542,7 +503,7 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 				public void onClick(DialogInterface arg0, int arg1) {
 					setAnimationQuality(arg1-1);
 					arg0.dismiss();
-					((ListView)findViewById(R.id.settings_items)).setSelection(7);
+					((ListView)findViewById(R.id.settings_items)).setSelection(position);
 				}
 			})
 			.show();
