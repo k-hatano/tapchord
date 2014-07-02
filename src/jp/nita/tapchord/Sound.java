@@ -57,7 +57,7 @@ public class Sound {
 					AudioFormat.CHANNEL_CONFIGURATION_MONO,
 					AudioFormat.ENCODING_PCM_16BIT,
 					length*2,
-					AudioTrack.MODE_STREAM);
+					AudioTrack.MODE_STATIC);
 
 			short[] wave=new short[length];
 			for(int i=0;i<length;i++){
