@@ -8,10 +8,17 @@ import android.media.AudioTrack;
 public class Sound {
 	Integer[] frequencies=new Integer[0];
 	WaveGenerator generator=null;
-	
+
 	int mode;
 	long term;
-	
+	long modeTerm;
+
+	final int MODE_ATTACK=0;
+	final int MODE_DECAY=1;
+	final int MODE_SUSTAIN=2;
+	final int MODE_RELEASE=3;
+	final int MODE_FINISHED=4;
+
 	int volume=0;
 	int sampleRate=4000;
 	int waveform;
@@ -23,15 +30,17 @@ public class Sound {
 	int sustain=0;
 	int release=0;
 	int length=0;
-	
+
 	int attackLength;
 	int decayLength;
 	int sustainLength;
 	int releaseLength;
-	
+
 	double sustainLevel;
-	
+
 	Context context;
+
+	Object modeProcess = new Object();
 
 	public Sound(Integer[] freqs,Context cont){
 		frequencies=freqs;
@@ -99,46 +108,81 @@ public class Sound {
 			releaseLength=release*sampleRate/1000;
 
 			sustainLevel=(double)sustain/100.0;
-			
+
 			length=AudioTrack.getMinBufferSize(sampleRate,
 					AudioFormat.CHANNEL_CONFIGURATION_MONO,
-					AudioFormat.ENCODING_PCM_16BIT);
+					AudioFormat.ENCODING_PCM_16BIT)/100;
 			AudioTrack track = new AudioTrack(AudioManager.STREAM_MUSIC,
 					sampleRate,
 					AudioFormat.CHANNEL_CONFIGURATION_MONO,
 					AudioFormat.ENCODING_PCM_16BIT,
 					sampleRate*2,
 					AudioTrack.MODE_STREAM);
-			mode=0;
+			mode=MODE_ATTACK;
 			term=0;
+			modeTerm=0;
 			track.play();
-			while(mode<=3){
+			while(mode<=MODE_RELEASE){
 				track.write(getWave(length),0,length);
 			}
+			track.pause();
 			track.stop();
 			track.release();
 		}
 
 		public short[] getWave(int length){
-			short[] w = new short[length];
-			for(int i=0;i<length;i++){
-				double s=0;
-				for(int j=0;j<frequencies.length;j++){
-					s+=wave((double)term*frequencies[j]/(double)sampleRate,waveform)*volume/400.0*(Short.MAX_VALUE);
+			synchronized(modeProcess){
+				short[] w = new short[length];
+				for(int i=0;i<length;i++){
+					double s=0;
+					for(int j=0;j<frequencies.length;j++){
+						s+=wave((double)term*frequencies[j]/(double)sampleRate,waveform)*volume/400.0*(Short.MAX_VALUE);
+					}
+
+					if(mode==MODE_ATTACK&&modeTerm>=attackLength){
+						modeTerm=0;
+						mode=MODE_DECAY;
+					}
+					if(mode==MODE_DECAY&&modeTerm>=decayLength){
+						modeTerm=0;
+						mode=MODE_SUSTAIN;
+					}
+					if(mode==MODE_RELEASE&&modeTerm>releaseLength){
+						modeTerm=0;
+						mode=MODE_FINISHED;
+					}
+
+					if(mode==MODE_ATTACK){
+						s=s*((double)modeTerm/(double)attackLength);
+					}else if(mode==MODE_DECAY){
+						s=(s*(double)(decayLength-modeTerm)/(double)decayLength+s*sustainLevel*(double)modeTerm/(double)decayLength);
+					}else if(mode==MODE_SUSTAIN){
+						s=s*sustainLevel;
+					}else if(mode==MODE_RELEASE){
+						s=s*((double)(releaseLength-modeTerm)/(double)releaseLength)*sustainLevel;
+					}else{
+						s=0;
+					}
+
+					if(s>=Short.MAX_VALUE) s=(double)Short.MAX_VALUE;
+					if(s<=-Short.MAX_VALUE) s=(double)(-Short.MAX_VALUE);
+					w[i]=(short)s;
+
+					term++;
+					if(mode!=MODE_SUSTAIN) modeTerm++;
+					if(term>=sampleRate) term-=sampleRate;
 				}
-				if(s>=Short.MAX_VALUE) s=(double)Short.MAX_VALUE;
-				if(s<=-Short.MAX_VALUE) s=(double)(-Short.MAX_VALUE);
-				w[i]=(short)s;
-				term++;
-				if(term>=sampleRate) term-=sampleRate;
+				return w;
 			}
-			return w;
 		}
 
 	}
-	
+
 	public void finish(){
-		mode=4;
+		synchronized(modeProcess){
+			modeTerm=0;
+			mode=MODE_RELEASE;
+		}
 	}
 
 }
