@@ -46,5 +46,8 @@
     <string name="settings_darken">あの楽器</string>
     <string name="settings_scale">調</string>
     <string name="settings_vibration">振動</string>
+    <string name="enable">有効</string>
+    <string name="disable">有効</string>
+    <string name="disabled">無効</string>
 
 </resources>

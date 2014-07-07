@@ -58,6 +58,7 @@ public class Statics {
 	public static final String PREF_DECAY_TIME = "decay_time";
 	public static final String PREF_SUSTAIN_LEVEL = "sustain_level";
 	public static final String PREF_RELEASE_TIME = "release_time";
+	public static final String PREF_ENABLE_ENVELOPE = "enable_envelope";
 	public static final String PREF_ANIMATION_QUALITY = "animation_quality";
 	
 	public static final int VIBRATION_LENGTH = 40;

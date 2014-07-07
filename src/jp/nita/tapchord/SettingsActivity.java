@@ -18,6 +18,7 @@ import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -38,6 +39,7 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 	int waveform;
 	int vibration;
 	int soundRange;
+	int enableEnvelope;
 	int attackTime;
 	int decayTime;
 	int sustainLevel;
@@ -70,6 +72,7 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 		samplingRate=Statics.getPreferenceValue(this,Statics.PREF_SAMPLING_RATE,0);
 		waveform=Statics.getPreferenceValue(this,Statics.PREF_WAVEFORM,0);
 		soundRange=Statics.getPreferenceValue(this,Statics.PREF_SOUND_RANGE,0);
+		enableEnvelope=Statics.getPreferenceValue(this,Statics.PREF_ENABLE_ENVELOPE,0);
 		attackTime=Statics.getPreferenceValue(this,Statics.PREF_ATTACK_TIME,0);
 		decayTime=Statics.getPreferenceValue(this,Statics.PREF_DECAY_TIME,0);
 		sustainLevel=Statics.getPreferenceValue(this,Statics.PREF_SUSTAIN_LEVEL,0);
@@ -338,6 +341,7 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 			break;
 		}
 		case 6:{
+			final CheckBox enableCheckBox = new CheckBox(this);
 			final SeekBar attackSeekBar = new SeekBar(this);
 			final SeekBar decaySeekBar = new SeekBar(this);
 			final SeekBar sustainSeekBar = new SeekBar(this);
@@ -347,9 +351,36 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 			final TextView sustainLabel = new TextView(this);
 			final TextView releaseLabel = new TextView(this);
 			TableRow.LayoutParams tableRowParams;
+			enableCheckBox.setText(getString(R.string.enable));
+			enableCheckBox.setSelected(enableEnvelope>0);
+			enableCheckBox.setOnClickListener(new OnClickListener(){
+				@Override
+				public void onClick(View v) {
+					if(enableCheckBox.isSelected()){
+						attackSeekBar.setEnabled(true);
+						decaySeekBar.setEnabled(true);
+						sustainSeekBar.setEnabled(true);
+						releaseSeekBar.setEnabled(true);
+					}else{
+						attackSeekBar.setEnabled(false);
+						decaySeekBar.setEnabled(false);
+						sustainSeekBar.setEnabled(false);
+						releaseSeekBar.setEnabled(false);
+						attackSeekBar.setProgress(0);
+						decaySeekBar.setProgress(0);
+						sustainSeekBar.setProgress(100);
+						releaseSeekBar.setProgress(0);
+						setAttackTime(attackSeekBar.getProgress());
+						setDecayTime(decaySeekBar.getProgress());
+						setSustainLevel(sustainSeekBar.getProgress());
+						setReleaseTime(releaseSeekBar.getProgress());
+					}
+				}
+			});
 			attackSeekBar.setProgress(attackTime);
 			attackSeekBar.setMax(100);
 			attackSeekBar.setPadding(0,0,0,8);
+			attackSeekBar.setEnabled(enableEnvelope>0);
 			attackSeekBar.setOnSeekBarChangeListener(new OnSeekBarChangeListener(){
 				@Override
 				public void onProgressChanged(SeekBar seekBar, int progress,
@@ -364,6 +395,7 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 			decaySeekBar.setProgress(decayTime);
 			decaySeekBar.setMax(100);
 			decaySeekBar.setPadding(0,0,0,8);
+			decaySeekBar.setEnabled(enableEnvelope>0);
 			decaySeekBar.setOnSeekBarChangeListener(new OnSeekBarChangeListener(){
 				@Override
 				public void onProgressChanged(SeekBar seekBar, int progress,
@@ -378,6 +410,7 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 			sustainSeekBar.setProgress(sustainLevel+100);
 			sustainSeekBar.setMax(100);
 			sustainSeekBar.setPadding(0,0,0,8);
+			sustainSeekBar.setEnabled(enableEnvelope>0);
 			sustainSeekBar.setOnSeekBarChangeListener(new OnSeekBarChangeListener(){
 				@Override
 				public void onProgressChanged(SeekBar seekBar, int progress,
@@ -392,6 +425,7 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 			releaseSeekBar.setProgress(releaseTime);
 			releaseSeekBar.setMax(100);
 			releaseSeekBar.setPadding(0,0,0,8);
+			releaseSeekBar.setEnabled(enableEnvelope>0);
 			releaseSeekBar.setOnSeekBarChangeListener(new OnSeekBarChangeListener(){
 				@Override
 				public void onProgressChanged(SeekBar seekBar, int progress,
@@ -405,29 +439,33 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 			});
 			final TableLayout tableLayout = new TableLayout(this);
 			TableRow row1=new TableRow(SettingsActivity.this);
-			attackLabel.setText(getString(R.string.settings_attack)+" : "+Statics.getStringOfSingleTime(attackTime,SettingsActivity.this));
-			attackLabel.setTextAppearance(this,darken>0?android.R.style.TextAppearance:android.R.style.TextAppearance_Inverse);
-			row1.addView(attackLabel);
-			row1.addView(attackSeekBar);
+			enableCheckBox.setTextAppearance(this,darken>0?android.R.style.TextAppearance:android.R.style.TextAppearance_Inverse);
+			row1.addView(enableCheckBox);
 			tableLayout.addView(row1);
 			TableRow row2=new TableRow(SettingsActivity.this);
-			decayLabel.setText(getString(R.string.settings_decay)+" : "+Statics.getStringOfSingleTime(decayTime,SettingsActivity.this));
-			decayLabel.setTextAppearance(this,darken>0?android.R.style.TextAppearance:android.R.style.TextAppearance_Inverse);
-			row2.addView(decayLabel);
-			row2.addView(decaySeekBar);
+			attackLabel.setText(getString(R.string.settings_attack)+" : "+Statics.getStringOfSingleTime(attackTime,SettingsActivity.this));
+			attackLabel.setTextAppearance(this,darken>0?android.R.style.TextAppearance:android.R.style.TextAppearance_Inverse);
+			row2.addView(attackLabel);
+			row2.addView(attackSeekBar);
 			tableLayout.addView(row2);
 			TableRow row3=new TableRow(SettingsActivity.this);
-			sustainLabel.setText(getString(R.string.settings_sustain)+" : "+Statics.getStringOfSustainLevel(sustainLevel,SettingsActivity.this));
-			sustainLabel.setTextAppearance(this,darken>0?android.R.style.TextAppearance:android.R.style.TextAppearance_Inverse);
-			row3.addView(sustainLabel);
-			row3.addView(sustainSeekBar);
+			decayLabel.setText(getString(R.string.settings_decay)+" : "+Statics.getStringOfSingleTime(decayTime,SettingsActivity.this));
+			decayLabel.setTextAppearance(this,darken>0?android.R.style.TextAppearance:android.R.style.TextAppearance_Inverse);
+			row3.addView(decayLabel);
+			row3.addView(decaySeekBar);
 			tableLayout.addView(row3);
 			TableRow row4=new TableRow(SettingsActivity.this);
+			sustainLabel.setText(getString(R.string.settings_sustain)+" : "+Statics.getStringOfSustainLevel(sustainLevel,SettingsActivity.this));
+			sustainLabel.setTextAppearance(this,darken>0?android.R.style.TextAppearance:android.R.style.TextAppearance_Inverse);
+			row4.addView(sustainLabel);
+			row4.addView(sustainSeekBar);
+			tableLayout.addView(row4);
+			TableRow row5=new TableRow(SettingsActivity.this);
 			releaseLabel.setText(getString(R.string.settings_release)+" : "+Statics.getStringOfSingleTime(releaseTime,SettingsActivity.this));
 			releaseLabel.setTextAppearance(this,darken>0?android.R.style.TextAppearance:android.R.style.TextAppearance_Inverse);
-			row4.addView(releaseLabel);
-			tableLayout.addView(row4);
-			row4.addView(releaseSeekBar);
+			row5.addView(releaseLabel);
+			row5.addView(releaseSeekBar);
+			tableLayout.addView(row5);
 
 			tableRowParams = (TableRow.LayoutParams)attackSeekBar.getLayoutParams();
 			tableRowParams.span = 3; 
@@ -457,6 +495,7 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 			.setPositiveButton(getString(R.string.ok),new DialogInterface.OnClickListener(){
 				@Override
 				public void onClick(DialogInterface dialog, int which) {
+					setEnableEnvelope(enableCheckBox.isSelected()?1:0);
 					setAttackTime(attackSeekBar.getProgress());
 					setDecayTime(decaySeekBar.getProgress());
 					setSustainLevel(sustainSeekBar.getProgress());
@@ -585,6 +624,13 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 	public void setWaveform(int wf){
 		waveform=wf;
 		Statics.setPreferenceValue(this,Statics.PREF_WAVEFORM,waveform);
+		getPreferenceValues();
+		updateSettingsListView();
+	}
+	
+	public void setEnableEnvelope(int ee){
+		enableEnvelope=ee;
+		Statics.setPreferenceValue(this,Statics.PREF_ENABLE_ENVELOPE,enableEnvelope);
 		getPreferenceValues();
 		updateSettingsListView();
 	}

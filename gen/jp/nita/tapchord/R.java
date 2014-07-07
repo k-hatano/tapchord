@@ -47,6 +47,9 @@ public final class R {
         public static final int cancel=0x7f050006;
         public static final int copyright=0x7f050021;
         public static final int darken=0x7f050024;
+        public static final int disable=0x7f05002b;
+        public static final int disabled=0x7f05002c;
+        public static final int enable=0x7f05002a;
         public static final int hello_world=0x7f050002;
         public static final int message_quit=0x7f050004;
         public static final int off=0x7f050026;

@@ -46,5 +46,8 @@
     <string name="settings_darken">Darken</string>
     <string name="settings_scale">Scale</string>
     <string name="settings_vibration">Vibration</string>
+    <string name="enable">Enable</string>
+    <string name="disable">Disable</string>
+    <string name="disabled">Disabled</string>
 
 </resources>
