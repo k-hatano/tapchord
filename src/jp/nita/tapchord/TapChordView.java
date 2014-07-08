@@ -30,9 +30,6 @@ public class TapChordView extends View {
 	int scale=0;
 	int vibration=0;
 	int soundRange=0;
-	int attackTime=0;
-	int decayTime=0;
-	int releaseTime=0;
 	int pulling=0;
 
 	int statusbarFlags[]={0,0,0,0};
@@ -321,7 +318,7 @@ public class TapChordView extends View {
 			paint.setColor(Statics.getColor(Statics.COLOR_ABSOLUTE_CYAN,1,darken));
 			for(int i=0;i<shapes.size();i++){
 				Shape shape=shapes.get(i);
-				paint.setAlpha(255*shape.lifetime/Shape.MAX_LIFETIME);
+				paint.setAlpha(255*shape.lifetime/Shape.getMaxLifetime());
 
 				if(shape.style==Shape.STYLE_LINE){
 					float r=shape.rad;
@@ -333,10 +330,10 @@ public class TapChordView extends View {
 				}if(shape.style==Shape.STYLE_CIRCLE){
 					float cx=shape.center.x;
 					float cy=shape.center.y;
-					canvas.drawCircle(cx,cy,(float)(height*(0.2f+(float)(Shape.MAX_LIFETIME-shape.lifetime)/Shape.MAX_LIFETIME)*0.8f),paint);
+					canvas.drawCircle(cx,cy,(float)(height*(0.2f+(float)(Shape.getMaxLifetime()-shape.lifetime)/Shape.getMaxLifetime())*0.8f),paint);
 				}if(shape.style==Shape.STYLE_TRIANGLE){
-					float l=(float)(height*(0.3f+(float)(Shape.MAX_LIFETIME-shape.lifetime)/Shape.MAX_LIFETIME)*0.7f);
-					float r=((shape.rad*shape.lifetime)+(shape.radDelta*(Shape.MAX_LIFETIME-shape.lifetime)))/Shape.MAX_LIFETIME;
+					float l=(float)(height*(0.3f+(float)(Shape.getMaxLifetime()-shape.lifetime)/Shape.getMaxLifetime())*0.7f);
+					float r=((shape.rad*shape.lifetime)+(shape.radDelta*(Shape.getMaxLifetime()-shape.lifetime)))/Shape.getMaxLifetime();
 					float ax=shape.center.x+(float)(Math.cos((r)/360.0*Math.PI*2)*l);
 					float ay=shape.center.y+(float)(Math.sin((r)/360.0*Math.PI*2)*l);
 					float bx=shape.center.x+(float)(Math.cos((r+120)/360.0*Math.PI*2)*l);
@@ -347,8 +344,8 @@ public class TapChordView extends View {
 					canvas.drawLine(bx,by,cx,cy,paint);
 					canvas.drawLine(cx,cy,ax,ay,paint);
 				}if(shape.style==Shape.STYLE_SQUARE){
-					float l=(float)(height*(0.3f+(float)(Shape.MAX_LIFETIME-shape.lifetime)/Shape.MAX_LIFETIME)*0.7f);
-					float r=((shape.rad*shape.lifetime)+(shape.radDelta*(Shape.MAX_LIFETIME-shape.lifetime)))/Shape.MAX_LIFETIME;
+					float l=(float)(height*(0.3f+(float)(Shape.getMaxLifetime()-shape.lifetime)/Shape.getMaxLifetime())*0.7f);
+					float r=((shape.rad*shape.lifetime)+(shape.radDelta*(Shape.getMaxLifetime()-shape.lifetime)))/Shape.getMaxLifetime();
 					float ax=shape.center.x+(float)(Math.cos((r)/360.0*Math.PI*2)*l);
 					float ay=shape.center.y+(float)(Math.sin((r)/360.0*Math.PI*2)*l);
 					float bx=shape.center.x+(float)(Math.cos((r+90)/360.0*Math.PI*2)*l);
@@ -782,9 +779,6 @@ public class TapChordView extends View {
 		darken=Statics.getPreferenceValue(this.getContext(),Statics.PREF_DARKEN,0);
 		soundRange=Statics.getPreferenceValue(this.getContext(),Statics.PREF_SOUND_RANGE,0);
 		vibration=Statics.getPreferenceValue(this.getContext(),Statics.PREF_VIBRATION,0);
-		attackTime=Statics.getPreferenceValue(this.getContext(),Statics.PREF_ATTACK_TIME,0);
-		decayTime=Statics.getPreferenceValue(this.getContext(),Statics.PREF_DECAY_TIME,0);
-		releaseTime=Statics.getPreferenceValue(this.getContext(),Statics.PREF_RELEASE_TIME,0);
 	}
 
 

@@ -1,5 +1,6 @@
 package jp.nita.tapchord;
 
+import android.media.AudioManager;
 import android.os.Bundle;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -19,6 +20,7 @@ public class MainActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		updatePreferenceValues();
+		setVolumeControlStream(AudioManager.STREAM_MUSIC);
 		heart=new Heart();
 		heart.start();
 	}

@@ -14,14 +14,18 @@ public class Shape {
 	public final static int STYLE_TRIANGLE=2;
 	public final static int STYLE_SQUARE=3;
 	
-	public final static int MAX_LIFETIME=(int)(400.0f/MainActivity.heartBeatInterval);
+	public static int MAX_LIFETIME=75;
 	
 	Shape(PointF pf){
 		style=(int)(Math.random()*4);
 		rad=(int)(Math.random()*360)-180;
-		radDelta=(int)(Math.random()*360)-180;
+		radDelta=(int)(Math.random()*180)-90;
 		if(style==0) radDelta=0;
-		lifetime=MAX_LIFETIME;
+		lifetime=getMaxLifetime();
 		center=pf;
+	}
+	
+	public static int getMaxLifetime(){
+		return MAX_LIFETIME;
 	}
 }
