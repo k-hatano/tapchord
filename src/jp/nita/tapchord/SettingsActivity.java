@@ -467,6 +467,9 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 			row5.addView(releaseSeekBar);
 			tableLayout.addView(row5);
 
+			tableRowParams = (TableRow.LayoutParams)enableCheckBox.getLayoutParams();
+			tableRowParams.span = 4; 
+			enableCheckBox.setLayoutParams(tableRowParams);
 			tableRowParams = (TableRow.LayoutParams)attackSeekBar.getLayoutParams();
 			tableRowParams.span = 3; 
 			attackSeekBar.setLayoutParams(tableRowParams);
