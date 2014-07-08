@@ -118,7 +118,7 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 
 			map=new HashMap<String,String>();
 			map.put("key", getString(R.string.settings_envelope));
-			map.put("value", ""+Statics.getStringOfEnvelope(attackTime,decayTime,sustainLevel,releaseTime,this));
+			map.put("value", ""+Statics.getStringOfEnvelope(enableEnvelope,attackTime,decayTime,sustainLevel,releaseTime,this));
 			list.add(map);
 
 			map=new HashMap<String,String>();
@@ -352,11 +352,11 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 			final TextView releaseLabel = new TextView(this);
 			TableRow.LayoutParams tableRowParams;
 			enableCheckBox.setText(getString(R.string.enable));
-			enableCheckBox.setSelected(enableEnvelope>0);
+			enableCheckBox.setChecked(enableEnvelope>0);
 			enableCheckBox.setOnClickListener(new OnClickListener(){
 				@Override
 				public void onClick(View v) {
-					if(enableCheckBox.isSelected()){
+					if(enableCheckBox.isChecked()){
 						attackSeekBar.setEnabled(true);
 						decaySeekBar.setEnabled(true);
 						sustainSeekBar.setEnabled(true);
@@ -495,7 +495,7 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 			.setPositiveButton(getString(R.string.ok),new DialogInterface.OnClickListener(){
 				@Override
 				public void onClick(DialogInterface dialog, int which) {
-					setEnableEnvelope(enableCheckBox.isSelected()?1:0);
+					setEnableEnvelope(enableCheckBox.isChecked()?1:0);
 					setAttackTime(attackSeekBar.getProgress());
 					setDecayTime(decaySeekBar.getProgress());
 					setSustainLevel(sustainSeekBar.getProgress());

@@ -590,11 +590,15 @@ public class Statics {
 		return ""+(s+100)+context.getString(R.string.settings_sustain_level_percent);
 	}
 	
-	public static String getStringOfEnvelope(int a,int d,int s,int r,Context context){
-		return ""+a/1000.0f+context.getString(R.string.settings_attack_decay_release_time_seconds)+" - "
-				+d/1000.0f+context.getString(R.string.settings_attack_decay_release_time_seconds)+" - "
-				+(s+100)+context.getString(R.string.settings_sustain_level_percent)+" - "
-				+r/1000.0f+context.getString(R.string.settings_attack_decay_release_time_seconds);
+	public static String getStringOfEnvelope(int e,int a,int d,int s,int r,Context context){
+		if(e>0){
+			return ""+a/1000.0f+context.getString(R.string.settings_attack_decay_release_time_seconds)+" - "
+					+d/1000.0f+context.getString(R.string.settings_attack_decay_release_time_seconds)+" - "
+					+(s+100)+context.getString(R.string.settings_sustain_level_percent)+" - "
+					+r/1000.0f+context.getString(R.string.settings_attack_decay_release_time_seconds);
+		}else{
+			return context.getString(R.string.disabled);
+		}
 	}
 	
 	public static String getShortStringOfSoundRange(int soundRange){
