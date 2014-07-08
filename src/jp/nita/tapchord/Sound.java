@@ -17,8 +17,7 @@ public class Sound {
 	final int MODE_DECAY=1;
 	final int MODE_SUSTAIN=2;
 	final int MODE_RELEASE=3;
-	final int MODE_SILENCE=4;
-	final int MODE_FINISHED=5;
+	final int MODE_FINISHED=4;
 
 	int volume=0;
 	int sampleRate=4000;
@@ -123,8 +122,13 @@ public class Sound {
 			term=0;
 			modeTerm=0;
 			track.play();
-			while(mode<=MODE_SILENCE){
+			while(mode<=MODE_RELEASE){
 				track.write(getWave(length),0,length);
+			}
+			try{
+				sleep(release);
+			}catch(InterruptedException ignore){
+				
 			}
 			track.pause();
 			track.stop();
@@ -150,9 +154,6 @@ public class Sound {
 					}
 					if(mode==MODE_RELEASE&&modeTerm>releaseLength){
 						modeTerm=0;
-						mode=MODE_SILENCE;
-					}
-					if(mode==MODE_SILENCE&&i==0){
 						mode=MODE_FINISHED;
 					}
 
