@@ -25,12 +25,7 @@ public class Sound {
 	int waveLength;
 	int soundRange;
 
-	int attack=0;
-	int decay=0;
-	int sustain=0;
-	int release=0;
-	int length=0;
-
+	int length;
 	int attackLength;
 	int decayLength;
 	int sustainLength;
@@ -97,10 +92,10 @@ public class Sound {
 			sampleRate=Statics.getValueOfSamplingRate(Statics.getPreferenceValue(context,Statics.PREF_SAMPLING_RATE,0));
 			waveform=Statics.getPreferenceValue(context,Statics.PREF_WAVEFORM,0);
 
-			attack=Statics.getPreferenceValue(context,Statics.PREF_ATTACK_TIME,0);
-			decay=Statics.getPreferenceValue(context,Statics.PREF_DECAY_TIME,0);
-			sustain=Statics.getPreferenceValue(context,Statics.PREF_SUSTAIN_LEVEL,0)+100;
-			release=Statics.getPreferenceValue(context,Statics.PREF_RELEASE_TIME,0);
+			int attack=Statics.getPreferenceValue(context,Statics.PREF_ATTACK_TIME,0);
+			int decay=Statics.getPreferenceValue(context,Statics.PREF_DECAY_TIME,0);
+			int sustain=Statics.getPreferenceValue(context,Statics.PREF_SUSTAIN_LEVEL,0)+100;
+			int release=Statics.getPreferenceValue(context,Statics.PREF_RELEASE_TIME,0);
 
 			attackLength=attack*sampleRate/1000;
 			decayLength=decay*sampleRate/1000;
