@@ -4,8 +4,8 @@ import android.graphics.PointF;
 
 public class Shape {
 	public int style;
-	public int rad;
-	public int radDelta;
+	public int radStart;
+	public int radEnd;
 	public int lifetime;
 	public PointF center;
 	
@@ -18,14 +18,13 @@ public class Shape {
 	
 	Shape(PointF pf){
 		style=(int)(Math.random()*4);
-		rad=(int)(Math.random()*360)-180;
-		radDelta=(int)(Math.random()*180)-90;
-		if(style==0) radDelta=0;
+		radStart=(int)(Math.random()*360)-180;
+		radEnd=radStart+(int)(Math.random()*180)-90;
 		lifetime=getMaxLifetime();
 		center=pf;
 	}
 	
 	public static int getMaxLifetime(){
-		return MAX_LIFETIME;
+		return MAX_LIFETIME/MainActivity.heartBeatInterval;
 	}
 }

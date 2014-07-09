@@ -134,19 +134,15 @@ public class TapChordView extends View {
 			if(x+scale<-7){
 				textPaint.setColor(Statics.getColor(Statics.COLOR_GRAY,0,darken));
 				str=Statics.getStringOfScale(x+scale+12);
-				w=textPaint.measureText(str);
-				canvas.drawText(str,rect.centerX()-w/2,rect.centerY()-(fontMetrics.ascent+fontMetrics.descent)/2,textPaint);
 			}else if(x+scale>7){
 				textPaint.setColor(Statics.getColor(Statics.COLOR_GRAY,0,darken));
 				str=Statics.getStringOfScale(x+scale-12);
-				w=textPaint.measureText(str);
-				canvas.drawText(str,rect.centerX()-w/2,rect.centerY()-(fontMetrics.ascent+fontMetrics.descent)/2,textPaint);
 			}else{
 				textPaint.setColor(Statics.getColor(Statics.COLOR_BLACK,0,darken));
 				str=Statics.getStringOfScale(x+scale);
-				w=textPaint.measureText(str);
-				canvas.drawText(str,rect.centerX()-w/2,rect.centerY()-(fontMetrics.ascent+fontMetrics.descent)/2,textPaint);
 			}
+			w=textPaint.measureText(str);
+			canvas.drawText(str,rect.centerX()-w/2,rect.centerY()-(fontMetrics.ascent+fontMetrics.descent)/2,textPaint);
 		}
 
 		textPaint.setColor(Statics.getColor(Statics.COLOR_BLACK,0,darken));
@@ -321,7 +317,7 @@ public class TapChordView extends View {
 				paint.setAlpha(255*shape.lifetime/Shape.getMaxLifetime());
 
 				if(shape.style==Shape.STYLE_LINE){
-					float r=shape.rad;
+					float r=shape.radStart;
 					float ax=shape.center.x-(float)(Math.cos(r/360.0*Math.PI*2)*width);
 					float ay=shape.center.y-(float)(Math.sin(r/360.0*Math.PI*2)*width);
 					float bx=shape.center.x+(float)(Math.cos(r/360.0*Math.PI*2)*width);
@@ -333,7 +329,7 @@ public class TapChordView extends View {
 					canvas.drawCircle(cx,cy,(float)(height*(0.2f+(float)(Shape.getMaxLifetime()-shape.lifetime)/Shape.getMaxLifetime())*0.8f),paint);
 				}if(shape.style==Shape.STYLE_TRIANGLE){
 					float l=(float)(height*(0.3f+(float)(Shape.getMaxLifetime()-shape.lifetime)/Shape.getMaxLifetime())*0.7f);
-					float r=((shape.rad*shape.lifetime)+(shape.radDelta*(Shape.getMaxLifetime()-shape.lifetime)))/Shape.getMaxLifetime();
+					float r=((shape.radStart*shape.lifetime)+(shape.radEnd*(Shape.getMaxLifetime()-shape.lifetime)))/Shape.getMaxLifetime();
 					float ax=shape.center.x+(float)(Math.cos((r)/360.0*Math.PI*2)*l);
 					float ay=shape.center.y+(float)(Math.sin((r)/360.0*Math.PI*2)*l);
 					float bx=shape.center.x+(float)(Math.cos((r+120)/360.0*Math.PI*2)*l);
@@ -345,7 +341,7 @@ public class TapChordView extends View {
 					canvas.drawLine(cx,cy,ax,ay,paint);
 				}if(shape.style==Shape.STYLE_SQUARE){
 					float l=(float)(height*(0.3f+(float)(Shape.getMaxLifetime()-shape.lifetime)/Shape.getMaxLifetime())*0.7f);
-					float r=((shape.rad*shape.lifetime)+(shape.radDelta*(Shape.getMaxLifetime()-shape.lifetime)))/Shape.getMaxLifetime();
+					float r=((shape.radStart*shape.lifetime)+(shape.radEnd*(Shape.getMaxLifetime()-shape.lifetime)))/Shape.getMaxLifetime();
 					float ax=shape.center.x+(float)(Math.cos((r)/360.0*Math.PI*2)*l);
 					float ay=shape.center.y+(float)(Math.sin((r)/360.0*Math.PI*2)*l);
 					float bx=shape.center.x+(float)(Math.cos((r+90)/360.0*Math.PI*2)*l);
@@ -373,14 +369,14 @@ public class TapChordView extends View {
 			if(rect.contains(x, y)){
 				toolbarPressed=0;
 				taps.put(id,Statics.TOOLBAR_BUTTON);
-				if(vibration>0) vib.vibrate(Statics.VIBRATION_LENGTH);
+				vibrate();
 				return false;
 			}
 			rect=Statics.getRectOfToolbarTransposingButton(0,0,width,height,1.0f);
 			if(rect.contains(x, y)){
 				toolbarPressed=1;
 				taps.put(id,Statics.TOOLBAR_BUTTON);
-				if(vibration>0) vib.vibrate(Statics.VIBRATION_LENGTH);
+				vibrate();
 				return false;
 			}
 		}else{
@@ -389,7 +385,7 @@ public class TapChordView extends View {
 				if(rect.contains(x, y)){
 					toolbarPressed=i;
 					taps.put(id,Statics.TOOLBAR_BUTTON);
-					if(vibration>0) vib.vibrate(Statics.VIBRATION_LENGTH);
+					vibrate();
 					return false;
 				}
 			}
@@ -401,7 +397,7 @@ public class TapChordView extends View {
 				if(rect.contains(x, y)){
 					scalePressed=i;
 					taps.put(id,Statics.TRANSPOSE_SCALE_BUTTON);
-					if(vibration>0) vib.vibrate(Statics.VIBRATION_LENGTH);
+					vibrate();
 					return false;
 				}
 			}
@@ -409,10 +405,10 @@ public class TapChordView extends View {
 			for(i=0;i<4;i++){
 				rect=Statics.getRectOfStatusBarButton(i,0,width,height,barsShowingRate);
 				if(rect.contains(x, y)){
-					if(lastTapped==i&&System.currentTimeMillis()-lastTappedTime<500) statusbarFlags[i]=2;
+					if(lastTapped==i&&System.currentTimeMillis()-lastTappedTime<400) statusbarFlags[i]=2;
 					else statusbarFlags[i]=1;
 					taps.put(id,Statics.STATUSBAR_BUTTON);
-					if(vibration>0) vib.vibrate(Statics.VIBRATION_LENGTH);
+					vibrate();
 					lastTapped=i;
 					lastTappedTime=System.currentTimeMillis();
 					return false;
@@ -423,7 +419,7 @@ public class TapChordView extends View {
 				originalY=y;
 				originalScroll=scroll;
 				taps.put(id,Statics.SCROLL_NOB);
-				if(vibration>0) vib.vibrate(Statics.VIBRATION_LENGTH);
+				vibrate();
 				return false;
 			}else if(Statics.getRectOfToolbar(width,height,1.0f).contains(x,y)){
 				if(scroll==0){
@@ -434,7 +430,7 @@ public class TapChordView extends View {
 					scroll=0;
 				}
 				taps.put(id,Statics.SCROLL_BAR);
-				if(vibration>0) vib.vibrate(Statics.VIBRATION_LENGTH);
+				vibrate();
 				return false;
 			}
 		}
@@ -448,7 +444,7 @@ public class TapChordView extends View {
 					tappedX=x;
 					playingID=id;
 					taps.put(playingID,Statics.CHORD_BUTTON);
-					if(vibration>0) vib.vibrate(Statics.VIBRATION_LENGTH);
+					vibrate();
 					if(darken>0){
 						shapes.add(new Shape(new PointF(x,y)));
 					}
@@ -477,7 +473,7 @@ public class TapChordView extends View {
 		switch(kind){
 		case Statics.SCROLL_NOB:
 			if(-y+originalY>height/5){
-				if(vibration>0&&scroll!=0) vib.vibrate(Statics.VIBRATION_LENGTH);
+				vibrate();
 				scroll=0;
 				upper=height/35/5*2;
 			}else{
@@ -492,7 +488,7 @@ public class TapChordView extends View {
 				rect=Statics.getRectOfStatusBarButton(i,0,width,height,barsShowingRate);
 				if(rect.contains(x, y)){
 					if(statusbarFlags[i]>=2&&lastTapped==i) continue;
-					if(vibration>0&&statusbarFlags[i]==0) vib.vibrate(Statics.VIBRATION_LENGTH);
+					if(statusbarFlags[i]==0) vibrate();
 					statusbarFlags[i]=1;
 				}
 			}
@@ -542,7 +538,6 @@ public class TapChordView extends View {
 					}
 				}
 				chordPressed=true;
-				break;
 			}else{
 				chordPressed=actionDown(x,y,id);
 			}
@@ -558,6 +553,7 @@ public class TapChordView extends View {
 		return chordPressed;
 	}
 
+	@SuppressLint("ClickableViewAccessibility")
 	public boolean onTouchEvent(MotionEvent event){
 		int x,y,id;
 		boolean chordPressed=false;
@@ -620,7 +616,6 @@ public class TapChordView extends View {
 			switch(which){
 			case 0:
 				Intent intent=new Intent((Activity)this.getContext(),SettingsActivity.class);
-				intent.putExtra("darken",getDarken());
 				this.getContext().startActivity(intent);
 				break;
 			case 1:
@@ -760,10 +755,6 @@ public class TapChordView extends View {
 		step=(int)stepMax;
 	}
 
-	public int getDarken(){
-		return darken;
-	}
-
 	public void setScale(int s){
 		scale=s;
 		Statics.setPreferenceValue(this.getContext(),Statics.PREF_SCALE,scale);
@@ -781,5 +772,8 @@ public class TapChordView extends View {
 		vibration=Statics.getPreferenceValue(this.getContext(),Statics.PREF_VIBRATION,0);
 	}
 
+	public void vibrate(){
+		if(vibration>0) vib.vibrate(Statics.VIBRATION_LENGTH);
+	}
 
 }

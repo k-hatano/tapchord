@@ -8,7 +8,6 @@ import java.util.Map;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -52,9 +51,7 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
-		Intent i=getIntent();
-		darken=i.getIntExtra("darken",0);
+		getPreferenceValues();
 		setTheme(darken>0?android.R.style.Theme_Black:android.R.style.Theme_Light);
 
 		setContentView(R.layout.activity_settings);
@@ -128,7 +125,7 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 
 			map=new HashMap<String,String>();
 			map.put("key", getString(R.string.settings_animation_quality));
-			map.put("value", Statics.getStringOfAnimationQuality(this,animationQuality));
+			map.put("value", Statics.getStringOfAnimationQuality(animationQuality,this));
 			list.add(map);
 		}
 
@@ -244,13 +241,9 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 					volumeView.setText(""+progress);
 				}
 				@Override
-				public void onStartTrackingTouch(SeekBar seekBar) {
-					// TODO Auto-generated method stub
-				}
+				public void onStartTrackingTouch(SeekBar seekBar) { }
 				@Override
-				public void onStopTrackingTouch(SeekBar seekBar) {
-					// TODO Auto-generated method stub
-				}
+				public void onStopTrackingTouch(SeekBar seekBar) { }
 			});
 			final LinearLayout layout = new LinearLayout(this);
 			layout.setOrientation(LinearLayout.VERTICAL);
@@ -290,13 +283,9 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 					rangeView.setText(""+Statics.getStringOfSoundRange(seekBar.getProgress()-24));
 				}
 				@Override
-				public void onStartTrackingTouch(SeekBar seekBar) {
-					// TODO Auto-generated method stub
-				}
+				public void onStartTrackingTouch(SeekBar seekBar) { }
 				@Override
-				public void onStopTrackingTouch(SeekBar seekBar) {
-					// TODO Auto-generated method stub
-				}
+				public void onStopTrackingTouch(SeekBar seekBar) { }
 			});
 			final LinearLayout layout = new LinearLayout(this);
 			layout.setOrientation(LinearLayout.VERTICAL);
@@ -536,7 +525,7 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 		case 8:{
 			CharSequence list[]=new String[3];
 			for(int i=0;i<3;i++){
-				list[i]=""+Statics.getStringOfAnimationQuality(SettingsActivity.this,i-1);
+				list[i]=""+Statics.getStringOfAnimationQuality(i-1,SettingsActivity.this);
 			}
 			new AlertDialog.Builder(SettingsActivity.this)
 			.setTitle(getString(R.string.settings_animation_quality))
@@ -562,12 +551,13 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 		getPreferenceValues();
 		updateSettingsListView();
 	}
-
+	
 	public void setDarken(int d){
 		darken=d;
 		Statics.setPreferenceValue(this,Statics.PREF_DARKEN,darken);
 		getPreferenceValues();
 		updateSettingsListView();
+		
 	}
 	public void setVibration(int v){
 		vibration=v;
@@ -575,6 +565,7 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 		getPreferenceValues();
 		updateSettingsListView();
 	}
+	
 	public void setSamplingRate(int sr){
 		samplingRate=sr;
 		Statics.setPreferenceValue(this,Statics.PREF_SAMPLING_RATE,samplingRate);

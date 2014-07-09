@@ -481,7 +481,7 @@ public class Statics {
 		editor.commit();
 	}
 	
-	public static String getStringOfAnimationQuality(Context context,int aq){
+	public static String getStringOfAnimationQuality(int aq,Context context){
 		switch(aq){
 		case -1:
 			return context.getString(R.string.settings_animation_quality_low);
