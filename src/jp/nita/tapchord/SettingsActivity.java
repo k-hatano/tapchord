@@ -8,20 +8,25 @@ import java.util.Map;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.ScrollView;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.SimpleAdapter;
+import android.widget.TableLayout;
+import android.widget.TableRow;
 import android.widget.TextView;
 
 public class SettingsActivity extends Activity implements OnClickListener,OnItemClickListener {
@@ -33,21 +38,23 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 	int waveform;
 	int vibration;
 	int soundRange;
+	int enableEnvelope;
 	int attackTime;
 	int decayTime;
+	int sustainLevel;
 	int releaseTime;
+	int animationQuality;
 
-	int selection;
+	int position=0;
+	int selected;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		getPreferenceValues();
+		setTheme(darken>0?android.R.style.Theme_Black:android.R.style.Theme_Light);
 
 		setContentView(R.layout.activity_settings);
-
-		Intent i=getIntent();
-		darken=i.getIntExtra("darken",0);
-		setTheme(darken>0?android.R.style.Theme_Black:android.R.style.Theme_Light);
 
 		Button button;
 		button=(Button)findViewById(R.id.settings_ok);
@@ -62,9 +69,12 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 		samplingRate=Statics.getPreferenceValue(this,Statics.PREF_SAMPLING_RATE,0);
 		waveform=Statics.getPreferenceValue(this,Statics.PREF_WAVEFORM,0);
 		soundRange=Statics.getPreferenceValue(this,Statics.PREF_SOUND_RANGE,0);
+		enableEnvelope=Statics.getPreferenceValue(this,Statics.PREF_ENABLE_ENVELOPE,0);
 		attackTime=Statics.getPreferenceValue(this,Statics.PREF_ATTACK_TIME,0);
 		decayTime=Statics.getPreferenceValue(this,Statics.PREF_DECAY_TIME,0);
+		sustainLevel=Statics.getPreferenceValue(this,Statics.PREF_SUSTAIN_LEVEL,0);
 		releaseTime=Statics.getPreferenceValue(this,Statics.PREF_RELEASE_TIME,0);
+		animationQuality=Statics.getPreferenceValue(this,Statics.PREF_ANIMATION_QUALITY,0);
 	}
 
 	public void updateSettingsListView(){
@@ -105,12 +115,17 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 
 			map=new HashMap<String,String>();
 			map.put("key", getString(R.string.settings_envelope));
-			map.put("value", ""+Statics.getStringOfAttackDecayReleaseTime(attackTime,decayTime,releaseTime,this));
+			map.put("value", ""+Statics.getStringOfEnvelope(enableEnvelope,attackTime,decayTime,sustainLevel,releaseTime,this));
 			list.add(map);
 
 			map=new HashMap<String,String>();
 			map.put("key", getString(R.string.settings_sampling_rate));
 			map.put("value", ""+Statics.getValueOfSamplingRate(samplingRate)+" "+getString(R.string.settings_sampling_rate_hz));
+			list.add(map);
+
+			map=new HashMap<String,String>();
+			map.put("key", getString(R.string.settings_animation_quality));
+			map.put("value", Statics.getStringOfAnimationQuality(animationQuality,this));
 			list.add(map);
 		}
 
@@ -157,11 +172,9 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 		}
 	}
 
-	int selected=-1;
-
 	@Override
 	public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
-		selected=-1;
+		position = ((ListView)arg0).getFirstVisiblePosition();
 		switch(arg2){
 		case 0:{
 			CharSequence list[]=new String[15];
@@ -171,23 +184,11 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 			.setSingleChoiceItems(list,scale+7,new DialogInterface.OnClickListener(){
 				@Override
 				public void onClick(DialogInterface arg0, int arg1) {
-					selected=arg1;
+					setScale(arg1-7);
+					arg0.dismiss();
+					((ListView)findViewById(R.id.settings_items)).setSelection(position);
 				}
-			})
-			.setPositiveButton(getString(R.string.ok),new DialogInterface.OnClickListener(){
-				@Override
-				public void onClick(DialogInterface dialog, int which) {
-					if(selected>=0) setScale(selected-7);
-					((ListView)findViewById(R.id.settings_items)).setSelection(0);
-				}
-			})
-			.setNegativeButton(getString(R.string.cancel),new DialogInterface.OnClickListener(){
-				@Override
-				public void onClick(DialogInterface dialog, int which) {
-					((ListView)findViewById(R.id.settings_items)).setSelection(0);
-				}
-			})
-			.show();
+			}).show();
 			break;
 		}
 		case 1:{
@@ -199,23 +200,14 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 			.setSingleChoiceItems(list,darken,new DialogInterface.OnClickListener(){
 				@Override
 				public void onClick(DialogInterface arg0, int arg1) {
-					selected=arg1;
+					if(arg1!=darken){
+						setDarken(arg1);
+						SettingsActivity.this.finish();
+					}
+					arg0.dismiss();
+					((ListView)findViewById(R.id.settings_items)).setSelection(position);
 				}
-			})
-			.setPositiveButton(getString(R.string.ok),new DialogInterface.OnClickListener(){
-				@Override
-				public void onClick(DialogInterface dialog, int which) {
-					if(selected>=0) setDarken(selected);
-					((ListView)findViewById(R.id.settings_items)).setSelection(1);
-				}
-			})
-			.setNegativeButton(getString(R.string.cancel),new DialogInterface.OnClickListener(){
-				@Override
-				public void onClick(DialogInterface dialog, int which) {
-					((ListView)findViewById(R.id.settings_items)).setSelection(1);
-				}
-			})
-			.show();
+			}).show();
 			break;
 		}
 		case 2:{
@@ -227,30 +219,18 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 			.setSingleChoiceItems(list,vibration,new DialogInterface.OnClickListener(){
 				@Override
 				public void onClick(DialogInterface arg0, int arg1) {
-					selected=arg1;
+					setVibration(arg1);
+					arg0.dismiss();
+					((ListView)findViewById(R.id.settings_items)).setSelection(position);
 				}
-			})
-			.setPositiveButton(getString(R.string.ok),new DialogInterface.OnClickListener(){
-				@Override
-				public void onClick(DialogInterface dialog, int which) {
-					if(selected>=0) setVibration(selected);
-					((ListView)findViewById(R.id.settings_items)).setSelection(2);
-				}
-			})
-			.setNegativeButton(getString(R.string.cancel),new DialogInterface.OnClickListener(){
-				@Override
-				public void onClick(DialogInterface dialog, int which) {
-					((ListView)findViewById(R.id.settings_items)).setSelection(2);
-				}
-			})
-			.show();
+			}).show();
 			break;
 		}
 		case 3:{
 			int vol=volume+50;
 			final TextView volumeView = new TextView(this);
 			volumeView.setText(""+vol);
-			volumeView.setTextAppearance(this,android.R.style.TextAppearance_Inverse);
+			volumeView.setTextAppearance(this,darken>0?android.R.style.TextAppearance:android.R.style.TextAppearance_Inverse);
 			final SeekBar seekBar = new SeekBar(this);
 			seekBar.setProgress(vol);
 			seekBar.setMax(100);
@@ -260,19 +240,10 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 						boolean fromUser) {
 					volumeView.setText(""+progress);
 				}
-
 				@Override
-				public void onStartTrackingTouch(SeekBar seekBar) {
-					// TODO Auto-generated method stub
-
-				}
-
+				public void onStartTrackingTouch(SeekBar seekBar) { }
 				@Override
-				public void onStopTrackingTouch(SeekBar seekBar) {
-					// TODO Auto-generated method stub
-
-				}
-
+				public void onStopTrackingTouch(SeekBar seekBar) { }
 			});
 			final LinearLayout layout = new LinearLayout(this);
 			layout.setOrientation(LinearLayout.VERTICAL);
@@ -286,13 +257,13 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 				@Override
 				public void onClick(DialogInterface dialog, int which) {
 					setVolume(seekBar.getProgress()-50);
-					((ListView)findViewById(R.id.settings_items)).setSelection(3);
+					((ListView)findViewById(R.id.settings_items)).setSelection(position);
 				}
 			})
 			.setNegativeButton(getString(R.string.cancel),new DialogInterface.OnClickListener(){
 				@Override
 				public void onClick(DialogInterface dialog, int which) {
-					((ListView)findViewById(R.id.settings_items)).setSelection(3);
+					((ListView)findViewById(R.id.settings_items)).setSelection(position);
 				}
 			})
 			.show();
@@ -301,7 +272,7 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 		case 4:{
 			final TextView rangeView = new TextView(this);
 			rangeView.setText(""+Statics.getStringOfSoundRange(soundRange));
-			rangeView.setTextAppearance(this,android.R.style.TextAppearance_Inverse);
+			rangeView.setTextAppearance(this,darken>0?android.R.style.TextAppearance:android.R.style.TextAppearance_Inverse);
 			final SeekBar seekBar = new SeekBar(this);
 			seekBar.setProgress(soundRange+24);
 			seekBar.setMax(48);
@@ -311,19 +282,10 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 						boolean fromUser) {
 					rangeView.setText(""+Statics.getStringOfSoundRange(seekBar.getProgress()-24));
 				}
-
 				@Override
-				public void onStartTrackingTouch(SeekBar seekBar) {
-					// TODO Auto-generated method stub
-
-				}
-
+				public void onStartTrackingTouch(SeekBar seekBar) { }
 				@Override
-				public void onStopTrackingTouch(SeekBar seekBar) {
-					// TODO Auto-generated method stub
-
-				}
-
+				public void onStopTrackingTouch(SeekBar seekBar) { }
 			});
 			final LinearLayout layout = new LinearLayout(this);
 			layout.setOrientation(LinearLayout.VERTICAL);
@@ -337,13 +299,13 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 				@Override
 				public void onClick(DialogInterface dialog, int which) {
 					setSoundRange(seekBar.getProgress()-24);
-					((ListView)findViewById(R.id.settings_items)).setSelection(4);
+					((ListView)findViewById(R.id.settings_items)).setSelection(position);
 				}
 			})
 			.setNegativeButton(getString(R.string.cancel),new DialogInterface.OnClickListener(){
 				@Override
 				public void onClick(DialogInterface dialog, int which) {
-					((ListView)findViewById(R.id.settings_items)).setSelection(4);
+					((ListView)findViewById(R.id.settings_items)).setSelection(position);
 				}
 			})
 			.show();
@@ -359,43 +321,60 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 			.setSingleChoiceItems(list,waveform,new DialogInterface.OnClickListener(){
 				@Override
 				public void onClick(DialogInterface arg0, int arg1) {
-					selected=arg1;
-				}
-			})
-			.setPositiveButton(getString(R.string.ok),new DialogInterface.OnClickListener(){
-				@Override
-				public void onClick(DialogInterface dialog, int which) {
-					if(selected>=0) setWaveform(selected);
-					((ListView)findViewById(R.id.settings_items)).setSelection(4);
-				}
-			})
-			.setNegativeButton(getString(R.string.cancel),new DialogInterface.OnClickListener(){
-				@Override
-				public void onClick(DialogInterface dialog, int which) {
-					((ListView)findViewById(R.id.settings_items)).setSelection(4);
+					setWaveform(arg1);
+					arg0.dismiss();
+					((ListView)findViewById(R.id.settings_items)).setSelection(position);
 				}
 			})
 			.show();
 			break;
 		}
 		case 6:{
-			final TextView timeView = new TextView(this);
-			int tmpAttackTime=attackTime;
-			int tmpDecayTime=decayTime;
-			int tmpReleaseTime=releaseTime;
-			timeView.setText(""+Statics.getStringOfAttackDecayReleaseTime(tmpAttackTime,tmpDecayTime,tmpReleaseTime,this));
-			timeView.setTextAppearance(this,android.R.style.TextAppearance_Inverse);
+			final CheckBox enableCheckBox = new CheckBox(this);
 			final SeekBar attackSeekBar = new SeekBar(this);
 			final SeekBar decaySeekBar = new SeekBar(this);
+			final SeekBar sustainSeekBar = new SeekBar(this);
 			final SeekBar releaseSeekBar = new SeekBar(this);
+			final TextView attackLabel = new TextView(this);
+			final TextView decayLabel = new TextView(this);
+			final TextView sustainLabel = new TextView(this);
+			final TextView releaseLabel = new TextView(this);
+			TableRow.LayoutParams tableRowParams;
+			enableCheckBox.setText(getString(R.string.enable));
+			enableCheckBox.setChecked(enableEnvelope>0);
+			enableCheckBox.setOnClickListener(new OnClickListener(){
+				@Override
+				public void onClick(View v) {
+					if(enableCheckBox.isChecked()){
+						attackSeekBar.setEnabled(true);
+						decaySeekBar.setEnabled(true);
+						sustainSeekBar.setEnabled(true);
+						releaseSeekBar.setEnabled(true);
+					}else{
+						attackSeekBar.setEnabled(false);
+						decaySeekBar.setEnabled(false);
+						sustainSeekBar.setEnabled(false);
+						releaseSeekBar.setEnabled(false);
+						attackSeekBar.setProgress(0);
+						decaySeekBar.setProgress(0);
+						sustainSeekBar.setProgress(100);
+						releaseSeekBar.setProgress(0);
+						setAttackTime(attackSeekBar.getProgress());
+						setDecayTime(decaySeekBar.getProgress());
+						setSustainLevel(sustainSeekBar.getProgress());
+						setReleaseTime(releaseSeekBar.getProgress());
+					}
+				}
+			});
 			attackSeekBar.setProgress(attackTime);
 			attackSeekBar.setMax(100);
+			attackSeekBar.setPadding(0,0,0,8);
+			attackSeekBar.setEnabled(enableEnvelope>0);
 			attackSeekBar.setOnSeekBarChangeListener(new OnSeekBarChangeListener(){
 				@Override
 				public void onProgressChanged(SeekBar seekBar, int progress,
 						boolean fromUser) {
-					timeView.setText(""+Statics.getStringOfAttackDecayReleaseTime(
-							attackSeekBar.getProgress(),decaySeekBar.getProgress(),releaseSeekBar.getProgress(),SettingsActivity.this));
+					attackLabel.setText(getString(R.string.settings_attack)+" : "+Statics.getStringOfSingleTime(progress,SettingsActivity.this));
 				}
 				@Override
 				public void onStartTrackingTouch(SeekBar seekBar) {}
@@ -404,12 +383,28 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 			});
 			decaySeekBar.setProgress(decayTime);
 			decaySeekBar.setMax(100);
+			decaySeekBar.setPadding(0,0,0,8);
+			decaySeekBar.setEnabled(enableEnvelope>0);
 			decaySeekBar.setOnSeekBarChangeListener(new OnSeekBarChangeListener(){
 				@Override
 				public void onProgressChanged(SeekBar seekBar, int progress,
 						boolean fromUser) {
-					timeView.setText(""+Statics.getStringOfAttackDecayReleaseTime(
-							attackSeekBar.getProgress(),decaySeekBar.getProgress(),releaseSeekBar.getProgress(),SettingsActivity.this));
+					decayLabel.setText(getString(R.string.settings_decay)+" : "+Statics.getStringOfSingleTime(progress,SettingsActivity.this));
+				}
+				@Override
+				public void onStartTrackingTouch(SeekBar seekBar) {}
+				@Override
+				public void onStopTrackingTouch(SeekBar seekBar) {}
+			});
+			sustainSeekBar.setProgress(sustainLevel+100);
+			sustainSeekBar.setMax(100);
+			sustainSeekBar.setPadding(0,0,0,8);
+			sustainSeekBar.setEnabled(enableEnvelope>0);
+			sustainSeekBar.setOnSeekBarChangeListener(new OnSeekBarChangeListener(){
+				@Override
+				public void onProgressChanged(SeekBar seekBar, int progress,
+						boolean fromUser) {
+					sustainLabel.setText(getString(R.string.settings_sustain)+" : "+Statics.getStringOfSustainLevel(progress-100,SettingsActivity.this));
 				}
 				@Override
 				public void onStartTrackingTouch(SeekBar seekBar) {}
@@ -418,41 +413,92 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 			});
 			releaseSeekBar.setProgress(releaseTime);
 			releaseSeekBar.setMax(100);
+			releaseSeekBar.setPadding(0,0,0,8);
+			releaseSeekBar.setEnabled(enableEnvelope>0);
 			releaseSeekBar.setOnSeekBarChangeListener(new OnSeekBarChangeListener(){
 				@Override
 				public void onProgressChanged(SeekBar seekBar, int progress,
 						boolean fromUser) {
-					timeView.setText(""+Statics.getStringOfAttackDecayReleaseTime(
-							attackSeekBar.getProgress(),decaySeekBar.getProgress(),releaseSeekBar.getProgress(),SettingsActivity.this));
+					releaseLabel.setText(getString(R.string.settings_release)+" : "+Statics.getStringOfSingleTime(progress,SettingsActivity.this));
 				}
 				@Override
 				public void onStartTrackingTouch(SeekBar seekBar) {}
 				@Override
 				public void onStopTrackingTouch(SeekBar seekBar) {}
 			});
-			final LinearLayout layout = new LinearLayout(this);
-			layout.setOrientation(LinearLayout.VERTICAL);
-			layout.addView(timeView);
-			layout.addView(attackSeekBar);
-			layout.addView(decaySeekBar);
-			layout.addView(releaseSeekBar);
-			layout.setPadding(8,8,8,8);
+			final TableLayout tableLayout = new TableLayout(this);
+			TableRow row1=new TableRow(SettingsActivity.this);
+			enableCheckBox.setTextAppearance(this,darken>0?android.R.style.TextAppearance:android.R.style.TextAppearance_Inverse);
+			row1.addView(enableCheckBox);
+			tableLayout.addView(row1);
+			TableRow row2=new TableRow(SettingsActivity.this);
+			attackLabel.setText(getString(R.string.settings_attack)+" : "+Statics.getStringOfSingleTime(attackTime,SettingsActivity.this));
+			attackLabel.setTextAppearance(this,darken>0?android.R.style.TextAppearance:android.R.style.TextAppearance_Inverse);
+			row2.addView(attackLabel);
+			row2.addView(attackSeekBar);
+			tableLayout.addView(row2);
+			TableRow row3=new TableRow(SettingsActivity.this);
+			decayLabel.setText(getString(R.string.settings_decay)+" : "+Statics.getStringOfSingleTime(decayTime,SettingsActivity.this));
+			decayLabel.setTextAppearance(this,darken>0?android.R.style.TextAppearance:android.R.style.TextAppearance_Inverse);
+			row3.addView(decayLabel);
+			row3.addView(decaySeekBar);
+			tableLayout.addView(row3);
+			TableRow row4=new TableRow(SettingsActivity.this);
+			sustainLabel.setText(getString(R.string.settings_sustain)+" : "+Statics.getStringOfSustainLevel(sustainLevel,SettingsActivity.this));
+			sustainLabel.setTextAppearance(this,darken>0?android.R.style.TextAppearance:android.R.style.TextAppearance_Inverse);
+			row4.addView(sustainLabel);
+			row4.addView(sustainSeekBar);
+			tableLayout.addView(row4);
+			TableRow row5=new TableRow(SettingsActivity.this);
+			releaseLabel.setText(getString(R.string.settings_release)+" : "+Statics.getStringOfSingleTime(releaseTime,SettingsActivity.this));
+			releaseLabel.setTextAppearance(this,darken>0?android.R.style.TextAppearance:android.R.style.TextAppearance_Inverse);
+			row5.addView(releaseLabel);
+			row5.addView(releaseSeekBar);
+			tableLayout.addView(row5);
+
+			tableRowParams = (TableRow.LayoutParams)enableCheckBox.getLayoutParams();
+			tableRowParams.span = 4; 
+			enableCheckBox.setLayoutParams(tableRowParams);
+			tableRowParams = (TableRow.LayoutParams)attackSeekBar.getLayoutParams();
+			tableRowParams.span = 3; 
+			attackSeekBar.setLayoutParams(tableRowParams);
+			tableRowParams = (TableRow.LayoutParams)decaySeekBar.getLayoutParams();
+			tableRowParams.span = 3; 
+			decaySeekBar.setLayoutParams(tableRowParams);
+			tableRowParams = (TableRow.LayoutParams)sustainSeekBar.getLayoutParams();
+			tableRowParams.span = 3; 
+			sustainSeekBar.setLayoutParams(tableRowParams);
+			tableRowParams = (TableRow.LayoutParams)releaseSeekBar.getLayoutParams();
+			tableRowParams.span = 3; 
+			releaseSeekBar.setLayoutParams(tableRowParams);
+
+			FrameLayout.LayoutParams layoutParams=(FrameLayout.LayoutParams)tableLayout.getLayoutParams();
+			layoutParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT,ViewGroup.LayoutParams.FILL_PARENT);
+			tableLayout.setLayoutParams(layoutParams);
+			tableLayout.setPadding(8,8,8,8);
+			tableLayout.setStretchAllColumns(true);
+
+			ScrollView scrollView = new ScrollView(SettingsActivity.this);
+			scrollView.addView(tableLayout);
+
 			new AlertDialog.Builder(SettingsActivity.this)
 			.setTitle(getString(R.string.settings_envelope))
-			.setView(layout)
+			.setView(scrollView)
 			.setPositiveButton(getString(R.string.ok),new DialogInterface.OnClickListener(){
 				@Override
 				public void onClick(DialogInterface dialog, int which) {
+					setEnableEnvelope(enableCheckBox.isChecked()?1:0);
 					setAttackTime(attackSeekBar.getProgress());
 					setDecayTime(decaySeekBar.getProgress());
+					setSustainLevel(sustainSeekBar.getProgress());
 					setReleaseTime(releaseSeekBar.getProgress());
-					((ListView)findViewById(R.id.settings_items)).setSelection(6);
+					((ListView)findViewById(R.id.settings_items)).setSelection(position);
 				}
 			})
 			.setNegativeButton(getString(R.string.cancel),new DialogInterface.OnClickListener(){
 				@Override
 				public void onClick(DialogInterface dialog, int which) {
-					((ListView)findViewById(R.id.settings_items)).setSelection(6);
+					((ListView)findViewById(R.id.settings_items)).setSelection(position);
 				}
 			})
 			.show();
@@ -468,20 +514,27 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 			.setSingleChoiceItems(list,samplingRate+3,new DialogInterface.OnClickListener(){
 				@Override
 				public void onClick(DialogInterface arg0, int arg1) {
-					selected=arg1;
+					setSamplingRate(arg1-3);
+					arg0.dismiss();
+					((ListView)findViewById(R.id.settings_items)).setSelection(position);
 				}
 			})
-			.setPositiveButton(getString(R.string.ok),new DialogInterface.OnClickListener(){
+			.show();
+			break;
+		}
+		case 8:{
+			CharSequence list[]=new String[3];
+			for(int i=0;i<3;i++){
+				list[i]=""+Statics.getStringOfAnimationQuality(i-1,SettingsActivity.this);
+			}
+			new AlertDialog.Builder(SettingsActivity.this)
+			.setTitle(getString(R.string.settings_animation_quality))
+			.setSingleChoiceItems(list,animationQuality+1,new DialogInterface.OnClickListener(){
 				@Override
-				public void onClick(DialogInterface dialog, int which) {
-					if(selected>=0) setSamplingRate(selected-3);
-					((ListView)findViewById(R.id.settings_items)).setSelection(5);
-				}
-			})
-			.setNegativeButton(getString(R.string.cancel),new DialogInterface.OnClickListener(){
-				@Override
-				public void onClick(DialogInterface dialog, int which) {
-					((ListView)findViewById(R.id.settings_items)).setSelection(5);
+				public void onClick(DialogInterface arg0, int arg1) {
+					setAnimationQuality(arg1-1);
+					arg0.dismiss();
+					((ListView)findViewById(R.id.settings_items)).setSelection(position);
 				}
 			})
 			.show();
@@ -498,12 +551,13 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 		getPreferenceValues();
 		updateSettingsListView();
 	}
-
+	
 	public void setDarken(int d){
 		darken=d;
 		Statics.setPreferenceValue(this,Statics.PREF_DARKEN,darken);
 		getPreferenceValues();
 		updateSettingsListView();
+		
 	}
 	public void setVibration(int v){
 		vibration=v;
@@ -511,6 +565,7 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 		getPreferenceValues();
 		updateSettingsListView();
 	}
+	
 	public void setSamplingRate(int sr){
 		samplingRate=sr;
 		Statics.setPreferenceValue(this,Statics.PREF_SAMPLING_RATE,samplingRate);
@@ -546,6 +601,13 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 		updateSettingsListView();
 	}
 
+	public void setSustainLevel(int sl){
+		sustainLevel=sl;
+		Statics.setPreferenceValue(this,Statics.PREF_SUSTAIN_LEVEL,sl-100);
+		getPreferenceValues();
+		updateSettingsListView();
+	}
+
 	public void setReleaseTime(int rt){
 		releaseTime=rt;
 		Statics.setPreferenceValue(this,Statics.PREF_RELEASE_TIME,rt);
@@ -556,6 +618,21 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 	public void setWaveform(int wf){
 		waveform=wf;
 		Statics.setPreferenceValue(this,Statics.PREF_WAVEFORM,waveform);
+		getPreferenceValues();
+		updateSettingsListView();
+	}
+	
+	public void setEnableEnvelope(int ee){
+		enableEnvelope=ee;
+		Statics.setPreferenceValue(this,Statics.PREF_ENABLE_ENVELOPE,enableEnvelope);
+		getPreferenceValues();
+		updateSettingsListView();
+	}
+	
+	public void setAnimationQuality(int aq){
+		animationQuality=aq;
+		Statics.setPreferenceValue(this,Statics.PREF_ANIMATION_QUALITY,animationQuality);
+		MainActivity.setAnimationQuality(aq);
 		getPreferenceValues();
 		updateSettingsListView();
 	}

@@ -56,7 +56,10 @@ public class Statics {
 	public static final String PREF_SOUND_RANGE = "sound_range";
 	public static final String PREF_ATTACK_TIME = "attack_time";
 	public static final String PREF_DECAY_TIME = "decay_time";
+	public static final String PREF_SUSTAIN_LEVEL = "sustain_level";
 	public static final String PREF_RELEASE_TIME = "release_time";
+	public static final String PREF_ENABLE_ENVELOPE = "enable_envelope";
+	public static final String PREF_ANIMATION_QUALITY = "animation_quality";
 	
 	public static final int VIBRATION_LENGTH = 40;
 	
@@ -398,7 +401,7 @@ public class Statics {
 			if(n<soundRange) n+=12;
 			if(n>=soundRange+12) n-=12;
 		}
-		return (int)(f*Math.pow(2,(n-9)/12.0));
+		return (int)Math.round(f*Math.pow(2,(n-9)/12.0));
 	}
 
 	public static Integer[] getNotesOfChord(int x,int y,int[] tensions){
@@ -476,6 +479,19 @@ public class Statics {
 		Editor editor=pref.edit();
 		editor.putInt(key, val);
 		editor.commit();
+	}
+	
+	public static String getStringOfAnimationQuality(int aq,Context context){
+		switch(aq){
+		case -1:
+			return context.getString(R.string.settings_animation_quality_low);
+		case 0:
+			return context.getString(R.string.settings_animation_quality_medium);
+		case 1:
+			return context.getString(R.string.settings_animation_quality_high);
+		default:
+			return context.getString(R.string.settings_animation_quality_medium);
+		}
 	}
 
 	public static String getLongStringOfScale(int i){
@@ -566,10 +582,23 @@ public class Statics {
 		return getShortStringOfSoundRange(soundRange)+" - "+getShortStringOfSoundRange(soundRange+11);
 	}
 	
-	public static String getStringOfAttackDecayReleaseTime(int a,int d,int r,Context context){
-		return ""+a/1000.0f+context.getString(R.string.settings_attack_decay_release_time_seconds)+" - "
-				+d/1000.0f+context.getString(R.string.settings_attack_decay_release_time_seconds)+" - "
-				+r/1000.0f+context.getString(R.string.settings_attack_decay_release_time_seconds);
+	public static String getStringOfSingleTime(int t,Context context){
+		return ""+t/1000.0f+context.getString(R.string.settings_attack_decay_release_time_seconds);
+	}
+	
+	public static String getStringOfSustainLevel(int s,Context context){
+		return ""+(s+100)+context.getString(R.string.settings_sustain_level_percent);
+	}
+	
+	public static String getStringOfEnvelope(int e,int a,int d,int s,int r,Context context){
+		if(e>0){
+			return ""+a/1000.0f+context.getString(R.string.settings_attack_decay_release_time_seconds)+" - "
+					+d/1000.0f+context.getString(R.string.settings_attack_decay_release_time_seconds)+" - "
+					+(s+100)+context.getString(R.string.settings_sustain_level_percent)+" - "
+					+r/1000.0f+context.getString(R.string.settings_attack_decay_release_time_seconds);
+		}else{
+			return context.getString(R.string.disabled);
+		}
 	}
 	
 	public static String getShortStringOfSoundRange(int soundRange){

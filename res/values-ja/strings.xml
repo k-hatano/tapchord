@@ -20,8 +20,18 @@
     <string name="settings_envelope">エンベロープ</string>
     <string name="settings_attack_time">アタックタイム</string>
     <string name="settings_decay_time">ディケイタイム</string>
+    <string name="settings_sustain_level">サステインレベル</string>
     <string name="settings_release_time">リリースタイム</string>
+    <string name="settings_attack">アタック</string>
+    <string name="settings_decay">ディケイ</string>
+    <string name="settings_sustain">サステイン</string>
+    <string name="settings_release">リリース</string>
     <string name="settings_attack_decay_release_time_seconds">s</string>
+    <string name="settings_sustain_level_percent">%</string>
+    <string name="settings_animation_quality">アニメーションの品質</string>
+    <string name="settings_animation_quality_low">低</string>
+    <string name="settings_animation_quality_medium">中</string>
+    <string name="settings_animation_quality_high">高</string>
 
     <string name="settings_sampling_rate_hz"> Hz</string>
     <string name="special_thanks">Special Thanks to\nAkiyoshi Kamide</string>
@@ -36,5 +46,8 @@
     <string name="settings_darken">あの楽器</string>
     <string name="settings_scale">調</string>
     <string name="settings_vibration">振動</string>
+    <string name="enable">有効</string>
+    <string name="disable">有効</string>
+    <string name="disabled">無効</string>
 
 </resources>

@@ -1,5 +1,6 @@
 package jp.nita.tapchord;
 
+import android.media.AudioManager;
 import android.os.Bundle;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -10,7 +11,7 @@ import android.view.MenuItem;
 
 public class MainActivity extends Activity {
 	
-	public static int heartBeatInterval=1;
+	public static int heartBeatInterval=5;
 	
 	private Heart heart=null;
 
@@ -18,6 +19,8 @@ public class MainActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+		updatePreferenceValues();
+		setVolumeControlStream(AudioManager.STREAM_MUSIC);
 		heart=new Heart();
 		heart.start();
 	}
@@ -47,8 +50,6 @@ public class MainActivity extends Activity {
 	    switch (item.getItemId()) {
 	    case R.id.action_settings:
 	        Intent intent=new Intent(this,SettingsActivity.class);
-	        TapChordView view=(TapChordView)findViewById(R.id.tapChordView);
-	        intent.putExtra("darken",view.getDarken());
 	        startActivity(intent);
 	        return true;
 	    case R.id.action_quit:
@@ -68,6 +69,23 @@ public class MainActivity extends Activity {
 			}).show();
 	    }
 	    return false;
+	}
+	
+	public static void setAnimationQuality(int aq){
+		switch(aq){
+		case -1:
+			heartBeatInterval=25;
+			break;
+		case 0:
+			heartBeatInterval=5;
+			break;
+		case 1:
+			heartBeatInterval=1;
+			break;
+		default:
+			heartBeatInterval=5;
+			break;
+		}
 	}
 	
 	class Heart extends Thread implements Runnable{
@@ -93,6 +111,11 @@ public class MainActivity extends Activity {
 		public void die(){
 			alive=false;
 		}
+	}
+	
+	public void updatePreferenceValues(){
+		int animationQuality=Statics.getPreferenceValue(this,Statics.PREF_ANIMATION_QUALITY,0);
+		setAnimationQuality(animationQuality);
 	}
 
 }
