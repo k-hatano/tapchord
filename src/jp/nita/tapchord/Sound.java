@@ -8,6 +8,7 @@ import android.media.AudioTrack;
 public class Sound {
 	Integer[] frequencies=new Integer[0];
 	WaveGenerator generator=null;
+	AudioTrack track=null;
 
 	int mode;
 	long term;
@@ -30,6 +31,7 @@ public class Sound {
 	int decayLength;
 	int sustainLength;
 	int releaseLength;
+	int enableEnvelope;
 
 	double sustainLevel;
 
@@ -48,11 +50,11 @@ public class Sound {
 	}
 
 	public void stop(){
-		finish();
+		finish(MODE_RELEASE);
 	}
 
 	public void release(){
-		finish();
+		finish(MODE_FINISHED);
 	}
 
 	public double wave(double t,int which){
@@ -87,47 +89,91 @@ public class Sound {
 
 	class WaveGenerator extends Thread{
 		public void run(){
+			if(track!=null){
+				track.pause();
+				track.stop();
+				track.release();
+				track=null;
+			}
+			
 			volume=Statics.getValueOfVolume(Statics.getPreferenceValue(context,Statics.PREF_VOLUME,0));
 			soundRange=Statics.getValueOfVolume(Statics.getPreferenceValue(context,Statics.PREF_SOUND_RANGE,0));
 			sampleRate=Statics.getValueOfSamplingRate(Statics.getPreferenceValue(context,Statics.PREF_SAMPLING_RATE,0));
 			waveform=Statics.getPreferenceValue(context,Statics.PREF_WAVEFORM,0);
+			enableEnvelope=Statics.getPreferenceValue(context,Statics.PREF_ENABLE_ENVELOPE,0);
 
-			int attack=Statics.getPreferenceValue(context,Statics.PREF_ATTACK_TIME,0);
-			int decay=Statics.getPreferenceValue(context,Statics.PREF_DECAY_TIME,0);
-			int sustain=Statics.getPreferenceValue(context,Statics.PREF_SUSTAIN_LEVEL,0)+100;
-			int release=Statics.getPreferenceValue(context,Statics.PREF_RELEASE_TIME,0);
+			if(enableEnvelope>0){
+				int attack=Statics.getPreferenceValue(context,Statics.PREF_ATTACK_TIME,0);
+				int decay=Statics.getPreferenceValue(context,Statics.PREF_DECAY_TIME,0);
+				int sustain=Statics.getPreferenceValue(context,Statics.PREF_SUSTAIN_LEVEL,0)+100;
+				int release=Statics.getPreferenceValue(context,Statics.PREF_RELEASE_TIME,0);
 
-			attackLength=attack*sampleRate/1000;
-			decayLength=decay*sampleRate/1000;
-			sustainLength=sampleRate;
-			releaseLength=release*sampleRate/1000;
+				attackLength=attack*sampleRate/1000;
+				decayLength=decay*sampleRate/1000;
+				sustainLength=sampleRate;
+				releaseLength=release*sampleRate/1000;
 
-			sustainLevel=(double)sustain/100.0;
+				sustainLevel=(double)sustain/100.0;
 
-			length=AudioTrack.getMinBufferSize(sampleRate,
-					AudioFormat.CHANNEL_CONFIGURATION_MONO,
-					AudioFormat.ENCODING_PCM_16BIT)/100;
-			AudioTrack track = new AudioTrack(AudioManager.STREAM_MUSIC,
-					sampleRate,
-					AudioFormat.CHANNEL_CONFIGURATION_MONO,
-					AudioFormat.ENCODING_PCM_16BIT,
-					sampleRate*2,
-					AudioTrack.MODE_STREAM);
-			mode=MODE_ATTACK;
-			term=0;
-			modeTerm=0;
-			track.play();
-			while(mode<=MODE_RELEASE){
-				track.write(getWave(length),0,length);
-			}
-			try{
-				sleep(release);
-			}catch(InterruptedException ignore){
+				length=AudioTrack.getMinBufferSize(sampleRate,
+						AudioFormat.CHANNEL_CONFIGURATION_MONO,
+						AudioFormat.ENCODING_PCM_16BIT)/100;
+				track = new AudioTrack(AudioManager.STREAM_MUSIC,
+						sampleRate,
+						AudioFormat.CHANNEL_CONFIGURATION_MONO,
+						AudioFormat.ENCODING_PCM_16BIT,
+						sampleRate*2,
+						AudioTrack.MODE_STREAM);
+				mode=MODE_ATTACK;
+				term=0;
+				modeTerm=0;
+				track.play();
+				while(mode<=MODE_RELEASE){
+					track.write(getWave(length),0,length);
+				}
+				try{
+					sleep(release);
+				}catch(InterruptedException ignore){
+
+				}
+				track.pause();
+				track.stop();
+				track.release();
+				track=null;
+			}else{
+				attackLength=0;
+				decayLength=0;
+				sustainLength=sampleRate;
+				releaseLength=0;
+
+				sustainLevel=1.0;
 				
+				length=sampleRate;
+				track = new AudioTrack(AudioManager.STREAM_MUSIC,
+						sampleRate,
+						AudioFormat.CHANNEL_CONFIGURATION_MONO,
+						AudioFormat.ENCODING_PCM_16BIT,
+						sampleRate*2,
+						AudioTrack.MODE_STATIC);
+				mode=MODE_SUSTAIN;
+				term=0;
+				modeTerm=0;
+				track.write(getWave(length),0,length);
+				track.setLoopPoints(0,length-1,-1);
+				track.play();
+				while(mode<=MODE_SUSTAIN){
+					try {
+						Thread.sleep(MainActivity.heartBeatInterval);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+						break;
+					}
+				}
+				track.pause();
+				track.stop();
+				track.release();
+				track=null;
 			}
-			track.pause();
-			track.stop();
-			track.release();
 		}
 
 		public short[] getWave(int length){
@@ -139,29 +185,31 @@ public class Sound {
 						s+=wave((double)term*frequencies[j]/(double)sampleRate,waveform)*volume/400.0*(Short.MAX_VALUE);
 					}
 
-					if(mode==MODE_ATTACK&&modeTerm>=attackLength){
-						modeTerm=0;
-						mode=MODE_DECAY;
-					}
-					if(mode==MODE_DECAY&&modeTerm>=decayLength){
-						modeTerm=0;
-						mode=MODE_SUSTAIN;
-					}
-					if(mode==MODE_RELEASE&&modeTerm>releaseLength){
-						modeTerm=0;
-						mode=MODE_FINISHED;
-					}
+					if(enableEnvelope>0){
+						if(mode==MODE_ATTACK&&modeTerm>=attackLength){
+							modeTerm=0;
+							mode=MODE_DECAY;
+						}
+						if(mode==MODE_DECAY&&modeTerm>=decayLength){
+							modeTerm=0;
+							mode=MODE_SUSTAIN;
+						}
+						if(mode==MODE_RELEASE&&modeTerm>releaseLength){
+							modeTerm=0;
+							mode=MODE_FINISHED;
+						}
 
-					if(mode==MODE_ATTACK){
-						s=s*((double)modeTerm/(double)attackLength);
-					}else if(mode==MODE_DECAY){
-						s=(s*(double)(decayLength-modeTerm)/(double)decayLength+s*sustainLevel*(double)modeTerm/(double)decayLength);
-					}else if(mode==MODE_SUSTAIN){
-						s=s*sustainLevel;
-					}else if(mode==MODE_RELEASE){
-						s=s*((double)(releaseLength-modeTerm)/(double)releaseLength)*sustainLevel;
-					}else{
-						s=0;
+						if(mode==MODE_ATTACK){
+							s=s*((double)modeTerm/(double)attackLength);
+						}else if(mode==MODE_DECAY){
+							s=(s*(double)(decayLength-modeTerm)/(double)decayLength+s*sustainLevel*(double)modeTerm/(double)decayLength);
+						}else if(mode==MODE_SUSTAIN){
+							s=s*sustainLevel;
+						}else if(mode==MODE_RELEASE){
+							s=s*((double)(releaseLength-modeTerm)/(double)releaseLength)*sustainLevel;
+						}else{
+							s=0;
+						}
 					}
 
 					if(s>=Short.MAX_VALUE) s=(double)Short.MAX_VALUE;
@@ -178,10 +226,10 @@ public class Sound {
 
 	}
 
-	public void finish(){
+	public void finish(int modeParam){
 		synchronized(modeProcess){
 			modeTerm=0;
-			mode=MODE_RELEASE;
+			mode=modeParam;
 		}
 	}
 
