@@ -632,10 +632,16 @@ public class TapChordView extends View {
 		playingX=x;
 		playingY=y;
 		sound.play();
+		for(int i=0;i<notesOfChord.length;i++){
+			MainActivity.main.sendMidiEventToDevice(1, notesOfChord[i]);
+		}
 		invalidate();
 	}
 
 	public void stop(){
+		for(int i=0;i<notesOfChord.length;i++){
+			MainActivity.main.sendMidiEventToDevice(0, notesOfChord[i]);
+		}
 		if(sound!=null){
 			sound.stop();
 		}

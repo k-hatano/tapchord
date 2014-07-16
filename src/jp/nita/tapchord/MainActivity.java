@@ -1,17 +1,23 @@
 package jp.nita.tapchord;
 
+import jp.kshoji.driver.midi.activity.AbstractSingleMidiActivity;
+import jp.kshoji.driver.midi.device.MidiInputDevice;
+import jp.kshoji.driver.midi.device.MidiOutputDevice;
+import android.hardware.usb.UsbDevice;
 import android.media.AudioManager;
 import android.os.Bundle;
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.view.Menu;
 import android.view.MenuItem;
 
-public class MainActivity extends Activity {
+public class MainActivity extends AbstractSingleMidiActivity {
 	
 	public static int heartBeatInterval=5;
+	int volume;
+	
+	public static MainActivity main = null;
 	
 	private Heart heart=null;
 
@@ -23,6 +29,7 @@ public class MainActivity extends Activity {
 		setVolumeControlStream(AudioManager.STREAM_MUSIC);
 		heart=new Heart();
 		heart.start();
+		main=this;
 	}
 	
 	@Override
@@ -36,6 +43,7 @@ public class MainActivity extends Activity {
 	protected void onResume(){
 		super.onResume();
 		((TapChordView)findViewById(R.id.tapChordView)).activityResumed();
+		updatePreferenceValues();
 		heart.wake();
 	}
 
@@ -113,9 +121,116 @@ public class MainActivity extends Activity {
 		}
 	}
 	
+	public void sendMidiEventToDevice(int on,int note){
+		MidiOutputDevice device = getMidiOutputDevice();
+		if (device != null) {
+			if(on > 0){
+				device.sendMidiNoteOn(0, 0, note, volume*127/100);
+			}else{
+				device.sendMidiNoteOff(0, 0, note, volume*127/100);
+			}
+		}
+	}
+	
 	public void updatePreferenceValues(){
 		int animationQuality=Statics.getPreferenceValue(this,Statics.PREF_ANIMATION_QUALITY,0);
 		setAnimationQuality(animationQuality);
+		volume=Statics.getValueOfVolume(Statics.getPreferenceValue(this,Statics.PREF_VOLUME,0));
+	}
+
+	@Override
+	public void onDeviceDetached(UsbDevice usbDevice) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onDeviceAttached(UsbDevice usbDevice) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onMidiMiscellaneousFunctionCodes(MidiInputDevice sender,
+			int cable, int byte1, int byte2, int byte3) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onMidiCableEvents(MidiInputDevice sender, int cable, int byte1,
+			int byte2, int byte3) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onMidiSystemCommonMessage(MidiInputDevice sender, int cable,
+			byte[] bytes) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onMidiSystemExclusive(MidiInputDevice sender, int cable,
+			byte[] systemExclusive) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onMidiNoteOff(MidiInputDevice sender, int cable, int channel,
+			int note, int velocity) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onMidiNoteOn(MidiInputDevice sender, int cable, int channel,
+			int note, int velocity) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onMidiPolyphonicAftertouch(MidiInputDevice sender, int cable,
+			int channel, int note, int pressure) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onMidiControlChange(MidiInputDevice sender, int cable,
+			int channel, int function, int value) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onMidiProgramChange(MidiInputDevice sender, int cable,
+			int channel, int program) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onMidiChannelAftertouch(MidiInputDevice sender, int cable,
+			int channel, int pressure) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onMidiPitchWheel(MidiInputDevice sender, int cable,
+			int channel, int amount) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onMidiSingleByte(MidiInputDevice sender, int cable, int byte1) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }
