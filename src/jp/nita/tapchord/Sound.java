@@ -11,8 +11,7 @@ public class Sound {
 	AudioTrack track=null;
 
 	int mode;
-	long term;
-	long modeTerm;
+	long term,modeTerm;
 
 	final int MODE_ATTACK=0;
 	final int MODE_DECAY=1;
@@ -27,10 +26,7 @@ public class Sound {
 	int soundRange;
 
 	int length;
-	int attackLength;
-	int decayLength;
-	int sustainLength;
-	int releaseLength;
+	int attackLength,decayLength,sustainLength,releaseLength;
 	int enableEnvelope;
 
 	double sustainLevel;

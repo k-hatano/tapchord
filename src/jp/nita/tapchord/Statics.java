@@ -19,7 +19,7 @@ public class Statics {
 	final public static int SITUATION_NORMAL=0;
 	final public static int SITUATION_TRANSPOSE=1;
 	final public static int SITUATION_TRANSPOSING=2;
-	final public static int SITUATION_PULLING=3;
+	//final public static int SITUATION_PULLING=3;
 
 	final public static int CHORD_BUTTON=1;
 	final public static int STATUSBAR_BUTTON=2;
@@ -408,7 +408,6 @@ public class Statics {
 		List<Integer> notes=new ArrayList<Integer>();
 
 		if(y>=1) x+=3;
-
 		if(y==-1){
 			if(tensions[1]>0){
 				notes.add((x*7+360)%12);
@@ -436,7 +435,6 @@ public class Statics {
 				notes.add((x*7+7+360)%12);
 			}
 		}
-
 		if(tensions[0]>0){
 			notes.add((x*7+2+360)%12);
 		}
@@ -448,18 +446,15 @@ public class Statics {
 		}else if(tensions[3]>0){
 			notes.add((x*7+11+360)%12);
 		}
-
 		Integer ns[]=notes.toArray(new Integer[0]);
 		return ns;
 	}
 
 	public static Integer[] convertNotesToFrequencies(Integer[] notes,int soundRange){
 		List<Integer> freqs=new ArrayList<Integer>();
-
 		for(int i=0;i<notes.length;i++){
 			freqs.add(getFrequencyOfNote(notes[i],soundRange));
 		}
-
 		Integer fs[]=freqs.toArray(new Integer[0]);
 		return fs;
 	}
