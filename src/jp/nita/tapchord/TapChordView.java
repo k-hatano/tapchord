@@ -69,7 +69,7 @@ public class TapChordView extends View {
 
 	@SuppressLint("DrawAllocation")
 	protected void onDraw(Canvas canvas){
-		int x,y,delta;
+		int x,y,c,d,delta;
 		float w;
 		Paint paint=new Paint();
 		Paint textPaint=new Paint();
@@ -98,7 +98,6 @@ public class TapChordView extends View {
 			paint.setColor(Statics.getColor(Statics.COLOR_PASTELGRAY,0,darken));
 			canvas.drawRect(Statics.getRectOfToolbar(width, height,1.0f),paint);
 
-			int d;
 			d=(toolbarPressed==0)?1:0;
 			paint.setColor(Statics.getColor(Statics.COLOR_PURPLE,d,darken));
 			rect=Statics.getRectOfToolbarButton(0,0,width,height,1.0f);
@@ -118,7 +117,7 @@ public class TapChordView extends View {
 
 		delta=scroll/(height/5);
 		for(x=-7-delta;x<=7-delta;x++){
-			int d=(x==scalePressed)?1:0;
+			d=(x==scalePressed)?1:0;
 			paint.setColor(Statics.getColor(Statics.COLOR_LIGHTGRAY,d,darken));
 
 			rect=Statics.getRectOfButton(x,-2,width,height,scroll);
@@ -150,22 +149,18 @@ public class TapChordView extends View {
 			if(min>=36) min-=12;
 			int xx=(x+360)%12;
 			for(y=-1;y<=1;y++){
-				int c=0;
-				int d=0;
+				c=0;
+				d=0;
 				if(playing>0&&playingX==x&&playingY==y) d=1;
 				switch(xx){
 				case 11: case 0: case 1:
-					c=Statics.COLOR_RED;
-					break;
+					c=Statics.COLOR_RED; break;
 				case 2: case 3: case 4:
-					c=Statics.COLOR_YELLOW;
-					break;
+					c=Statics.COLOR_YELLOW; break;
 				case 5: case 6: case 7:
-					c=Statics.COLOR_GREEN;
-					break;
+					c=Statics.COLOR_GREEN; break;
 				case 8: case 9: case 10:
-					c=Statics.COLOR_BLUE;
-					break;
+					c=Statics.COLOR_BLUE; break;
 				}
 				if(situation==Statics.SITUATION_TRANSPOSE || destination==Statics.SITUATION_TRANSPOSE){
 					c=Statics.COLOR_LIGHTGRAY;
@@ -194,7 +189,7 @@ public class TapChordView extends View {
 			for(x=-7;x<=7;x++){
 				int xx=(x+360)%12;
 				for(y=-1;y<=1;y++){
-					int c=0;
+					c=0;
 					switch(xx){
 					case 11: case 0: case 1:
 						c=Statics.COLOR_RED; break;
@@ -231,7 +226,7 @@ public class TapChordView extends View {
 		canvas.drawRect(Statics.getRectOfToolbar(width, height,barsShowingRate),paint);
 
 		for(x=0;x<4;x++){
-			int d=(statusbarFlags[x]>0)?1:0;
+			d=(statusbarFlags[x]>0)?1:0;
 			paint.setColor(Statics.getColor(Statics.COLOR_ORANGE,d,darken));
 			rect=Statics.getRectOfStatusBarButton(x,0,width,height,barsShowingRate);
 			canvas.drawOval(rect, paint);
@@ -248,7 +243,7 @@ public class TapChordView extends View {
 		textPaint.setColor(Statics.getColor(Statics.COLOR_BLACK,0,darken));
 
 		for(x=0;x<3;x++){
-			int d=(toolbarPressed==x)?1:0;
+			d=(toolbarPressed==x)?1:0;
 			paint.setColor(Statics.getColor(Statics.COLOR_PURPLE,d,darken));
 			rect=Statics.getRectOfToolbarButton(x,0,width,height,barsShowingRate);
 			canvas.drawOval(rect, paint);
@@ -269,7 +264,6 @@ public class TapChordView extends View {
 
 		if(Statics.getRectOfStatusBarButton(3, 0, width, height, barsShowingRate).right
 				< Statics.getRectOfKeyboardIndicator(0, 0, width, height, barsShowingRate).left){
-
 			for(x=0;x<12;x++){
 				paint.setColor(Statics.getColor(Statics.COLOR_GRAY,0,darken));
 				rect=Statics.getRectOfKeyboardIndicator(x, 0, width, height, barsShowingRate);
@@ -281,7 +275,6 @@ public class TapChordView extends View {
 				rect=Statics.getRectOfKeyboardIndicator(notesOfChord[i], 2, width, height, barsShowingRate);
 				canvas.drawOval(rect,paint);
 			}
-
 		}
 
 		paint.setColor(Statics.getColor(Statics.COLOR_GRAY,0,darken));
@@ -447,10 +440,9 @@ public class TapChordView extends View {
 	}
 
 	public boolean actionMove(int x,int y,int id){
-		int i;
 		boolean chordPressed=false;
 		RectF rect;
-		int kind;
+		int i,kind;
 		if(id>=0) kind=taps.get(id);
 		else kind=0;
 		switch(kind){
@@ -626,6 +618,7 @@ public class TapChordView extends View {
 	}
 
 	public void play(int x,int y){
+		release();
 		notesOfChord=Statics.getNotesOfChord(x+scale,y,statusbarFlags);
 		notes=Statics.getMidiNotesOfChord(x+scale,y,statusbarFlags,soundRange);
 		Integer f[]=(Statics.convertNotesToFrequencies(notesOfChord,soundRange));
@@ -680,8 +673,6 @@ public class TapChordView extends View {
 				case Statics.SITUATION_TRANSPOSE:
 					scroll=(int)(originalScroll*step/stepMax);
 					barsShowingRate=step/stepMax;
-					break;
-				case Statics.SITUATION_PULLING:
 					break;
 				}
 			}else if(situation==Statics.SITUATION_TRANSPOSE){
@@ -739,11 +730,12 @@ public class TapChordView extends View {
 		step=(int)stepMax;
 		destScale=ds;
 	}
-
+	
 	public void startPullingAnimation(){
-		situation=Statics.SITUATION_PULLING;
+		pulling=1;
 		step=(int)stepMax;
 	}
+
 
 	public void setScale(int s){
 		scale=s;

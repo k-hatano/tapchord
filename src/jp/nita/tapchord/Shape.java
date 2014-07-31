@@ -3,10 +3,7 @@ package jp.nita.tapchord;
 import android.graphics.PointF;
 
 public class Shape {
-	public int style;
-	public int radStart;
-	public int radEnd;
-	public int lifetime;
+	public int style,radStart,radEnd,lifetime;
 	public PointF center;
 	
 	public final static int STYLE_LINE=0;
