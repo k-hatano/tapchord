@@ -52,7 +52,7 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		getPreferenceValues();
-		setTheme(darken>0?android.R.style.Theme_Black:android.R.style.Theme_Light);
+		setTheme(android.R.style.Theme_Light);
 
 		setContentView(R.layout.activity_settings);
 
@@ -230,7 +230,7 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 			int vol=volume+50;
 			final TextView volumeView = new TextView(this);
 			volumeView.setText(""+vol);
-			volumeView.setTextAppearance(this,darken>0?android.R.style.TextAppearance:android.R.style.TextAppearance_Inverse);
+			volumeView.setTextAppearance(this,android.R.style.TextAppearance_Inverse);
 			final SeekBar seekBar = new SeekBar(this);
 			seekBar.setProgress(vol);
 			seekBar.setMax(100);
@@ -272,7 +272,7 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 		case 4:{
 			final TextView rangeView = new TextView(this);
 			rangeView.setText(""+Statics.getStringOfSoundRange(soundRange));
-			rangeView.setTextAppearance(this,darken>0?android.R.style.TextAppearance:android.R.style.TextAppearance_Inverse);
+			rangeView.setTextAppearance(this,android.R.style.TextAppearance_Inverse);
 			final SeekBar seekBar = new SeekBar(this);
 			seekBar.setProgress(soundRange+24);
 			seekBar.setMax(48);
@@ -428,30 +428,30 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 			});
 			final TableLayout tableLayout = new TableLayout(this);
 			TableRow row1=new TableRow(SettingsActivity.this);
-			enableCheckBox.setTextAppearance(this,darken>0?android.R.style.TextAppearance:android.R.style.TextAppearance_Inverse);
+			enableCheckBox.setTextAppearance(this,android.R.style.TextAppearance_Inverse);
 			row1.addView(enableCheckBox);
 			tableLayout.addView(row1);
 			TableRow row2=new TableRow(SettingsActivity.this);
 			attackLabel.setText(getString(R.string.settings_attack)+" : "+Statics.getStringOfSingleTime(attackTime,SettingsActivity.this));
-			attackLabel.setTextAppearance(this,darken>0?android.R.style.TextAppearance:android.R.style.TextAppearance_Inverse);
+			attackLabel.setTextAppearance(this,android.R.style.TextAppearance_Inverse);
 			row2.addView(attackLabel);
 			row2.addView(attackSeekBar);
 			tableLayout.addView(row2);
 			TableRow row3=new TableRow(SettingsActivity.this);
 			decayLabel.setText(getString(R.string.settings_decay)+" : "+Statics.getStringOfSingleTime(decayTime,SettingsActivity.this));
-			decayLabel.setTextAppearance(this,darken>0?android.R.style.TextAppearance:android.R.style.TextAppearance_Inverse);
+			decayLabel.setTextAppearance(this,android.R.style.TextAppearance_Inverse);
 			row3.addView(decayLabel);
 			row3.addView(decaySeekBar);
 			tableLayout.addView(row3);
 			TableRow row4=new TableRow(SettingsActivity.this);
 			sustainLabel.setText(getString(R.string.settings_sustain)+" : "+Statics.getStringOfSustainLevel(sustainLevel,SettingsActivity.this));
-			sustainLabel.setTextAppearance(this,darken>0?android.R.style.TextAppearance:android.R.style.TextAppearance_Inverse);
+			sustainLabel.setTextAppearance(this,android.R.style.TextAppearance_Inverse);
 			row4.addView(sustainLabel);
 			row4.addView(sustainSeekBar);
 			tableLayout.addView(row4);
 			TableRow row5=new TableRow(SettingsActivity.this);
 			releaseLabel.setText(getString(R.string.settings_release)+" : "+Statics.getStringOfSingleTime(releaseTime,SettingsActivity.this));
-			releaseLabel.setTextAppearance(this,darken>0?android.R.style.TextAppearance:android.R.style.TextAppearance_Inverse);
+			releaseLabel.setTextAppearance(this,android.R.style.TextAppearance_Inverse);
 			row5.addView(releaseLabel);
 			row5.addView(releaseSeekBar);
 			tableLayout.addView(row5);
