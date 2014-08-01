@@ -37,7 +37,7 @@ public class TapChordView extends View {
 	long lastTappedTime=-1;
 	int toolbarPressed=-1;
 	int scalePressed=Statics.FARAWAY;
-	float stepMax=100.0f/MainActivity.heartBeatInterval;
+	float stepMax=1.0f;
 	float barsShowingRate=1.0f;
 
 	private Vibrator vib;
@@ -663,13 +663,13 @@ public class TapChordView extends View {
 				switch(destination){
 				case Statics.SITUATION_TRANSPOSE:
 					scroll=(int)(originalScroll*step/stepMax);
-					barsShowingRate=step/stepMax;
+					barsShowingRate=(float)step/stepMax;
 					break;
 				}
 			}else if(situation==Statics.SITUATION_TRANSPOSE){
 				switch(destination){
 				case Statics.SITUATION_NORMAL:
-					barsShowingRate=(stepMax-step)/stepMax;
+					barsShowingRate=(float)(stepMax-step)/stepMax;
 					break;
 				}
 			}else if(situation==Statics.SITUATION_TRANSPOSING){
@@ -743,6 +743,7 @@ public class TapChordView extends View {
 		darken=Statics.getPreferenceValue(this.getContext(),Statics.PREF_DARKEN,0);
 		soundRange=Statics.getPreferenceValue(this.getContext(),Statics.PREF_SOUND_RANGE,0);
 		vibration=Statics.getPreferenceValue(this.getContext(),Statics.PREF_VIBRATION,0);
+		stepMax=100.0f/MainActivity.heartBeatInterval;
 	}
 
 	public void vibrate(){
