@@ -41,7 +41,7 @@ public class TapChordView extends View {
 	float barsShowingRate=1.0f;
 
 	private Vibrator vib;
-	
+
 	Handler handler=new Handler();
 
 	Integer notesOfChord[]=new Integer[0];
@@ -347,6 +347,7 @@ public class TapChordView extends View {
 				toolbarPressed=0;
 				taps.put(id,Statics.TOOLBAR_BUTTON);
 				vibrate();
+				invalidate(Statics.RectFToRect(Statics.getRectOfToolbar(width,height,1.0f)));
 				return false;
 			}
 			rect=Statics.getRectOfToolbarTransposingButton(0,0,width,height,1.0f);
@@ -354,6 +355,7 @@ public class TapChordView extends View {
 				toolbarPressed=1;
 				taps.put(id,Statics.TOOLBAR_BUTTON);
 				vibrate();
+				invalidate(Statics.RectFToRect(Statics.getRectOfToolbar(width,height,1.0f)));
 				return false;
 			}
 		}else{
@@ -363,6 +365,7 @@ public class TapChordView extends View {
 					toolbarPressed=i;
 					taps.put(id,Statics.TOOLBAR_BUTTON);
 					vibrate();
+					invalidate(Statics.RectFToRect(Statics.getRectOfToolbar(width,height,1.0f)));
 					return false;
 				}
 			}
@@ -375,6 +378,7 @@ public class TapChordView extends View {
 					scalePressed=i;
 					taps.put(id,Statics.TRANSPOSE_SCALE_BUTTON);
 					vibrate();
+					invalidate();
 					return false;
 				}
 			}
@@ -388,6 +392,7 @@ public class TapChordView extends View {
 					vibrate();
 					lastTapped=i;
 					lastTappedTime=System.currentTimeMillis();
+					invalidate(Statics.RectFToRect(Statics.getRectOfStatusBar(width,height,1.0f)));
 					return false;
 				}
 			}
@@ -397,6 +402,7 @@ public class TapChordView extends View {
 				originalScroll=scroll;
 				taps.put(id,Statics.SCROLL_NOB);
 				vibrate();
+				invalidate(Statics.RectFToRect(Statics.getRectOfToolbar(width,height,1.0f)));
 				return false;
 			}else if(Statics.getRectOfToolbar(width,height,1.0f).contains(x,y)){
 				if(scroll==0){
@@ -408,6 +414,7 @@ public class TapChordView extends View {
 				}
 				taps.put(id,Statics.SCROLL_BAR);
 				vibrate();
+				invalidate(Statics.RectFToRect(Statics.getRectOfToolbar(width,height,1.0f)));
 				return false;
 			}
 		}
@@ -425,14 +432,16 @@ public class TapChordView extends View {
 					if(darken>0){
 						shapes.add(new Shape(new PointF(x,y)));
 					}
+					invalidate();
 					return true;
 				}
 			}
 		}else{
 			if(Statics.getRectOfButtonArea(width,height).contains(x, y)){
-				destinationScroll=originalScroll+(x-tappedX);
+				// destinationScroll=originalScroll+(x-tappedX);
 				pulling=1;
 				startPullingAnimation();
+				invalidate(Statics.RectFToRect(Statics.getRectOfButtonArea(width,height)));
 				return true;
 			}
 		}
@@ -448,15 +457,18 @@ public class TapChordView extends View {
 		switch(kind){
 		case Statics.SCROLL_NOB:
 			if(-y+originalY>height/5){
-				vibrate();
-				scroll=0;
-				upper=height/35/5*2;
+				if(upper==0){
+					vibrate();
+					scroll=0;
+					upper=height/35/5*2;
+				}
 			}else{
 				scroll=(int)(-x+originalX)*5+originalScroll;
 				if(scroll<-Statics.getScrollMax(width,height)) scroll=-Statics.getScrollMax(width,height);
 				if(scroll>Statics.getScrollMax(width,height)) scroll=Statics.getScrollMax(width,height);
 				upper=0;
 			}
+			invalidate(Statics.RectFToRect(Statics.getRectOfToolbar(width,height,1.0f)));
 			break;
 		case Statics.STATUSBAR_BUTTON:
 			for(i=0;i<4;i++){
@@ -467,6 +479,7 @@ public class TapChordView extends View {
 					statusbarFlags[i]=1;
 				}
 			}
+			invalidate(Statics.RectFToRect(Statics.getRectOfStatusBar(width,height,1.0f)));
 			break;
 		case Statics.TOOLBAR_BUTTON:
 			toolbarPressed=-1;
@@ -490,6 +503,7 @@ public class TapChordView extends View {
 					}
 				}
 			}
+			invalidate(Statics.RectFToRect(Statics.getRectOfToolbar(width,height,1.0f)));
 			break;
 		case Statics.CHORD_BUTTON:
 			if(id==playingID){
@@ -506,7 +520,7 @@ public class TapChordView extends View {
 						destinationScroll=originalScroll+(x-tappedX);
 					}else if(Math.abs(x-tappedX)>height/5){
 						originalScroll=scroll;
-						destinationScroll=originalScroll+(x-tappedX);
+						// destinationScroll=originalScroll+(x-tappedX);
 						pulling=1;
 						step=100/MainActivity.heartBeatInterval;
 						startPullingAnimation();
@@ -516,6 +530,8 @@ public class TapChordView extends View {
 			}else{
 				chordPressed=actionDown(x,y,id);
 			}
+			invalidate(Statics.RectFToRect(Statics.getRectOfButtonArea(width,height)));
+			invalidate(Statics.RectFToRect(Statics.getRectOfStatusBar(width,height,1.0f)));
 			break;
 		case Statics.SCROLL_BAR:
 			break;
@@ -568,11 +584,11 @@ public class TapChordView extends View {
 			pulling=0;
 			upper=0;
 			taps=new SparseIntArray();
+			invalidate();
 			break;
 		default:
 			break;
 		}
-		invalidate();
 		return true;
 	}
 
@@ -630,7 +646,8 @@ public class TapChordView extends View {
 		for(int i=0;i<notes.length;i++){
 			MainActivity.main.sendMidiEventToDevice(1, notes[i]);
 		}
-		invalidate();
+		invalidate(Statics.RectFToRect(Statics.getRectOfButton(x,y,width,height,scroll)));
+		invalidate(Statics.RectFToRect(Statics.getRectOfStatusBar(width,height,1.0f)));
 	}
 
 	public void stop(){
@@ -643,7 +660,8 @@ public class TapChordView extends View {
 		playing=0;
 		notesOfChord=new Integer[0];
 		notes=new Integer[0];
-		invalidate();
+		invalidate(Statics.RectFToRect(Statics.getRectOfButtonArea(width,height)));
+		invalidate(Statics.RectFToRect(Statics.getRectOfStatusBar(width,height,1.0f)));
 	}
 
 	public void release(){
@@ -730,7 +748,7 @@ public class TapChordView extends View {
 		step=(int)stepMax;
 		destScale=ds;
 	}
-	
+
 	public void startPullingAnimation(){
 		pulling=1;
 		step=(int)stepMax;

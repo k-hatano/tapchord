@@ -8,7 +8,7 @@ import android.media.AudioTrack;
 public class Sound {
 	Integer[] frequencies=new Integer[0];
 	WaveGenerator generator=null;
-	AudioTrack track=null;
+	static AudioTrack track=null;
 
 	int mode;
 	long term,modeTerm;
@@ -91,7 +91,7 @@ public class Sound {
 				track.release();
 				track=null;
 			}
-			
+
 			volume=Statics.getValueOfVolume(Statics.getPreferenceValue(context,Statics.PREF_VOLUME,0));
 			soundRange=Statics.getValueOfVolume(Statics.getPreferenceValue(context,Statics.PREF_SOUND_RANGE,0));
 			sampleRate=Statics.getValueOfSamplingRate(Statics.getPreferenceValue(context,Statics.PREF_SAMPLING_RATE,0));
@@ -114,12 +114,14 @@ public class Sound {
 				length=AudioTrack.getMinBufferSize(sampleRate,
 						AudioFormat.CHANNEL_CONFIGURATION_MONO,
 						AudioFormat.ENCODING_PCM_16BIT)/100;
-				track = new AudioTrack(AudioManager.STREAM_MUSIC,
-						sampleRate,
-						AudioFormat.CHANNEL_CONFIGURATION_MONO,
-						AudioFormat.ENCODING_PCM_16BIT,
-						sampleRate*2,
-						AudioTrack.MODE_STREAM);
+				synchronized(modeProcess){
+					track = new AudioTrack(AudioManager.STREAM_MUSIC,
+							sampleRate,
+							AudioFormat.CHANNEL_CONFIGURATION_MONO,
+							AudioFormat.ENCODING_PCM_16BIT,
+							sampleRate*2,
+							AudioTrack.MODE_STREAM);
+				}
 				mode=MODE_ATTACK;
 				term=0;
 				modeTerm=0;
@@ -143,14 +145,16 @@ public class Sound {
 				releaseLength=0;
 
 				sustainLevel=1.0;
-				
+
 				length=sampleRate;
-				track = new AudioTrack(AudioManager.STREAM_MUSIC,
-						sampleRate,
-						AudioFormat.CHANNEL_CONFIGURATION_MONO,
-						AudioFormat.ENCODING_PCM_16BIT,
-						sampleRate*2,
-						AudioTrack.MODE_STATIC);
+				synchronized(modeProcess){
+					track = new AudioTrack(AudioManager.STREAM_MUSIC,
+							sampleRate,
+							AudioFormat.CHANNEL_CONFIGURATION_MONO,
+							AudioFormat.ENCODING_PCM_16BIT,
+							sampleRate*2,
+							AudioTrack.MODE_STATIC);
+				}
 				mode=MODE_SUSTAIN;
 				term=0;
 				modeTerm=0;
