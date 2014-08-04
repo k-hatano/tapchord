@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Point;
+import android.graphics.Rect;
 import android.graphics.RectF;
 
 public class Statics {
@@ -609,5 +610,9 @@ public class Statics {
 			}
 		}
 		return ""+NOTES_C2B[soundRange]+octave;
+	}
+	
+	public static Rect RectFToRect(RectF rectf){
+		return new Rect((int)rectf.left,(int)rectf.top,(int)rectf.right,(int)rectf.bottom);
 	}
 }
