@@ -52,7 +52,7 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		getPreferenceValues();
-		setTheme(darken>0?android.R.style.Theme_Black:android.R.style.Theme_Light);
+		setTheme(darken>0?android.R.style.Theme_Holo:android.R.style.Theme_Holo_Light);
 
 		setContentView(R.layout.activity_settings);
 
