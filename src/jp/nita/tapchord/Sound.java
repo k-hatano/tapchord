@@ -134,7 +134,6 @@ public class Sound {
 					}catch(InterruptedException ignore){
 
 					}
-					track.pause();
 					track.stop();
 					track.release();
 					track=null;
@@ -167,7 +166,6 @@ public class Sound {
 							break;
 						}
 					}
-					track.pause();
 					track.stop();
 					track.release();
 					track=null;
