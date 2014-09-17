@@ -113,10 +113,12 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 			map.put("value", Statics.getValueOfWaveform(waveform,this));
 			list.add(map);
 
+			/*
 			map=new HashMap<String,String>();
 			map.put("key", getString(R.string.settings_envelope));
 			map.put("value", ""+Statics.getStringOfEnvelope(enableEnvelope,attackTime,decayTime,sustainLevel,releaseTime,this));
 			list.add(map);
+			*/
 
 			map=new HashMap<String,String>();
 			map.put("key", getString(R.string.settings_sampling_rate));
@@ -329,6 +331,7 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 			.show();
 			break;
 		}
+		/*
 		case 6:{
 			final CheckBox enableCheckBox = new CheckBox(this);
 			final SeekBar attackSeekBar = new SeekBar(this);
@@ -504,7 +507,8 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 			.show();
 			break;
 		}
-		case 7:{
+		*/
+		case 6:{
 			CharSequence list[]=new String[4];
 			for(int i=0;i<4;i++){
 				list[i]=""+Statics.getValueOfSamplingRate(i-3)+" "+getString(R.string.settings_sampling_rate_hz);
@@ -522,7 +526,7 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 			.show();
 			break;
 		}
-		case 8:{
+		case 7:{
 			CharSequence list[]=new String[3];
 			for(int i=0;i<3;i++){
 				list[i]=""+Statics.getStringOfAnimationQuality(i-1,SettingsActivity.this);
