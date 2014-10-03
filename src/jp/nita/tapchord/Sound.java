@@ -155,7 +155,7 @@ public class Sound {
 					term=0;
 					modeTerm=0;
 					track.write(getWave(length),0,length);
-					track.setLoopPoints(0,length-1,-1);
+					track.setLoopPoints(0,length,-1);
 					track.play();
 					while(mode<=MODE_SUSTAIN){
 						try {
