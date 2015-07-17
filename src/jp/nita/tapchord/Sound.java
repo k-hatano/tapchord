@@ -27,7 +27,7 @@ public class Sound {
 
 	int length;
 	int attackLength,decayLength,sustainLength,releaseLength;
-	int enableEnvelope;
+	boolean enableEnvelope;
 
 	double sustainLevel;
 
@@ -53,7 +53,7 @@ public class Sound {
 		finish(MODE_FINISHED);
 	}
 
-	public double wave(double t,int which){
+	public static double wave(double t,int which){
 		switch(which){
 		case 0:
 			return Math.sin(2.0*Math.PI*t);
@@ -97,13 +97,13 @@ public class Sound {
 				soundRange=Statics.getValueOfVolume(Statics.getPreferenceValue(context,Statics.PREF_SOUND_RANGE,0));
 				sampleRate=Statics.getValueOfSamplingRate(Statics.getPreferenceValue(context,Statics.PREF_SAMPLING_RATE,0));
 				waveform=Statics.getPreferenceValue(context,Statics.PREF_WAVEFORM,0);
-				enableEnvelope=Statics.getPreferenceValue(context,Statics.PREF_ENABLE_ENVELOPE,0);
+				enableEnvelope=Statics.getPreferenceValue(context,Statics.PREF_ENABLE_ENVELOPE,0)>0;
 
-				if(enableEnvelope>0){
-					int attack=Statics.getPreferenceValue(context,Statics.PREF_ATTACK_TIME,0);
-					int decay=Statics.getPreferenceValue(context,Statics.PREF_DECAY_TIME,0);
-					int sustain=Statics.getPreferenceValue(context,Statics.PREF_SUSTAIN_LEVEL,0)+100;
-					int release=Statics.getPreferenceValue(context,Statics.PREF_RELEASE_TIME,0);
+				if(enableEnvelope){
+					final int attack=Statics.getPreferenceValue(context,Statics.PREF_ATTACK_TIME,0);
+					final int decay=Statics.getPreferenceValue(context,Statics.PREF_DECAY_TIME,0);
+					final int sustain=Statics.getPreferenceValue(context,Statics.PREF_SUSTAIN_LEVEL,0)+100;
+					final int release=Statics.getPreferenceValue(context,Statics.PREF_RELEASE_TIME,0);
 
 					attackLength=attack*sampleRate/1000;
 					decayLength=decay*sampleRate/1000;
@@ -177,10 +177,11 @@ public class Sound {
 			for(int i=0;i<length;i++){
 				double s=0;
 				for(int j=0;j<frequencies.length;j++){
-					s+=wave((double)term*frequencies[j]/(double)sampleRate,waveform)*volume/400.0*(Short.MAX_VALUE);
+					s+=wave((double)term*frequencies[j]/sampleRate,waveform);
 				}
+				s*=volume/400.0*(Short.MAX_VALUE);
 
-				if(enableEnvelope>0){
+				if(enableEnvelope){
 					if(mode==MODE_ATTACK&&modeTerm>=attackLength){
 						modeTerm=0;
 						mode=MODE_DECAY;

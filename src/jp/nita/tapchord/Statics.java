@@ -78,9 +78,9 @@ public class Statics {
 
 	public static String TENSIONS[]={"add9","-5/aug","7","M7"};
 
-	public static int getColor(int which,int pressed,int dark){
+	public static int getColor(int which,int pressed,boolean dark){
 		int r,g,b;
-		if(dark==0){
+		if(dark==false){
 			switch(which){
 			case COLOR_BLACK:
 				r=0x00;
