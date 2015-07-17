@@ -478,6 +478,14 @@ public class TapChordView extends View {
 					statusbarFlags[i]=1;
 				}
 			}
+			if(y>height*7/35){
+				for(i=0;i<4;i++){
+					if(statusbarFlags[i]==1){
+						statusbarFlags[i]=2;
+						vibrate();
+					}
+				}
+			}
 			invalidate(Statics.RectFToRect(Statics.getRectOfStatusBar(width,height,1.0f)));
 			break;
 		case Statics.TOOLBAR_BUTTON:
