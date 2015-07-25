@@ -415,6 +415,22 @@ public class TapChordView extends View {
 				vibrate();
 				invalidate(Statics.RectFToRect(Statics.getRectOfToolbar(width,height,1.0f)));
 				return false;
+			}else if(Statics.getRectOfStatusBar(width,height,1.0f).contains(x,y)){
+				boolean statusbarFlag=false;
+				for(i=0;i<4;i++){
+					if(statusbarFlags[i]>=2) statusbarFlag=true;
+				}
+				if(statusbarFlag){
+					for(i=0;i<4;i++){
+						if(statusbarFlags[i]>=2) statusbarFlags[i]=0;
+					}
+				}else{
+					scroll=0;
+				}
+				taps.put(id,Statics.STATUS_BAR);
+				vibrate();
+				invalidate(Statics.RectFToRect(Statics.getRectOfStatusBar(width,height,1.0f)));
+				return false;
 			}
 		}
 
@@ -543,6 +559,8 @@ public class TapChordView extends View {
 		case Statics.SCROLL_BAR:
 			break;
 		case Statics.TRANSPOSE_SCALE_BUTTON:
+			break;
+		case Statics.STATUS_BAR:
 			break;
 		default:
 			chordPressed=actionDown(x,y,id);
