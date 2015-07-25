@@ -28,6 +28,7 @@ public class Statics {
 	final public static int TOOLBAR_BUTTON=4;
 	final public static int SCROLL_BAR=5;
 	final public static int TRANSPOSE_SCALE_BUTTON=6;
+	final public static int STATUS_BAR=7;
 
 	final public static int COLOR_ABSOLUTE_CYAN=-128;
 	final public static int COLOR_BLACK=-6;
