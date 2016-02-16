@@ -28,6 +28,7 @@ public class Statics {
 	final public static int TOOLBAR_BUTTON=4;
 	final public static int SCROLL_BAR=5;
 	final public static int TRANSPOSE_SCALE_BUTTON=6;
+	final public static int STATUS_BAR=7;
 
 	final public static int COLOR_ABSOLUTE_CYAN=-128;
 	final public static int COLOR_BLACK=-6;
@@ -78,9 +79,9 @@ public class Statics {
 
 	public static String TENSIONS[]={"add9","-5/aug","7","M7"};
 
-	public static int getColor(int which,int pressed,int dark){
+	public static int getColor(int which,int pressed,boolean dark){
 		int r,g,b;
-		if(dark==0){
+		if(dark==false){
 			switch(which){
 			case COLOR_BLACK:
 				r=0x00;

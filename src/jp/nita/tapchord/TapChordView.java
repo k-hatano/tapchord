@@ -23,12 +23,12 @@ import android.view.View;
 
 public class TapChordView extends View {
 	int width,height,originalX,originalY,originalScroll;
-	int situation,destination,step,scroll,upper,darken,destScale;
+	int situation,destination,step,scroll,upper,destScale;
 	int playing,playingX,playingY,tappedX,destinationScroll;
 	int playingID;
+	boolean darken,vibration;
 
 	int scale=0;
-	int vibration=0;
 	int soundRange=0;
 	int pulling=0;
 
@@ -58,12 +58,12 @@ public class TapChordView extends View {
 		playing=0;
 		scroll=0;
 		upper=0;
-		darken=0;
+		darken=false;
 		vib = (Vibrator)context.getSystemService(Context.VIBRATOR_SERVICE);
 	}
 
 	public void init(Context context){
-
+		getPreferenceValues();
 	}
 
 	@SuppressLint("DrawAllocation")
@@ -284,7 +284,7 @@ public class TapChordView extends View {
 		rect=Statics.getRectOfScrollNob(scroll, upper, width, height, barsShowingRate);
 		canvas.drawRect(rect,paint);
 
-		if(darken>0){
+		if(darken){
 			paint.setStyle(Style.STROKE);
 			paint.setStrokeWidth(height/25);
 			paint.setColor(Statics.getColor(Statics.COLOR_ABSOLUTE_CYAN,1,darken));
@@ -415,6 +415,22 @@ public class TapChordView extends View {
 				vibrate();
 				invalidate(Statics.RectFToRect(Statics.getRectOfToolbar(width,height,1.0f)));
 				return false;
+			}else if(Statics.getRectOfStatusBar(width,height,1.0f).contains(x,y)){
+				boolean statusbarFlag=false;
+				for(i=0;i<4;i++){
+					if(statusbarFlags[i]>=2) statusbarFlag=true;
+				}
+				if(statusbarFlag){
+					for(i=0;i<4;i++){
+						if(statusbarFlags[i]>=2) statusbarFlags[i]=0;
+					}
+				}else{
+					scroll=0;
+				}
+				taps.put(id,Statics.STATUS_BAR);
+				vibrate();
+				invalidate(Statics.RectFToRect(Statics.getRectOfStatusBar(width,height,1.0f)));
+				return false;
 			}
 		}
 
@@ -428,7 +444,7 @@ public class TapChordView extends View {
 					playingID=id;
 					taps.put(playingID,Statics.CHORD_BUTTON);
 					vibrate();
-					if(darken>0){
+					if(darken){
 						shapes.add(new Shape(new PointF(x,y)));
 					}
 					invalidate();
@@ -476,6 +492,14 @@ public class TapChordView extends View {
 					if(statusbarFlags[i]>=2&&lastTapped==i) continue;
 					if(statusbarFlags[i]==0) vibrate();
 					statusbarFlags[i]=1;
+				}
+			}
+			if(y>height*7/35){
+				for(i=0;i<4;i++){
+					if(statusbarFlags[i]==1){
+						statusbarFlags[i]=2;
+						vibrate();
+					}
 				}
 			}
 			invalidate(Statics.RectFToRect(Statics.getRectOfStatusBar(width,height,1.0f)));
@@ -535,6 +559,8 @@ public class TapChordView extends View {
 		case Statics.SCROLL_BAR:
 			break;
 		case Statics.TRANSPOSE_SCALE_BUTTON:
+			break;
+		case Statics.STATUS_BAR:
 			break;
 		default:
 			chordPressed=actionDown(x,y,id);
@@ -609,7 +635,7 @@ public class TapChordView extends View {
 				this.getContext().startActivity(intent);
 				break;
 			case 1:
-				setDarken(1-darken);
+				setDarken(!darken);
 				break;
 			case 2:
 				originalScroll=scroll;
@@ -751,21 +777,21 @@ public class TapChordView extends View {
 		Statics.setPreferenceValue(this.getContext(),Statics.PREF_SCALE,scale);
 	}
 
-	public void setDarken(int d){
+	public void setDarken(boolean d){
 		darken=d;
-		Statics.setPreferenceValue(this.getContext(),Statics.PREF_DARKEN,darken);
+		Statics.setPreferenceValue(this.getContext(),Statics.PREF_DARKEN,darken?1:0);
 	}
 
 	public void getPreferenceValues(){
 		scale=Statics.getPreferenceValue(this.getContext(),Statics.PREF_SCALE,0);
-		darken=Statics.getPreferenceValue(this.getContext(),Statics.PREF_DARKEN,0);
+		darken=Statics.getPreferenceValue(this.getContext(),Statics.PREF_DARKEN,0)>0;
 		soundRange=Statics.getPreferenceValue(this.getContext(),Statics.PREF_SOUND_RANGE,0);
-		vibration=Statics.getPreferenceValue(this.getContext(),Statics.PREF_VIBRATION,0);
+		vibration=Statics.getPreferenceValue(this.getContext(),Statics.PREF_VIBRATION,0)>0;
 		stepMax=100.0f/MainActivity.heartBeatInterval;
 	}
 
 	public void vibrate(){
-		if(vibration>0) vib.vibrate(Statics.VIBRATION_LENGTH);
+		if(vibration) vib.vibrate(Statics.VIBRATION_LENGTH);
 	}
 
 }
