@@ -50,4 +50,6 @@
     <string name="disable">有効</string>
     <string name="disabled">無効</string>
 
+    <string name="quit_message">tapchordを終了しますか?</string>
+    
 </resources>
