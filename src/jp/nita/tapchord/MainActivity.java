@@ -122,21 +122,20 @@ public class MainActivity extends Activity {
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event){
 		if (keyCode == KeyEvent.KEYCODE_BACK) {
-			AlertDialog.Builder builder = new AlertDialog.Builder(this);
-	        builder.setTitle(getString(R.string.app_name))
-	                .setMessage(getString(R.string.message_quit))
-	                .setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
-	                    public void onClick(DialogInterface dialog, int id) {
-	                    	finish();
-	                    }
-	                })
-	                .setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
-	                    public void onClick(DialogInterface dialog, int id) {
-
-	                    }
-	                });
-	        AlertDialog dialog = builder.create();
-	        dialog.show();
+			new AlertDialog.Builder(this)
+			.setTitle(getString(R.string.action_quit))
+			.setMessage(getString(R.string.message_quit))
+			.setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					finish();
+				}
+			}).setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener(){
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					
+				}
+			}).show();
 		} else if (keyCode == KeyEvent.KEYCODE_CAMERA) {
 			TapChordView.debugMode = !TapChordView.debugMode;
 			((TapChordView)findViewById(R.id.tapChordView)).invalidate();
