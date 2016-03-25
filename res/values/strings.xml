@@ -49,5 +49,7 @@
     <string name="enable">Enable</string>
     <string name="disable">Disable</string>
     <string name="disabled">Disabled</string>
+    
+    <string name="quit_message">Are you sure you want to quit tapchord?</string>
 
 </resources>

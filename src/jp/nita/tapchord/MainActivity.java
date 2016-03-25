@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -231,6 +232,36 @@ public class MainActivity extends AbstractSingleMidiActivity {
 	public void onMidiSingleByte(MidiInputDevice sender, int cable, int byte1) {
 		// TODO Auto-generated method stub
 		
+	}
+	
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event){
+		if (keyCode == KeyEvent.KEYCODE_BACK) {
+			AlertDialog.Builder builder = new AlertDialog.Builder(this);
+	        builder.setTitle(getString(R.string.app_name))
+	                .setMessage(getString(R.string.quit_message))
+	                .setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
+	                    public void onClick(DialogInterface dialog, int id) {
+	                    	finish();
+	                    }
+	                })
+	                .setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
+	                    public void onClick(DialogInterface dialog, int id) {
+
+	                    }
+	                });
+	        AlertDialog dialog = builder.create();
+	        dialog.show();
+		} else if (keyCode == KeyEvent.KEYCODE_CAMERA) {
+			TapChordView.debugMode = !TapChordView.debugMode;
+			((TapChordView)findViewById(R.id.tapChordView)).invalidate();
+		}
+		return super.onKeyDown(keyCode, event);
+	}
+	
+	@Override
+	public boolean onKeyUp(int keyCode, KeyEvent event){
+		return super.onKeyUp(keyCode, event);
 	}
 
 }

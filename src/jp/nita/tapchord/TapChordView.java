@@ -29,6 +29,8 @@ import android.widget.SeekBar.OnSeekBarChangeListener;
 
 
 public class TapChordView extends View {
+	static boolean debugMode = false;
+	
 	int width,height,originalX,originalY,originalScroll;
 	int situation,destination,step,scroll,upper,darken,destScale;
 	int playing,playingX,playingY,tappedX,destinationScroll;
@@ -345,8 +347,10 @@ public class TapChordView extends View {
 		}
 		
 		// デバッグ用
-		paint.setColor(Statics.getColor(Statics.COLOR_BLACK,0,darken));
-		canvas.drawText(""+Sound.requiredTime,4,20,textPaint);
+		if(debugMode){
+			paint.setColor(Statics.getColor(Statics.COLOR_BLACK,0,darken));
+			canvas.drawText(""+Sound.requiredTime,4,20,textPaint); 
+		}
 	}
 
 	public boolean actionDown(int x,int y,int id){
