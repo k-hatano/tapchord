@@ -239,7 +239,7 @@ public class MainActivity extends AbstractSingleMidiActivity {
 		if (keyCode == KeyEvent.KEYCODE_BACK) {
 			AlertDialog.Builder builder = new AlertDialog.Builder(this);
 	        builder.setTitle(getString(R.string.app_name))
-	                .setMessage(getString(R.string.quit_message))
+	                .setMessage(getString(R.string.message_quit))
 	                .setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
 	                    public void onClick(DialogInterface dialog, int id) {
 	                    	finish();
