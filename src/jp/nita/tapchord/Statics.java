@@ -29,6 +29,7 @@ public class Statics {
 	final public static int SCROLL_BAR=5;
 	final public static int TRANSPOSE_SCALE_BUTTON=6;
 	final public static int STATUS_BAR=7;
+	final public static int KEYBOARD_INDICATORS=8;
 
 	final public static int COLOR_ABSOLUTE_CYAN=-128;
 	final public static int COLOR_BLACK=-6;
@@ -394,6 +395,13 @@ public class Statics {
 		}
 
 		return r;
+	}
+	
+	public static RectF getRectOfKeyboardIndicators(int shrink,int width,int height,float showingRate){
+		float vert=height/35f;
+		float hidingDelta=vert*7*(1.0f-showingRate);
+		return new RectF(width-vert*23+shrink,0,
+				width,vert*7-shrink-hidingDelta);
 	}
 
 	public static int getFrequencyOfNote(int note,int soundRange){

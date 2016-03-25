@@ -5,7 +5,9 @@ import java.util.List;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.Paint;
@@ -20,12 +22,18 @@ import android.util.AttributeSet;
 import android.util.SparseIntArray;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.LinearLayout;
+import android.widget.SeekBar;
+import android.widget.TextView;
+import android.widget.SeekBar.OnSeekBarChangeListener;
+
 
 public class TapChordView extends View {
 	int width,height,originalX,originalY,originalScroll;
 	int situation,destination,step,scroll,upper,darken,destScale;
 	int playing,playingX,playingY,tappedX,destinationScroll;
 	int playingID;
+	boolean darken,vibration,keyboardIndicatorsTapped;
 
 	int scale=0;
 	int vibration=0;
@@ -266,6 +274,7 @@ public class TapChordView extends View {
 				< Statics.getRectOfKeyboardIndicator(0, 0, width, height, barsShowingRate).left){
 			for(x=0;x<12;x++){
 				paint.setColor(Statics.getColor(Statics.COLOR_GRAY,0,darken));
+				if(keyboardIndicatorsTapped) paint.setColor(Statics.getColor(Statics.COLOR_DARKGRAY,0,darken));
 				rect=Statics.getRectOfKeyboardIndicator(x, 0, width, height, barsShowingRate);
 				canvas.drawOval(rect,paint);
 			}
@@ -338,7 +347,6 @@ public class TapChordView extends View {
 		// デバッグ用
 		paint.setColor(Statics.getColor(Statics.COLOR_BLACK,0,darken));
 		canvas.drawText(""+Sound.requiredTime,4,20,textPaint);
-		
 	}
 
 	public boolean actionDown(int x,int y,int id){
@@ -407,6 +415,14 @@ public class TapChordView extends View {
 				taps.put(id,Statics.SCROLL_NOB);
 				vibrate();
 				invalidate(Statics.RectFToRect(Statics.getRectOfToolbar(width,height,1.0f)));
+				return false;
+			}else if(Statics.getRectOfStatusBarButton(3, 0, width, height, barsShowingRate).right
+						< Statics.getRectOfKeyboardIndicator(0, 0, width, height, barsShowingRate).left
+						&& Statics.getRectOfKeyboardIndicators(0, width,height,1.0f).contains(x,y)){
+				keyboardIndicatorsTapped = true;
+				taps.put(id, Statics.KEYBOARD_INDICATORS);
+				vibrate();
+				invalidate(Statics.RectFToRect(Statics.getRectOfKeyboardIndicators(2, width, height, 1.0f)));
 				return false;
 			}else if(Statics.getRectOfToolbar(width,height,1.0f).contains(x,y)){
 				if(scroll==0){
@@ -609,8 +625,10 @@ public class TapChordView extends View {
 			}
 			if(toolbarPressed>=0) toolbarReleased(toolbarPressed);
 			if(scalePressed!=Statics.FARAWAY) scaleReleased(scalePressed);
+			if(keyboardIndicatorsTapped) keyboardIndicatorsReleased();
 			toolbarPressed=-1;
 			scalePressed=Statics.FARAWAY;
+			keyboardIndicatorsTapped=false;
 			playingID=-1;
 			pulling=0;
 			upper=0;
@@ -661,6 +679,51 @@ public class TapChordView extends View {
 		if(ds<-7) ds+=12;
 		if(ds>7) ds-=12;
 		startTransposingAnimation(ds);
+		invalidate();
+	}
+	
+	public void keyboardIndicatorsReleased(){
+		final TextView rangeView = new TextView(this.getContext());
+		rangeView.setText(""+Statics.getStringOfSoundRange(soundRange));
+		rangeView.setTextAppearance(this.getContext(),android.R.style.TextAppearance_Inverse);
+		final SeekBar seekBar = new SeekBar(this.getContext());
+		seekBar.setProgress(soundRange+24);
+		seekBar.setMax(48);
+		seekBar.setOnSeekBarChangeListener(new OnSeekBarChangeListener(){
+			@Override
+			public void onProgressChanged(SeekBar seekBar, int progress,
+					boolean fromUser) {
+				rangeView.setText(""+Statics.getStringOfSoundRange(seekBar.getProgress()-24));
+			}
+			@Override
+			public void onStartTrackingTouch(SeekBar seekBar) { }
+			@Override
+			public void onStopTrackingTouch(SeekBar seekBar) { }
+		});
+		final LinearLayout layout = new LinearLayout(this.getContext());
+		layout.setOrientation(LinearLayout.VERTICAL);
+		layout.addView(rangeView);
+		layout.addView(seekBar);
+		layout.setPadding(8,8,8,8);
+		new AlertDialog.Builder(this.getContext())
+		.setTitle(this.getContext().getString(R.string.settings_sound_range))
+		.setView(layout)
+		.setPositiveButton(this.getContext().getString(R.string.ok),new DialogInterface.OnClickListener(){
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				soundRange=seekBar.getProgress()-24;
+				Statics.setPreferenceValue(TapChordView.this.getContext(),Statics.PREF_SOUND_RANGE,soundRange);
+				getPreferenceValues();
+			}
+		})
+		.setNegativeButton(this.getContext().getString(R.string.cancel),new DialogInterface.OnClickListener(){
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				
+			}
+		})
+		.show();
+		
 		invalidate();
 	}
 
