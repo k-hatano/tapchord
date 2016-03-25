@@ -334,7 +334,11 @@ public class TapChordView extends View {
 				}
 			}
 		}
-
+		
+		// デバッグ用
+		paint.setColor(Statics.getColor(Statics.COLOR_BLACK,0,darken));
+		canvas.drawText(""+Sound.requiredTime,4,20,textPaint);
+		
 	}
 
 	public boolean actionDown(int x,int y,int id){
@@ -577,6 +581,7 @@ public class TapChordView extends View {
 		switch(event.getAction()){
 		case MotionEvent.ACTION_DOWN:
 			// Log.i("TapChordView","DOWN Count:"+event.getPointerCount());
+			Sound.tappedTime = System.currentTimeMillis();
 			x=(int)event.getX(event.getActionIndex());
 			y=(int)event.getY(event.getActionIndex());
 			id=event.getPointerId(event.getActionIndex());

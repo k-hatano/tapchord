@@ -6,6 +6,10 @@ import android.media.AudioManager;
 import android.media.AudioTrack;
 
 public class Sound {
+	static long tappedTime = 0;
+	static long startedPlayingTime = 0;
+	static long requiredTime = 0;
+	
 	Integer[] frequencies=new Integer[0];
 	WaveGenerator generator=null;
 	static AudioTrack track=null;
@@ -125,6 +129,8 @@ public class Sound {
 					mode=MODE_ATTACK;
 					term=0;
 					modeTerm=0;
+					startedPlayingTime = System.currentTimeMillis();
+					requiredTime = startedPlayingTime - tappedTime;
 					track.play();
 					while(mode<=MODE_RELEASE){
 						track.write(getWave(length),0,length);
@@ -157,6 +163,9 @@ public class Sound {
 					modeTerm=0;
 					track.write(getWave(length),0,length);
 					track.setLoopPoints(0,length-1,-1);
+					track.setLoopPoints(0,length,-1);
+					startedPlayingTime = System.currentTimeMillis();
+					requiredTime = startedPlayingTime - tappedTime;
 					track.play();
 					while(mode<=MODE_SUSTAIN){
 						try {
