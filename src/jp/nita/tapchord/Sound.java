@@ -82,9 +82,23 @@ public class Sound {
 			return t-Math.floor(t)<1.0/4.0?0.5:-0.5;
 		case 5:
 			return t-Math.floor(t)<1.0/8.0?0.5:-0.5;
+		case 6:
+		{
+			double r=0;
+			r+=Math.sin(0.5*Math.PI*t)*gaussian(0.05);
+			r+=Math.sin(1.0*Math.PI*t)*gaussian(0.15);
+			r+=Math.sin(2.0*Math.PI*t)*gaussian(0.6);
+			r+=Math.sin(4.0*Math.PI*t)*gaussian(0.15);
+			r+=Math.sin(8.0*Math.PI*t)*gaussian(0.05);
+			return r;
+		}
 		default:
 			return Math.sin(2.0*Math.PI*t);
 		}
+	}
+	
+	public static double gaussian(double t){
+		return t;
 	}
 
 	class WaveGenerator extends Thread{

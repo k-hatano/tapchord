@@ -12,21 +12,15 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.ScrollView;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.SimpleAdapter;
-import android.widget.TableLayout;
-import android.widget.TableRow;
 import android.widget.TextView;
 
 public class SettingsActivity extends Activity implements OnClickListener,OnItemClickListener {
@@ -314,8 +308,8 @@ public class SettingsActivity extends Activity implements OnClickListener,OnItem
 			break;
 		}
 		case 5:{
-			CharSequence list[]=new String[6];
-			for(int i=0;i<6;i++){
+			CharSequence list[]=new String[7];
+			for(int i=0;i<7;i++){
 				list[i]=Statics.getValueOfWaveform(i,this);
 			}
 			new AlertDialog.Builder(SettingsActivity.this)
