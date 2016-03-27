@@ -421,10 +421,12 @@ public class TapChordView extends View {
 			}else if(Statics.getRectOfStatusBarButton(3, 0, width, height, barsShowingRate).right
 						< Statics.getRectOfKeyboardIndicator(0, 0, width, height, barsShowingRate).left
 						&& Statics.getRectOfKeyboardIndicators(0, width,height,1.0f).contains(x,y)){
-				keyboardIndicatorsTapped = true;
-				taps.put(id, Statics.KEYBOARD_INDICATORS);
-				vibrate();
-				invalidate(Statics.RectFToRect(Statics.getRectOfKeyboardIndicators(2, width, height, 1.0f)));
+				if(!keyboardIndicatorsTapped){
+					keyboardIndicatorsTapped = true;
+					taps.put(id, Statics.KEYBOARD_INDICATORS);
+					vibrate();
+					invalidate(Statics.RectFToRect(Statics.getRectOfKeyboardIndicators(2, width, height, 1.0f)));
+				}
 				return false;
 			}else if(Statics.getRectOfToolbar(width,height,1.0f).contains(x,y)){
 				if(scroll==0){
@@ -580,10 +582,9 @@ public class TapChordView extends View {
 			invalidate(Statics.RectFToRect(Statics.getRectOfStatusBar(width,height,1.0f)));
 			break;
 		case Statics.SCROLL_BAR:
-			break;
 		case Statics.TRANSPOSE_SCALE_BUTTON:
-			break;
 		case Statics.STATUS_BAR:
+		case Statics.KEYBOARD_INDICATORS:
 			break;
 		default:
 			chordPressed=actionDown(x,y,id);
@@ -596,10 +597,10 @@ public class TapChordView extends View {
 	public boolean onTouchEvent(MotionEvent event){
 		int x,y,id;
 		boolean chordPressed=false;
+		Sound.tappedTime = System.currentTimeMillis();
 		switch(event.getAction()){
 		case MotionEvent.ACTION_DOWN:
 			// Log.i("TapChordView","DOWN Count:"+event.getPointerCount());
-			Sound.tappedTime = System.currentTimeMillis();
 			x=(int)event.getX(event.getActionIndex());
 			y=(int)event.getY(event.getActionIndex());
 			id=event.getPointerId(event.getActionIndex());
