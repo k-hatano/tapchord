@@ -99,31 +99,31 @@ public class Sound {
 			Log.i("Sound","start generate shepard tone wave");
 			
 			g=gaussian((Math.log(frequency)/Math.log(2)) - (soundRange+6-24) + 50);
-			Log.i("Sound","g:"+g);
+			Log.i("Sound","n:"+((Math.log(frequency)/Math.log(2)) - (soundRange+6-24) + 50)+" g:"+g);
 			gg+=g;
 			r+=Math.sin(0.5*Math.PI*(double)term*frequency/sampleRate)*g;
 			
 			g=gaussian((Math.log(frequency)/Math.log(2)) - (soundRange+6-12) + 50);
-			Log.i("Sound","g:"+g);
+			Log.i("Sound","n:"+((Math.log(frequency)/Math.log(2)) - (soundRange+6-12) + 50)+" g:"+g);
 			gg+=g;
 			r+=Math.sin(1.0*Math.PI*(double)term*frequency/sampleRate)*g;
 			
 			g=gaussian((Math.log(frequency)/Math.log(2)) - (soundRange+6) + 50);
-			Log.i("Sound","g:"+g);
+			Log.i("Sound","n:"+((Math.log(frequency)/Math.log(2)) - (soundRange+6) + 50)+" g:"+g);
 			gg+=g;
 			r+=Math.sin(2.0*Math.PI*(double)term*frequency/sampleRate)*g;
 			
 			g=gaussian((Math.log(frequency)/Math.log(2)) - (soundRange+6+12) + 50);
-			Log.i("Sound","g:"+g);
+			Log.i("Sound","n:"+((Math.log(frequency)/Math.log(2)) - (soundRange+6+12) + 50)+" g:"+g);
 			gg+=g;
 			r+=Math.sin(4.0*Math.PI*(double)term*frequency/sampleRate)*g;
 			
 			g=gaussian((Math.log(frequency)/Math.log(2)) - (soundRange+6+24) + 50);
-			Log.i("Sound","g:"+g);
+			Log.i("Sound","n:"+((Math.log(frequency)/Math.log(2)) - (soundRange+6+24) + 50)+" g:"+g);
 			gg+=g;
 			r+=Math.sin(8.0*Math.PI*(double)term*frequency/sampleRate)*g;
 
-			Log.i("Sound","gg:"+gg);
+			Log.i("Sound"," gg:"+gg);
 			
 			return r;
 		}
@@ -133,10 +133,9 @@ public class Sound {
 	}
 	
 	public static double gaussian(double t){
-		double sigma = 1;
+		double sigma = 0.6;
 		double mu = 0;
-		Log.i("Sound","t:"+t);
-		return (10)*Math.exp(-(t-mu)*(t-mu)/(2*sigma*sigma));
+		return (1/(sigma*Math.sqrt(2*Math.PI)))*Math.exp(-(t/12-mu)*(t/12-mu)/(2*sigma*sigma));
 	}
 
 	class WaveGenerator extends Thread{
