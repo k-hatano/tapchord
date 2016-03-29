@@ -11,10 +11,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 public class MainActivity extends Activity {
-	
-	public static int heartBeatInterval=5;
-	
-	private Heart heart=null;
+
+	public static int heartBeatInterval = 5;
+
+	private Heart heart = null;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -22,21 +22,21 @@ public class MainActivity extends Activity {
 		setContentView(R.layout.activity_main);
 		updatePreferenceValues();
 		setVolumeControlStream(AudioManager.STREAM_MUSIC);
-		heart=new Heart();
+		heart = new Heart();
 		heart.start();
 	}
-	
+
 	@Override
-	protected void onPause(){
+	protected void onPause() {
 		super.onPause();
-		((TapChordView)findViewById(R.id.tapChordView)).activityPaused();
+		((TapChordView) findViewById(R.id.tapChordView)).activityPaused();
 		heart.sleep();
 	}
-	
+
 	@Override
-	protected void onResume(){
+	protected void onResume() {
 		super.onResume();
-		((TapChordView)findViewById(R.id.tapChordView)).activityResumed();
+		((TapChordView) findViewById(R.id.tapChordView)).activityResumed();
 		heart.wake();
 	}
 
@@ -46,105 +46,108 @@ public class MainActivity extends Activity {
 		getMenuInflater().inflate(R.menu.main, menu);
 		return true;
 	}
-	
+
 	public boolean onOptionsItemSelected(MenuItem item) {
-	    switch (item.getItemId()) {
-	    case R.id.action_settings:
-	        Intent intent=new Intent(this,SettingsActivity.class);
-	        startActivity(intent);
-	        return true;
-	    case R.id.action_quit:
-	    	new AlertDialog.Builder(this)
-			.setTitle(getString(R.string.action_quit))
-			.setMessage(getString(R.string.message_quit))
-			.setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
-				@Override
-				public void onClick(DialogInterface dialog, int which) {
-					finish();
-				}
-			}).setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener(){
-				@Override
-				public void onClick(DialogInterface dialog, int which) {
-					
-				}
-			}).show();
-	    }
-	    return false;
+		switch (item.getItemId()) {
+		case R.id.action_settings:
+			Intent intent = new Intent(this, SettingsActivity.class);
+			startActivity(intent);
+			return true;
+		case R.id.action_quit:
+			new AlertDialog.Builder(this).setTitle(getString(R.string.action_quit))
+					.setMessage(getString(R.string.message_quit))
+					.setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							finish();
+						}
+					}).setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+
+						}
+					}).show();
+		}
+		return false;
 	}
-	
-	public static void setAnimationQuality(int aq){
-		switch(aq){
+
+	public static void setAnimationQuality(int aq) {
+		switch (aq) {
 		case -1:
-			heartBeatInterval=25;
+			heartBeatInterval = 25;
 			break;
 		case 0:
-			heartBeatInterval=5;
+			heartBeatInterval = 5;
 			break;
 		case 1:
-			heartBeatInterval=1;
+			heartBeatInterval = 1;
 			break;
 		default:
-			heartBeatInterval=5;
+			heartBeatInterval = 5;
 			break;
 		}
 	}
-	
-	class Heart extends Thread implements Runnable{
-		private boolean awake=true;
-		private boolean alive=true;
-		public void run(){
-			TapChordView view=((TapChordView)findViewById(R.id.tapChordView));
-			while(alive){
-				try{
+
+	class Heart extends Thread implements Runnable {
+		private boolean awake = true;
+		private boolean alive = true;
+
+		public void run() {
+			TapChordView view = ((TapChordView) findViewById(R.id.tapChordView));
+			while (alive) {
+				try {
 					Thread.sleep(heartBeatInterval);
-					if(awake) view.heartbeat(heartBeatInterval);
-				}catch(InterruptedException e){
+					if (awake)
+						view.heartbeat(heartBeatInterval);
+				} catch (InterruptedException e) {
 					die();
 				}
 			}
 		}
-		public void wake(){
-			awake=true;
+
+		public void wake() {
+			awake = true;
 		}
-		public void sleep(){
-			awake=false;
+
+		public void sleep() {
+			awake = false;
 		}
-		public void die(){
-			alive=false;
+
+		public void die() {
+			alive = false;
 		}
 	}
-	
-	public void updatePreferenceValues(){
-		int animationQuality=Statics.getPreferenceValue(this,Statics.PREF_ANIMATION_QUALITY,0);
+
+	public void updatePreferenceValues() {
+		int animationQuality = Statics.getPreferenceValue(this, Statics.PREF_ANIMATION_QUALITY, 0);
 		setAnimationQuality(animationQuality);
 	}
-	
+
 	@Override
-	public boolean onKeyDown(int keyCode, KeyEvent event){
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		if (keyCode == KeyEvent.KEYCODE_BACK) {
-			new AlertDialog.Builder(this)
-			.setTitle(getString(R.string.action_quit))
-			.setMessage(getString(R.string.message_quit))
-			.setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
-				@Override
-				public void onClick(DialogInterface dialog, int which) {
-					finish();
-				}
-			}).setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener(){
-				@Override
-				public void onClick(DialogInterface dialog, int which) {
-					
-				}
-			}).show();
+			new AlertDialog.Builder(this).setTitle(getString(R.string.action_quit))
+					.setMessage(getString(R.string.message_quit))
+					.setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							finish();
+						}
+					}).setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+
+						}
+					}).show();
 		} else if (keyCode == KeyEvent.KEYCODE_CAMERA) {
 			TapChordView.debugMode = !TapChordView.debugMode;
-			((TapChordView)findViewById(R.id.tapChordView)).invalidate();
+			((TapChordView) findViewById(R.id.tapChordView)).invalidate();
 		}
 		return super.onKeyDown(keyCode, event);
 	}
-	
+
 	@Override
-	public boolean onKeyUp(int keyCode, KeyEvent event){
+	public boolean onKeyUp(int keyCode, KeyEvent event) {
 		return super.onKeyUp(keyCode, event);
 	}
 
