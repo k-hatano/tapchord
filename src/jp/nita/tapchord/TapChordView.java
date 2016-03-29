@@ -35,7 +35,7 @@ public class TapChordView extends View {
 	int situation,destination,step,scroll,upper,darken,destScale;
 	int playing,playingX,playingY,tappedX,destinationScroll;
 	int playingID;
-	boolean darken,vibration,keyboardIndicatorsTapped;
+	boolean keyboardIndicatorsTapped;
 
 	int scale=0;
 	int vibration=0;
