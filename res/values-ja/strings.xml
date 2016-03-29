@@ -51,4 +51,9 @@
     <string name="disable">有効</string>
     <string name="disabled">無効</string>
     
+    <string name="message_midi_device_attached_1">MIDI デバイス </string>
+    <string name="message_midi_device_attached_2"> が接続されました。</string>
+    <string name="message_midi_device_detached_1">MIDI デバイス </string>
+    <string name="message_midi_device_detached_2"> が切断されました。</string>
+    
 </resources>

@@ -12,6 +12,7 @@ import android.content.Intent;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 public class MainActivity extends AbstractSingleMidiActivity {
 
@@ -145,14 +146,14 @@ public class MainActivity extends AbstractSingleMidiActivity {
 
 	@Override
 	public void onDeviceDetached(UsbDevice usbDevice) {
-		// TODO Auto-generated method stub
-
+		Toast.makeText(MainActivity.this, getString(R.string.message_midi_device_attached_1)
+				+ usbDevice.getDeviceName() + getString(R.string.message_midi_device_attached_2), Toast.LENGTH_LONG).show();
 	}
 
 	@Override
 	public void onDeviceAttached(UsbDevice usbDevice) {
-		// TODO Auto-generated method stub
-
+		Toast.makeText(MainActivity.this, getString(R.string.message_midi_device_detached_1)
+				+ usbDevice.getDeviceName() + getString(R.string.message_midi_device_detached_2), Toast.LENGTH_LONG).show();
 	}
 
 	@Override
