@@ -4,7 +4,6 @@ import android.content.Context;
 import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioTrack;
-import android.util.Log;
 
 public class Sound {
 	static long tappedTime = 0;
@@ -90,38 +89,28 @@ public class Sound {
 	public static double shepardTone(long term, int frequency, int sampleRate, int soundRange, int which) {
 		switch (which) {
 		case 6: {
-			double r = 0;
+			double r = 0, g = 0;
+			double note = (Math.log(frequency) / Math.log(2));
 
-			double g = 0, gg = 0;
+			g = gaussian(note - (soundRange + 6 - 24) + 50);
+			//Log.i("Sound", "n:" + ((Math.log(frequency) / Math.log(2)) - (soundRange + 6 - 24) + 50) + " g:" + g);
+			r += Math.sin(0.5 * Math.PI * term * frequency / sampleRate) * g;
 
-			Log.i("Sound", "start generate shepard tone wave");
+			g = gaussian(note - (soundRange + 6 - 12) + 50);
+			//Log.i("Sound", "n:" + ((Math.log(frequency) / Math.log(2)) - (soundRange + 6 - 12) + 50) + " g:" + g);
+			r += Math.sin(1.0 * Math.PI * term * frequency / sampleRate) * g;
 
-			g = gaussian((Math.log(frequency) / Math.log(2)) - (soundRange + 6 - 24) + 50);
-			Log.i("Sound", "n:" + ((Math.log(frequency) / Math.log(2)) - (soundRange + 6 - 24) + 50) + " g:" + g);
-			gg += g;
-			r += Math.sin(0.5 * Math.PI * (double) term * frequency / sampleRate) * g;
+			g = gaussian(note - (soundRange + 6) + 50);
+			//Log.i("Sound", "n:" + ((Math.log(frequency) / Math.log(2)) - (soundRange + 6) + 50) + " g:" + g);
+			r += Math.sin(2.0 * Math.PI * term * frequency / sampleRate) * g;
 
-			g = gaussian((Math.log(frequency) / Math.log(2)) - (soundRange + 6 - 12) + 50);
-			Log.i("Sound", "n:" + ((Math.log(frequency) / Math.log(2)) - (soundRange + 6 - 12) + 50) + " g:" + g);
-			gg += g;
-			r += Math.sin(1.0 * Math.PI * (double) term * frequency / sampleRate) * g;
+			g = gaussian(note - (soundRange + 6 + 12) + 50);
+			//Log.i("Sound", "n:" + ((Math.log(frequency) / Math.log(2)) - (soundRange + 6 + 12) + 50) + " g:" + g);
+			r += Math.sin(4.0 * Math.PI * term * frequency / sampleRate) * g;
 
-			g = gaussian((Math.log(frequency) / Math.log(2)) - (soundRange + 6) + 50);
-			Log.i("Sound", "n:" + ((Math.log(frequency) / Math.log(2)) - (soundRange + 6) + 50) + " g:" + g);
-			gg += g;
-			r += Math.sin(2.0 * Math.PI * (double) term * frequency / sampleRate) * g;
-
-			g = gaussian((Math.log(frequency) / Math.log(2)) - (soundRange + 6 + 12) + 50);
-			Log.i("Sound", "n:" + ((Math.log(frequency) / Math.log(2)) - (soundRange + 6 + 12) + 50) + " g:" + g);
-			gg += g;
-			r += Math.sin(4.0 * Math.PI * (double) term * frequency / sampleRate) * g;
-
-			g = gaussian((Math.log(frequency) / Math.log(2)) - (soundRange + 6 + 24) + 50);
-			Log.i("Sound", "n:" + ((Math.log(frequency) / Math.log(2)) - (soundRange + 6 + 24) + 50) + " g:" + g);
-			gg += g;
-			r += Math.sin(8.0 * Math.PI * (double) term * frequency / sampleRate) * g;
-
-			Log.i("Sound", " gg:" + gg);
+			g = gaussian(note - (soundRange + 6 + 24) + 50);
+			//Log.i("Sound", "n:" + ((Math.log(frequency) / Math.log(2)) - (soundRange + 6 + 24) + 50) + " g:" + g);
+			r += Math.sin(8.0 * Math.PI * term * frequency / sampleRate) * g;
 
 			return r;
 		}
@@ -131,9 +120,9 @@ public class Sound {
 	}
 
 	public static double gaussian(double t) {
+		final double sqrt_pi = Math.sqrt(2 * Math.PI);
 		double sigma = 0.6;
-		double mu = 0;
-		return (1 / (sigma * Math.sqrt(2 * Math.PI))) * Math.exp(-(t / 12 - mu) * (t / 12 - mu) / (2 * sigma * sigma));
+		return (1 / (sigma * sqrt_pi)) * Math.exp(-(t / 12) * (t / 12) / (2 * sigma * sigma));
 	}
 
 	class WaveGenerator extends Thread {

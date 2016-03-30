@@ -139,7 +139,7 @@ public class MainActivity extends Activity {
 
 						}
 					}).show();
-		} else if (keyCode == KeyEvent.KEYCODE_CAMERA) {
+		} else if (keyCode == KeyEvent.KEYCODE_CAMERA || keyCode == KeyEvent.KEYCODE_SEARCH) {
 			TapChordView.debugMode = !TapChordView.debugMode;
 			((TapChordView) findViewById(R.id.tapChordView)).invalidate();
 		}
