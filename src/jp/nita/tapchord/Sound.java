@@ -237,10 +237,12 @@ public class Sound {
 					for (int j = 0; j < frequencies.length; j++) {
 						s += wave((double) term * frequencies[j] / sampleRate, waveform);
 					}
+					break;
 				case 6:
 					for (int j = 0; j < frequencies.length; j++) {
 						s += shepardTone(term, frequencies[j], sampleRate, soundRange, waveform);
 					}
+					break;
 				}
 
 				s *= volume / 400.0 * (Short.MAX_VALUE);
