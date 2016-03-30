@@ -19,7 +19,9 @@ import android.graphics.RectF;
 import android.os.Handler;
 import android.os.Vibrator;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.util.SparseIntArray;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -719,6 +721,32 @@ public class TapChordView extends View {
 			break;
 		}
 		return true;
+	}
+	
+	public boolean keyPressed(int keyCode,KeyEvent event) {
+		Log.i("TapChordView", "pressed "+keyCode);
+		switch (keyCode) {
+		case KeyEvent.KEYCODE_H:
+			if (playing <= 0) {
+				play(0,0);
+			}
+			return true;
+		default:
+			return false;
+		}
+	}
+	
+	public boolean keyReleased(int keyCode,KeyEvent event) {
+		Log.i("TapChordView", "released "+keyCode);
+		switch (keyCode) {
+		case KeyEvent.KEYCODE_H:
+			if (playing > 0) {
+				stop();
+			}
+			return true;
+		default:
+			return false;
+		}
 	}
 
 	public void toolbarReleased(int which) {
