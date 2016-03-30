@@ -156,10 +156,11 @@ public class Sound {
 					sustainLevel = (double) sustain / 100.0;
 
 					length = AudioTrack.getMinBufferSize(sampleRate, AudioFormat.CHANNEL_CONFIGURATION_MONO,
-							AudioFormat.ENCODING_PCM_16BIT) / 100;
+							AudioFormat.ENCODING_PCM_16BIT);
 					track = new AudioTrack(AudioManager.STREAM_MUSIC, sampleRate,
-							AudioFormat.CHANNEL_CONFIGURATION_MONO, AudioFormat.ENCODING_PCM_16BIT, sampleRate * 2,
+							AudioFormat.CHANNEL_CONFIGURATION_MONO, AudioFormat.ENCODING_PCM_16BIT, length,
 							AudioTrack.MODE_STREAM);
+					
 					mode = MODE_ATTACK;
 					term = 0;
 					modeTerm = 0;
@@ -184,26 +185,21 @@ public class Sound {
 					releaseLength = 0;
 
 					sustainLevel = 1.0;
-
-					length = sampleRate;
+					length = AudioTrack.getMinBufferSize(sampleRate, AudioFormat.CHANNEL_CONFIGURATION_MONO,
+							AudioFormat.ENCODING_PCM_16BIT);
 					track = new AudioTrack(AudioManager.STREAM_MUSIC, sampleRate,
-							AudioFormat.CHANNEL_CONFIGURATION_MONO, AudioFormat.ENCODING_PCM_16BIT, sampleRate * 2,
-							AudioTrack.MODE_STATIC);
+							AudioFormat.CHANNEL_CONFIGURATION_MONO, AudioFormat.ENCODING_PCM_16BIT, length,
+							AudioTrack.MODE_STREAM);
+					
 					mode = MODE_SUSTAIN;
 					term = 0;
 					modeTerm = 0;
-					track.write(getWave(length), 0, length);
-					track.setLoopPoints(0, length, -1);
+
 					startedPlayingTime = System.currentTimeMillis();
 					requiredTime = startedPlayingTime - tappedTime;
 					track.play();
 					while (mode <= MODE_SUSTAIN) {
-						try {
-							Thread.sleep(MainActivity.heartBeatInterval);
-						} catch (InterruptedException e) {
-							e.printStackTrace();
-							break;
-						}
+						track.write(getWave(length), 0, length);
 					}
 					track.stop();
 					track.release();
