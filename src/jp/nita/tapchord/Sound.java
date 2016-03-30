@@ -164,23 +164,16 @@ public class Sound {
 							AudioFormat.ENCODING_PCM_16BIT);
 					track = new AudioTrack(AudioManager.STREAM_MUSIC, sampleRate,
 							AudioFormat.CHANNEL_CONFIGURATION_MONO, AudioFormat.ENCODING_PCM_16BIT, length,
-							AudioTrack.MODE_STATIC);
+							AudioTrack.MODE_STREAM);
 					
 					mode = MODE_SUSTAIN;
 					term = 0;
 					modeTerm = 0;
-					track.write(getWave(length), 0, length);
-					track.setLoopPoints(0, length, -1);
 					startedPlayingTime = System.currentTimeMillis();
 					requiredTime = startedPlayingTime - tappedTime;
 					track.play();
 					while (mode <= MODE_SUSTAIN) {
-						try {
-							Thread.sleep(MainActivity.heartBeatInterval);
-						} catch (InterruptedException e) {
-							e.printStackTrace();
-							break;
-						}
+						track.write(getWave(length), 0, length);
 					}
 					track.stop();
 					track.release();
