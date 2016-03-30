@@ -37,6 +37,8 @@ public class TapChordView extends View {
 	int playing, playingX, playingY, tappedX, destinationScroll;
 	int playingID;
 	boolean darken, vibration, keyboardIndicatorsTapped;
+	boolean keyState[][] = new boolean[15][3];
+	boolean lastKeyState[][] = new boolean[15][3];
 
 	int scale = 0;
 	int soundRange = 0;
@@ -728,7 +730,7 @@ public class TapChordView extends View {
 		switch (keyCode) {
 		case KeyEvent.KEYCODE_H:
 			if (playing <= 0) {
-				play(0,0);
+				keyState[7][1] = true;
 			}
 			return true;
 		default:
@@ -741,7 +743,7 @@ public class TapChordView extends View {
 		switch (keyCode) {
 		case KeyEvent.KEYCODE_H:
 			if (playing > 0) {
-				stop();
+				keyState[7][1] = false;
 			}
 			return true;
 		default:
@@ -929,6 +931,16 @@ public class TapChordView extends View {
 					shapes.remove(i);
 			}
 			handler.post(new Repainter());
+		}
+		for (int x = 0; x < 15; x++) {
+			for (int y = 0; y < 3; y++) {
+				if (keyState[x][y] == false && lastKeyState[x][y] == true) {
+					play(x - 7, y - 1);
+				} else if (keyState[x][y] == true && lastKeyState[x][y] == false) {
+					stop();
+				}
+				lastKeyState[x][y] = keyState[x][y];
+			}
 		}
 	}
 
