@@ -161,5 +161,15 @@ public class MainActivity extends Activity {
 		}
 		return super.onKeyUp(keyCode, event);
 	}
+	
+	@Override
+	public boolean onKeyLongPress(int keyCode, KeyEvent event){
+		boolean result = false;
+		result = ((TapChordView) findViewById(R.id.tapChordView)).keyLongPressed(keyCode, event);
+		if (!result) {
+			return super.onKeyLongPress(keyCode, event);
+		}
+	    return super.onKeyLongPress(keyCode, event);
+	}
 
 }

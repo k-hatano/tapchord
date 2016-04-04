@@ -37,8 +37,8 @@ public class TapChordView extends View {
 	int playing, playingX, playingY, tappedX, destinationScroll;
 	int playingID;
 	boolean darken, vibration, keyboardIndicatorsTapped;
-	boolean keyState[][] = new boolean[15][3];
-	boolean lastKeyState[][] = new boolean[15][3];
+	int keyState[][] = new int[15][3];
+	int lastKeyState[][] = new int[15][3];
 
 	int scale = 0;
 	int soundRange = 0;
@@ -61,6 +61,8 @@ public class TapChordView extends View {
 
 	SparseIntArray taps = new SparseIntArray();
 	List<Shape> shapes = new ArrayList<Shape>();
+	
+	Object keyWatcher = new Object();
 
 	public TapChordView(Context context, AttributeSet attrs) {
 		super(context, attrs);
@@ -727,115 +729,124 @@ public class TapChordView extends View {
 	
 	public boolean keyPressed(int keyCode,KeyEvent event) {
 		Log.i("TapChordView", "pressed "+keyCode);
-		if (event.isLongPress()) {
-			return false;
+		if (event.getRepeatCount() > 0 || event.isLongPress()) {
+			return true;
 		}
 		
-		switch (keyCode) {
-		case KeyEvent.KEYCODE_T:
-			if (playing <= 0) {
-				keyState[6][0] = true;
+		synchronized (keyWatcher) {
+			switch (keyCode) {
+			case KeyEvent.KEYCODE_T:
+				if (playing <= 0) {
+					keyState[6][0]++;
+				}
+				return true;
+			case KeyEvent.KEYCODE_G:
+				if (playing <= 0) {
+					keyState[6][1]++;
+				}
+				return true;
+			case KeyEvent.KEYCODE_B:
+				if (playing <= 0) {
+					keyState[6][2]++;
+				}
+				return true;
+			case KeyEvent.KEYCODE_Y:
+				if (playing <= 0) {
+					keyState[7][0]++;
+				}
+				return true;
+			case KeyEvent.KEYCODE_H:
+				if (playing <= 0) {
+					keyState[7][1]++;
+				}
+				return true;
+			case KeyEvent.KEYCODE_N:
+				if (playing <= 0) {
+					keyState[7][2]++;
+				}
+				return true;
+			case KeyEvent.KEYCODE_U:
+				if (playing <= 0) {
+					keyState[8][0]++;
+				}
+				return true;
+			case KeyEvent.KEYCODE_J:
+				if (playing <= 0) {
+					keyState[8][1]++;
+				}
+				return true;
+			case KeyEvent.KEYCODE_M:
+				if (playing <= 0) {
+					keyState[8][2]++;
+				}
+				return true;
+			default:
+				return false;
 			}
-			return true;
-		case KeyEvent.KEYCODE_G:
-			if (playing <= 0) {
-				keyState[6][1] = true;
-			}
-			return true;
-		case KeyEvent.KEYCODE_B:
-			if (playing <= 0) {
-				keyState[6][2] = true;
-			}
-			return true;
-		case KeyEvent.KEYCODE_Y:
-			if (playing <= 0) {
-				keyState[7][0] = true;
-			}
-			return true;
-		case KeyEvent.KEYCODE_H:
-			if (playing <= 0) {
-				keyState[7][1] = true;
-			}
-			return true;
-		case KeyEvent.KEYCODE_N:
-			if (playing <= 0) {
-				keyState[7][2] = true;
-			}
-			return true;
-		case KeyEvent.KEYCODE_U:
-			if (playing <= 0) {
-				keyState[8][0] = true;
-			}
-			return true;
-		case KeyEvent.KEYCODE_J:
-			if (playing <= 0) {
-				keyState[8][1] = true;
-			}
-			return true;
-		case KeyEvent.KEYCODE_M:
-			if (playing <= 0) {
-				keyState[8][2] = true;
-			}
-			return true;
-		default:
-			return false;
 		}
+	}
+	
+	public boolean keyLongPressed(int keyCode,KeyEvent event) {
+		Log.i("TapChordView", "longPressed "+keyCode);
+		return false;
 	}
 	
 	public boolean keyReleased(int keyCode,KeyEvent event) {
 		Log.i("TapChordView", "released "+keyCode);
-		if (event.isLongPress()) {
-			return false;
+		if (event.getRepeatCount() > 0 || event.isLongPress()) {
+			return true;
 		}
 		
-		switch (keyCode) {
-		case KeyEvent.KEYCODE_T:
-			if (playing > 0) {
-				keyState[6][0] = false;
+		synchronized (keyWatcher) {
+			switch (keyCode) {
+			case KeyEvent.KEYCODE_T:
+				if (playing > 0) {
+					keyState[6][0]--;
+				}
+				return true;
+			case KeyEvent.KEYCODE_G:
+				if (playing > 0) {
+					keyState[6][1]--;
+				}
+				return true;
+			case KeyEvent.KEYCODE_B:
+				if (playing > 0) {
+					keyState[6][2]--;
+				}
+				return true;
+			case KeyEvent.KEYCODE_Y:
+				if (playing > 0) {
+					keyState[7][0]--;
+				}
+				return true;
+			case KeyEvent.KEYCODE_H:
+				if (playing > 0) {
+					keyState[7][1]--;
+				}
+				return true;
+			case KeyEvent.KEYCODE_N:
+				if (playing > 0) {
+					keyState[7][2]--;
+				}
+				return true;
+			case KeyEvent.KEYCODE_U:
+				if (playing > 0) {
+					keyState[8][0]--;
+				}
+				return true;
+			case KeyEvent.KEYCODE_J:
+				if (playing > 0) {
+					keyState[8][1]--;
+				}
+				return true;
+			case KeyEvent.KEYCODE_M:
+				if (playing > 0) {
+					keyState[8][2]--;
+				}
+				return true;
+			default:
+				return false;
 			}
-			return true;
-		case KeyEvent.KEYCODE_G:
-			if (playing > 0) {
-				keyState[6][1] = false;
-			}
-			return true;
-		case KeyEvent.KEYCODE_B:
-			if (playing > 0) {
-				keyState[6][2] = false;
-			}
-			return true;
-		case KeyEvent.KEYCODE_Y:
-			if (playing > 0) {
-				keyState[7][0] = false;
-			}
-			return true;
-		case KeyEvent.KEYCODE_H:
-			if (playing > 0) {
-				keyState[7][1] = false;
-			}
-			return true;
-		case KeyEvent.KEYCODE_N:
-			if (playing > 0) {
-				keyState[7][2] = false;
-			}
-			return true;
-		case KeyEvent.KEYCODE_U:
-			if (playing > 0) {
-				keyState[8][0] = false;
-			}
-			return true;
-		case KeyEvent.KEYCODE_J:
-			if (playing > 0) {
-				keyState[8][1] = false;
-			}
-			return true;
-		case KeyEvent.KEYCODE_M:
-			if (playing > 0) {
-				keyState[8][2] = false;
-			}
-			return true;
-		default:
-			return false;
 		}
 	}
 
@@ -1020,26 +1031,28 @@ public class TapChordView extends View {
 			}
 			handler.post(new Repainter());
 		}
-		for (int x = 0; x < 15; x++) {
-			for (int y = 0; y < 3; y++) {
-				if (keyState[x][y] == true && lastKeyState[x][y] == false) {
-					final int X = x;
-					final int Y = y;
-					handler.post(new Runnable() {
-						@Override
-						public void run() {
-							play(X - 7, Y - 1);
-						}
-					});
-				} else if (keyState[x][y] == false && lastKeyState[x][y] == true) {
-					handler.post(new Runnable() {
-						@Override
-						public void run() {
-							stop();
-						}
-					});
+		synchronized (keyWatcher) {
+			for (int x = 0; x < 15; x++) {
+				for (int y = 0; y < 3; y++) {
+					if (keyState[x][y] > 0 && lastKeyState[x][y] <= 0) {
+						final int X = x;
+						final int Y = y;
+						handler.post(new Runnable() {
+							@Override
+							public void run() {
+								play(X - 7, Y - 1);
+							}
+						});
+					} else if (keyState[x][y] <= 0 && lastKeyState[x][y] > 0) {
+						handler.post(new Runnable() {
+							@Override
+							public void run() {
+								stop();
+							}
+						});
+					}
+					lastKeyState[x][y] = keyState[x][y];
 				}
-				lastKeyState[x][y] = keyState[x][y];
 			}
 		}
 	}
