@@ -41,6 +41,7 @@ public class TapChordView extends View {
 	boolean darken, vibration, keyboardIndicatorsTapped;
 	int keyState[][] = new int[15][3];
 	int lastKeyState[][] = new int[15][3];
+	int statusbarKeycodes[] = {KeyEvent.KEYCODE_1, KeyEvent.KEYCODE_2, KeyEvent.KEYCODE_3, KeyEvent.KEYCODE_4};
 	int keycodes[][] = { { 0, 0, 0 },
 			{ 0, 0, 0 },
 			{ KeyEvent.KEYCODE_Q, KeyEvent.KEYCODE_A, KeyEvent.KEYCODE_Z },
@@ -80,8 +81,8 @@ public class TapChordView extends View {
 	List<Shape> shapes = new ArrayList<Shape>();
 	
 	Object keyWatcher = new Object();
-	Timer playTimer = null;
 	Timer stopTimer = null;
+	Timer statusBarSwitchOffTimer = null;
 	long lastKeyWatchedTime;
 
 	public TapChordView(Context context, AttributeSet attrs) {
@@ -763,6 +764,12 @@ public class TapChordView extends View {
 					}
 				}
 			}
+			for (int i = 0; i < 4; i++) {
+				if (statusbarKeycodes[i] == keyCode) {
+					switchStatusBarWithKey(i, 1);
+					return true;
+				}
+			}
 		}
 		return false;
 	}
@@ -786,6 +793,12 @@ public class TapChordView extends View {
 						stopWithKey(x,y);
 						return true;
 					}
+				}
+			}
+			for (int i = 0; i < 4; i++) {
+				if (statusbarKeycodes[i] == keyCode) {
+					switchStatusBarWithKey(i, 0);
+					return true;
 				}
 			}
 		}
@@ -820,6 +833,35 @@ public class TapChordView extends View {
 			}
 		}, 100);
 		
+		return true;
+	}
+	
+	public boolean switchStatusBarWithKey(final int index, final int value) {
+		if (value > 0) {
+			if (statusBarSwitchOffTimer != null) {
+				statusBarSwitchOffTimer.cancel();
+				statusBarSwitchOffTimer = null;
+				return false;
+			}
+			
+			statusbarFlags[index] = value;
+			invalidate(Statics.RectFToRect(Statics.getRectOfStatusBar(width, height, 1.0f)));
+		} else {
+			statusBarSwitchOffTimer = new Timer();
+			statusBarSwitchOffTimer.schedule(new TimerTask() {
+				@Override
+				public void run() {
+					handler.post(new Runnable() {
+						@Override
+						public void run() {
+							statusbarFlags[index] = value;
+							invalidate(Statics.RectFToRect(Statics.getRectOfStatusBar(width, height, 1.0f)));
+							statusBarSwitchOffTimer = null;
+						}
+					});
+				}
+			}, 100);
+		}
 		return true;
 	}
 
