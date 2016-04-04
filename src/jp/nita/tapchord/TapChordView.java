@@ -831,11 +831,11 @@ public class TapChordView extends View {
 	}
 
 	public void stop() {
-		for (int i = 0; i < notes.length; i++) {
-			MainActivity.main.sendMidiEventToDevice(0, notes[i]);
-		}
 		if (sound != null) {
 			sound.stop();
+		}
+		for (int i = 0; i < notes.length; i++) {
+			MainActivity.main.sendMidiEventToDevice(0, notes[i]);
 		}
 		playing = 0;
 		notesOfChord = new Integer[0];
