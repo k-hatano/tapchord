@@ -727,10 +727,54 @@ public class TapChordView extends View {
 	
 	public boolean keyPressed(int keyCode,KeyEvent event) {
 		Log.i("TapChordView", "pressed "+keyCode);
+		if (event.isLongPress()) {
+			return false;
+		}
+		
 		switch (keyCode) {
+		case KeyEvent.KEYCODE_T:
+			if (playing <= 0) {
+				keyState[6][0] = true;
+			}
+			return true;
+		case KeyEvent.KEYCODE_G:
+			if (playing <= 0) {
+				keyState[6][1] = true;
+			}
+			return true;
+		case KeyEvent.KEYCODE_B:
+			if (playing <= 0) {
+				keyState[6][2] = true;
+			}
+			return true;
+		case KeyEvent.KEYCODE_Y:
+			if (playing <= 0) {
+				keyState[7][0] = true;
+			}
+			return true;
 		case KeyEvent.KEYCODE_H:
 			if (playing <= 0) {
 				keyState[7][1] = true;
+			}
+			return true;
+		case KeyEvent.KEYCODE_N:
+			if (playing <= 0) {
+				keyState[7][2] = true;
+			}
+			return true;
+		case KeyEvent.KEYCODE_U:
+			if (playing <= 0) {
+				keyState[8][0] = true;
+			}
+			return true;
+		case KeyEvent.KEYCODE_J:
+			if (playing <= 0) {
+				keyState[8][1] = true;
+			}
+			return true;
+		case KeyEvent.KEYCODE_M:
+			if (playing <= 0) {
+				keyState[8][2] = true;
 			}
 			return true;
 		default:
@@ -740,10 +784,54 @@ public class TapChordView extends View {
 	
 	public boolean keyReleased(int keyCode,KeyEvent event) {
 		Log.i("TapChordView", "released "+keyCode);
+		if (event.isLongPress()) {
+			return false;
+		}
+		
 		switch (keyCode) {
+		case KeyEvent.KEYCODE_T:
+			if (playing > 0) {
+				keyState[6][0] = false;
+			}
+			return true;
+		case KeyEvent.KEYCODE_G:
+			if (playing > 0) {
+				keyState[6][1] = false;
+			}
+			return true;
+		case KeyEvent.KEYCODE_B:
+			if (playing > 0) {
+				keyState[6][2] = false;
+			}
+			return true;
+		case KeyEvent.KEYCODE_Y:
+			if (playing > 0) {
+				keyState[7][0] = false;
+			}
+			return true;
 		case KeyEvent.KEYCODE_H:
 			if (playing > 0) {
 				keyState[7][1] = false;
+			}
+			return true;
+		case KeyEvent.KEYCODE_N:
+			if (playing > 0) {
+				keyState[7][2] = false;
+			}
+			return true;
+		case KeyEvent.KEYCODE_U:
+			if (playing > 0) {
+				keyState[8][0] = false;
+			}
+			return true;
+		case KeyEvent.KEYCODE_J:
+			if (playing > 0) {
+				keyState[8][1] = false;
+			}
+			return true;
+		case KeyEvent.KEYCODE_M:
+			if (playing > 0) {
+				keyState[8][2] = false;
 			}
 			return true;
 		default:
@@ -934,10 +1022,22 @@ public class TapChordView extends View {
 		}
 		for (int x = 0; x < 15; x++) {
 			for (int y = 0; y < 3; y++) {
-				if (keyState[x][y] == false && lastKeyState[x][y] == true) {
-					play(x - 7, y - 1);
-				} else if (keyState[x][y] == true && lastKeyState[x][y] == false) {
-					stop();
+				if (keyState[x][y] == true && lastKeyState[x][y] == false) {
+					final int X = x;
+					final int Y = y;
+					handler.post(new Runnable() {
+						@Override
+						public void run() {
+							play(X - 7, Y - 1);
+						}
+					});
+				} else if (keyState[x][y] == false && lastKeyState[x][y] == true) {
+					handler.post(new Runnable() {
+						@Override
+						public void run() {
+							stop();
+						}
+					});
 				}
 				lastKeyState[x][y] = keyState[x][y];
 			}
