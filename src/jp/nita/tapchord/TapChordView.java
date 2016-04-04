@@ -2,6 +2,8 @@ package jp.nita.tapchord;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -63,6 +65,9 @@ public class TapChordView extends View {
 	List<Shape> shapes = new ArrayList<Shape>();
 	
 	Object keyWatcher = new Object();
+	Timer playTimer = null;
+	Timer stopTimer = null;
+	long lastKeyWatchedTime;
 
 	public TapChordView(Context context, AttributeSet attrs) {
 		super(context, attrs);
@@ -727,127 +732,121 @@ public class TapChordView extends View {
 		return true;
 	}
 	
-	public boolean keyPressed(int keyCode,KeyEvent event) {
-		Log.i("TapChordView", "pressed "+keyCode);
+	public boolean keyPressed(int keyCode, KeyEvent event) {
+		Log.i("TapChordView", "pressed " + keyCode);
 		if (event.getRepeatCount() > 0 || event.isLongPress()) {
 			return true;
 		}
-		
+
 		synchronized (keyWatcher) {
 			switch (keyCode) {
 			case KeyEvent.KEYCODE_T:
-				if (playing <= 0) {
-					keyState[6][0]++;
-				}
+				playWithKey(6,0);
 				return true;
 			case KeyEvent.KEYCODE_G:
-				if (playing <= 0) {
-					keyState[6][1]++;
-				}
+				playWithKey(6,1);
 				return true;
 			case KeyEvent.KEYCODE_B:
-				if (playing <= 0) {
-					keyState[6][2]++;
-				}
+				playWithKey(6,2);
 				return true;
 			case KeyEvent.KEYCODE_Y:
-				if (playing <= 0) {
-					keyState[7][0]++;
-				}
+				playWithKey(7,0);
 				return true;
 			case KeyEvent.KEYCODE_H:
-				if (playing <= 0) {
-					keyState[7][1]++;
-				}
+				playWithKey(7,1);
 				return true;
 			case KeyEvent.KEYCODE_N:
-				if (playing <= 0) {
-					keyState[7][2]++;
-				}
+				playWithKey(7,2);
 				return true;
 			case KeyEvent.KEYCODE_U:
-				if (playing <= 0) {
-					keyState[8][0]++;
-				}
+				playWithKey(8,0);
 				return true;
 			case KeyEvent.KEYCODE_J:
-				if (playing <= 0) {
-					keyState[8][1]++;
-				}
+				playWithKey(8,1);
 				return true;
 			case KeyEvent.KEYCODE_M:
-				if (playing <= 0) {
-					keyState[8][2]++;
-				}
+				playWithKey(8,2);
 				return true;
 			default:
 				return false;
 			}
 		}
 	}
-	
-	public boolean keyLongPressed(int keyCode,KeyEvent event) {
-		Log.i("TapChordView", "longPressed "+keyCode);
+
+	public boolean keyLongPressed(int keyCode, KeyEvent event) {
+		Log.i("TapChordView", "longPressed " + keyCode);
 		return false;
 	}
-	
-	public boolean keyReleased(int keyCode,KeyEvent event) {
-		Log.i("TapChordView", "released "+keyCode);
+
+	public boolean keyReleased(int keyCode, KeyEvent event) {
+		Log.i("TapChordView", "released " + keyCode);
 		if (event.getRepeatCount() > 0 || event.isLongPress()) {
 			return true;
 		}
-		
+
 		synchronized (keyWatcher) {
 			switch (keyCode) {
 			case KeyEvent.KEYCODE_T:
-				if (playing > 0) {
-					keyState[6][0]--;
-				}
+				stopWithKey(6,0);
 				return true;
 			case KeyEvent.KEYCODE_G:
-				if (playing > 0) {
-					keyState[6][1]--;
-				}
+				stopWithKey(6,1);
 				return true;
 			case KeyEvent.KEYCODE_B:
-				if (playing > 0) {
-					keyState[6][2]--;
-				}
+				stopWithKey(6,2);
 				return true;
 			case KeyEvent.KEYCODE_Y:
-				if (playing > 0) {
-					keyState[7][0]--;
-				}
+				stopWithKey(7,0);
 				return true;
 			case KeyEvent.KEYCODE_H:
-				if (playing > 0) {
-					keyState[7][1]--;
-				}
+				stopWithKey(7,1);
 				return true;
 			case KeyEvent.KEYCODE_N:
-				if (playing > 0) {
-					keyState[7][2]--;
-				}
+				stopWithKey(7,2);
 				return true;
 			case KeyEvent.KEYCODE_U:
-				if (playing > 0) {
-					keyState[8][0]--;
-				}
+				stopWithKey(8,0);
 				return true;
 			case KeyEvent.KEYCODE_J:
-				if (playing > 0) {
-					keyState[8][1]--;
-				}
+				stopWithKey(8,1);
 				return true;
 			case KeyEvent.KEYCODE_M:
-				if (playing > 0) {
-					keyState[8][2]--;
-				}
+				stopWithKey(8,2);
 				return true;
 			default:
 				return false;
 			}
 		}
+	}
+	
+	public boolean playWithKey(final int x,final int y) {
+		if (stopTimer != null) {
+			stopTimer.cancel();
+			stopTimer = null;
+			return false;
+		}
+		
+		play(x - 7, y - 1);
+		
+		return true;
+	}
+	
+	public boolean stopWithKey(final int x,final int y) {
+		stopTimer = new Timer();
+		stopTimer.schedule(new TimerTask(){
+			@Override
+			public void run() {
+				handler.post(new Runnable() {
+					@Override
+					public void run() {
+						stop();
+						stopTimer = null;
+					}
+				});
+			}
+		}, 100);
+		
+		return true;
 	}
 
 	public void toolbarReleased(int which) {
@@ -1030,33 +1029,6 @@ public class TapChordView extends View {
 					shapes.remove(i);
 			}
 			handler.post(new Repainter());
-		}
-		synchronized (keyWatcher) {
-			for (int x = 0; x < 15; x++) {
-				for (int y = 0; y < 3; y++) {
-					if (keyState[x][y] > 0 && lastKeyState[x][y] <= 0) {
-						Log.i("TapChordView", "heartbeat "+keyState[x][y]);
-						final int X = x;
-						final int Y = y;
-						handler.post(new Runnable() {
-							@Override
-							public void run() {
-								play(X - 7, Y - 1);
-							}
-						});
-					}
-					if (keyState[x][y] <= 0 && lastKeyState[x][y] > 0) {
-						Log.i("TapChordView", "heartbeat "+keyState[x][y]);
-						handler.post(new Runnable() {
-							@Override
-							public void run() {
-								stop();
-							}
-						});
-					}
-					lastKeyState[x][y] = keyState[x][y];
-				}
-			}
 		}
 	}
 
