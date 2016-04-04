@@ -41,6 +41,21 @@ public class TapChordView extends View {
 	boolean darken, vibration, keyboardIndicatorsTapped;
 	int keyState[][] = new int[15][3];
 	int lastKeyState[][] = new int[15][3];
+	int keycodes[][] = { { 0, 0, 0 },
+			{ 0, 0, 0 },
+			{ KeyEvent.KEYCODE_Q, KeyEvent.KEYCODE_A, KeyEvent.KEYCODE_Z },
+			{ KeyEvent.KEYCODE_W, KeyEvent.KEYCODE_S, KeyEvent.KEYCODE_X },
+			{ KeyEvent.KEYCODE_E, KeyEvent.KEYCODE_D, KeyEvent.KEYCODE_C },
+			{ KeyEvent.KEYCODE_R, KeyEvent.KEYCODE_F, KeyEvent.KEYCODE_V },
+			{ KeyEvent.KEYCODE_T, KeyEvent.KEYCODE_G, KeyEvent.KEYCODE_B },
+			{ KeyEvent.KEYCODE_Y, KeyEvent.KEYCODE_H, KeyEvent.KEYCODE_N },
+			{ KeyEvent.KEYCODE_U, KeyEvent.KEYCODE_J, KeyEvent.KEYCODE_M },
+			{ KeyEvent.KEYCODE_I, KeyEvent.KEYCODE_K, KeyEvent.KEYCODE_COMMA },
+			{ KeyEvent.KEYCODE_O, KeyEvent.KEYCODE_L, KeyEvent.KEYCODE_PERIOD },
+			{ KeyEvent.KEYCODE_P, KeyEvent.KEYCODE_SEMICOLON, KeyEvent.KEYCODE_SLASH },
+			{ KeyEvent.KEYCODE_GRAVE, KeyEvent.KEYCODE_APOSTROPHE, KeyEvent.KEYCODE_BACKSLASH },
+			{ 0, 0, 0 },
+			{ 0, 0, 0 } };
 
 	int scale = 0;
 	int soundRange = 0;
@@ -739,38 +754,17 @@ public class TapChordView extends View {
 		}
 
 		synchronized (keyWatcher) {
-			switch (keyCode) {
-			case KeyEvent.KEYCODE_T:
-				playWithKey(6,0);
-				return true;
-			case KeyEvent.KEYCODE_G:
-				playWithKey(6,1);
-				return true;
-			case KeyEvent.KEYCODE_B:
-				playWithKey(6,2);
-				return true;
-			case KeyEvent.KEYCODE_Y:
-				playWithKey(7,0);
-				return true;
-			case KeyEvent.KEYCODE_H:
-				playWithKey(7,1);
-				return true;
-			case KeyEvent.KEYCODE_N:
-				playWithKey(7,2);
-				return true;
-			case KeyEvent.KEYCODE_U:
-				playWithKey(8,0);
-				return true;
-			case KeyEvent.KEYCODE_J:
-				playWithKey(8,1);
-				return true;
-			case KeyEvent.KEYCODE_M:
-				playWithKey(8,2);
-				return true;
-			default:
-				return false;
+			for (int x = 0; x < 15; x++) {
+				for (int y = 0; y < 3; y++) {
+					if (keycodes[x][y] == 0) continue;
+					if (keycodes[x][y] == keyCode) {
+						playWithKey(x,y);
+						return true;
+					}
+				}
 			}
 		}
+		return false;
 	}
 
 	public boolean keyLongPressed(int keyCode, KeyEvent event) {
@@ -785,38 +779,18 @@ public class TapChordView extends View {
 		}
 
 		synchronized (keyWatcher) {
-			switch (keyCode) {
-			case KeyEvent.KEYCODE_T:
-				stopWithKey(6,0);
-				return true;
-			case KeyEvent.KEYCODE_G:
-				stopWithKey(6,1);
-				return true;
-			case KeyEvent.KEYCODE_B:
-				stopWithKey(6,2);
-				return true;
-			case KeyEvent.KEYCODE_Y:
-				stopWithKey(7,0);
-				return true;
-			case KeyEvent.KEYCODE_H:
-				stopWithKey(7,1);
-				return true;
-			case KeyEvent.KEYCODE_N:
-				stopWithKey(7,2);
-				return true;
-			case KeyEvent.KEYCODE_U:
-				stopWithKey(8,0);
-				return true;
-			case KeyEvent.KEYCODE_J:
-				stopWithKey(8,1);
-				return true;
-			case KeyEvent.KEYCODE_M:
-				stopWithKey(8,2);
-				return true;
-			default:
-				return false;
+			for (int x = 0; x < 15; x++) {
+				for (int y = 0; y < 3; y++) {
+					if (keycodes[x][y] == 0) continue;
+					if (keycodes[x][y] == keyCode) {
+						stopWithKey(x,y);
+						return true;
+					}
+				}
 			}
 		}
+		
+		return false;
 	}
 	
 	public boolean playWithKey(final int x,final int y) {
