@@ -146,14 +146,14 @@ public class MainActivity extends AbstractSingleMidiActivity {
 
 	@Override
 	public void onDeviceDetached(UsbDevice usbDevice) {
-		Toast.makeText(MainActivity.this, getString(R.string.message_midi_device_attached_1)
-				+ usbDevice.getDeviceName() + getString(R.string.message_midi_device_attached_2), Toast.LENGTH_LONG).show();
+		Toast.makeText(MainActivity.this, getString(R.string.message_midi_device_detached_1)
+				+ usbDevice.getDeviceName() + getString(R.string.message_midi_device_detached_2), Toast.LENGTH_LONG).show();
 	}
 
 	@Override
 	public void onDeviceAttached(UsbDevice usbDevice) {
-		Toast.makeText(MainActivity.this, getString(R.string.message_midi_device_detached_1)
-				+ usbDevice.getDeviceName() + getString(R.string.message_midi_device_detached_2), Toast.LENGTH_LONG).show();
+		Toast.makeText(MainActivity.this, getString(R.string.message_midi_device_attached_1)
+				+ usbDevice.getDeviceName() + getString(R.string.message_midi_device_attached_2), Toast.LENGTH_LONG).show();
 	}
 
 	@Override
