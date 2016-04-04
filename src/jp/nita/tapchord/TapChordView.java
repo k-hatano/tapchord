@@ -1035,6 +1035,7 @@ public class TapChordView extends View {
 			for (int x = 0; x < 15; x++) {
 				for (int y = 0; y < 3; y++) {
 					if (keyState[x][y] > 0 && lastKeyState[x][y] <= 0) {
+						Log.i("TapChordView", "heartbeat "+keyState[x][y]);
 						final int X = x;
 						final int Y = y;
 						handler.post(new Runnable() {
@@ -1043,7 +1044,9 @@ public class TapChordView extends View {
 								play(X - 7, Y - 1);
 							}
 						});
-					} else if (keyState[x][y] <= 0 && lastKeyState[x][y] > 0) {
+					}
+					if (keyState[x][y] <= 0 && lastKeyState[x][y] > 0) {
+						Log.i("TapChordView", "heartbeat "+keyState[x][y]);
 						handler.post(new Runnable() {
 							@Override
 							public void run() {
