@@ -57,6 +57,7 @@ public class TapChordView extends View {
 			{ KeyEvent.KEYCODE_GRAVE, KeyEvent.KEYCODE_APOSTROPHE, KeyEvent.KEYCODE_BACKSLASH },
 			{ 0, 0, 0 },
 			{ 0, 0, 0 } };
+	int specialKeycodes[] = {KeyEvent.KEYCODE_0};
 
 	int scale = 0;
 	int soundRange = 0;
@@ -82,7 +83,8 @@ public class TapChordView extends View {
 	
 	Object keyWatcher = new Object();
 	Timer stopTimer = null;
-	Timer statusBarSwitchOffTimer = null;
+	Timer cancelSwitchingStatusBarTimer = null;
+	Timer cancelSpecialKeyTimer = null;
 	long lastKeyWatchedTime;
 
 	public TapChordView(Context context, AttributeSet attrs) {
@@ -766,9 +768,41 @@ public class TapChordView extends View {
 			}
 			for (int i = 0; i < 4; i++) {
 				if (statusbarKeycodes[i] == keyCode) {
-					switchStatusBarWithKey(i, 1);
+					switchStatusBarWithKey(i);
 					return true;
 				}
+			}
+			for (int i = 0; i < statusbarKeycodes.length; i++) {
+				if (statusbarKeycodes[i] == keyCode) {
+					performSpecialKey(i);
+					return true;
+				}
+			}
+
+			switch (keyCode) {
+			case KeyEvent.KEYCODE_DPAD_LEFT:
+				scroll -= 8;
+				if (scroll < -Statics.getScrollMax(width, height))
+					scroll = -Statics.getScrollMax(width, height);
+				if (scroll > Statics.getScrollMax(width, height))
+					scroll = Statics.getScrollMax(width, height);
+				invalidate();
+				break;
+			case KeyEvent.KEYCODE_DPAD_RIGHT:
+				scroll += 8;
+				if (scroll < -Statics.getScrollMax(width, height))
+					scroll = -Statics.getScrollMax(width, height);
+				if (scroll > Statics.getScrollMax(width, height))
+					scroll = Statics.getScrollMax(width, height);
+				invalidate();
+				break;
+			case KeyEvent.KEYCODE_DPAD_UP:
+			case KeyEvent.KEYCODE_DPAD_DOWN:
+				scroll = 0;
+				invalidate();
+				break;
+			default:
+				break;
 			}
 		}
 		return false;
@@ -797,7 +831,13 @@ public class TapChordView extends View {
 			}
 			for (int i = 0; i < 4; i++) {
 				if (statusbarKeycodes[i] == keyCode) {
-					switchStatusBarWithKey(i, 0);
+					cancelSwitchingStatusBar();
+					return true;
+				}
+			}
+			for (int i = 0; i < statusbarKeycodes.length; i++) {
+				if (statusbarKeycodes[i] == keyCode) {
+					cancelSpecialKey();
 					return true;
 				}
 			}
@@ -835,33 +875,73 @@ public class TapChordView extends View {
 		
 		return true;
 	}
-	
-	public boolean switchStatusBarWithKey(final int index, final int value) {
-		if (value > 0) {
-			if (statusBarSwitchOffTimer != null) {
-				statusBarSwitchOffTimer.cancel();
-				statusBarSwitchOffTimer = null;
-				return false;
-			}
-			
-			statusbarFlags[index] = value;
-			invalidate(Statics.RectFToRect(Statics.getRectOfStatusBar(width, height, 1.0f)));
-		} else {
-			statusBarSwitchOffTimer = new Timer();
-			statusBarSwitchOffTimer.schedule(new TimerTask() {
-				@Override
-				public void run() {
-					handler.post(new Runnable() {
-						@Override
-						public void run() {
-							statusbarFlags[index] = value;
-							invalidate(Statics.RectFToRect(Statics.getRectOfStatusBar(width, height, 1.0f)));
-							statusBarSwitchOffTimer = null;
-						}
-					});
-				}
-			}, 100);
+
+	public boolean switchStatusBarWithKey(final int index) {
+		if (cancelSwitchingStatusBarTimer != null) {
+			cancelSwitchingStatusBarTimer.cancel();
+			cancelSwitchingStatusBarTimer = null;
+			return false;
 		}
+
+		statusbarFlags[index] = 2 - statusbarFlags[index];
+		invalidate(Statics.RectFToRect(Statics.getRectOfStatusBar(width, height, 1.0f)));
+
+		return true;
+	}
+
+	public boolean cancelSwitchingStatusBar() {
+		cancelSwitchingStatusBarTimer = new Timer();
+		cancelSwitchingStatusBarTimer.schedule(new TimerTask() {
+			@Override
+			public void run() {
+				handler.post(new Runnable() {
+					@Override
+					public void run() {
+						cancelSwitchingStatusBarTimer = null;
+					}
+				});
+			}
+		}, 100);
+		
+		return true;
+	}
+	
+	public boolean performSpecialKey(final int index) {
+		if (cancelSpecialKeyTimer != null) {
+			cancelSpecialKeyTimer.cancel();
+			cancelSpecialKeyTimer = null;
+			return false;
+		}
+		
+		switch (specialKeycodes[index]) {
+		case KeyEvent.KEYCODE_0:
+			for (int i = 0; i < 4; i++) {
+				if (statusbarFlags[i] >= 2)
+					statusbarFlags[i] = 0;
+			}
+			invalidate(Statics.RectFToRect(Statics.getRectOfStatusBar(width, height, 1.0f)));
+			break;
+		default:
+			break;
+		}
+		
+		return true;
+	}
+	
+	public boolean cancelSpecialKey() {
+		cancelSpecialKeyTimer = new Timer();
+		cancelSpecialKeyTimer.schedule(new TimerTask() {
+			@Override
+			public void run() {
+				handler.post(new Runnable() {
+					@Override
+					public void run() {
+						cancelSpecialKeyTimer = null;
+					}
+				});
+			}
+		}, 100);
+		
 		return true;
 	}
 
