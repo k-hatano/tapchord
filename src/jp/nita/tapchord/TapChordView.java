@@ -57,7 +57,7 @@ public class TapChordView extends View {
 			{ KeyEvent.KEYCODE_GRAVE, KeyEvent.KEYCODE_APOSTROPHE, KeyEvent.KEYCODE_BACKSLASH },
 			{ 0, 0, 0 },
 			{ 0, 0, 0 } };
-	int specialKeycodes[] = {KeyEvent.KEYCODE_0, KeyEvent.KEYCODE_SHIFT_LEFT, KeyEvent.KEYCODE_SHIFT_RIGHT};
+	int specialKeycodes[] = {KeyEvent.KEYCODE_SHIFT_LEFT, KeyEvent.KEYCODE_SHIFT_RIGHT, KeyEvent.KEYCODE_0, KeyEvent.KEYCODE_DEL, KeyEvent.KEYCODE_SPACE};
 
 	int scale = 0;
 	int soundRange = 0;
@@ -924,12 +924,30 @@ public class TapChordView extends View {
 		
 		switch (specialKeycodes[index]) {
 		case KeyEvent.KEYCODE_0:
+		case KeyEvent.KEYCODE_DEL: {
+			boolean statusbarFlag = false;
 			for (int i = 0; i < 4; i++) {
 				if (statusbarFlags[i] >= 2)
-					statusbarFlags[i] = 0;
+					statusbarFlag = true;
 			}
-			invalidate(Statics.RectFToRect(Statics.getRectOfStatusBar(width, height, 1.0f)));
-			break;
+			if (statusbarFlag) {
+				for (int i = 0; i < 4; i++) {
+					if (statusbarFlags[i] >= 2)
+						statusbarFlags[i] = 0;
+				}
+			} else {
+				scroll = 0;
+			}
+		}
+		case KeyEvent.KEYCODE_SPACE:
+			if (scroll == 0) {
+				for (int i = 0; i < 4; i++) {
+					if (statusbarFlags[i] >= 2)
+						statusbarFlags[i] = 0;
+				}
+			} else {
+				scroll = 0;
+			}
 		case KeyEvent.KEYCODE_SHIFT_LEFT:
 		case KeyEvent.KEYCODE_SHIFT_RIGHT:
 			shiftKeyPressed = true;
