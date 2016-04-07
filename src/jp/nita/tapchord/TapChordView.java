@@ -57,7 +57,7 @@ public class TapChordView extends View {
 			{ KeyEvent.KEYCODE_GRAVE, KeyEvent.KEYCODE_APOSTROPHE, KeyEvent.KEYCODE_BACKSLASH },
 			{ 0, 0, 0 },
 			{ 0, 0, 0 } };
-	int specialKeycodes[] = {KeyEvent.KEYCODE_0};
+	int specialKeycodes[] = {KeyEvent.KEYCODE_0, KeyEvent.KEYCODE_SHIFT_LEFT, KeyEvent.KEYCODE_SHIFT_RIGHT};
 
 	int scale = 0;
 	int soundRange = 0;
@@ -86,6 +86,7 @@ public class TapChordView extends View {
 	Timer cancelSwitchingStatusBarTimer = null;
 	Timer cancelSpecialKeyTimer = null;
 	long lastKeyWatchedTime;
+	boolean shiftKeyPressed = false;
 
 	public TapChordView(Context context, AttributeSet attrs) {
 		super(context, attrs);
@@ -761,7 +762,15 @@ public class TapChordView extends View {
 				for (int y = 0; y < 3; y++) {
 					if (keycodes[x][y] == 0) continue;
 					if (keycodes[x][y] == keyCode) {
-						playWithKey(x,y);
+						if (shiftKeyPressed) {
+							int newX = x + 6;
+							if (newX > 13) {
+								newX -= 12;
+							}
+							playWithKey(newX,y);
+						} else {
+							playWithKey(x,y);
+						}
 						return true;
 					}
 				}
@@ -772,8 +781,8 @@ public class TapChordView extends View {
 					return true;
 				}
 			}
-			for (int i = 0; i < statusbarKeycodes.length; i++) {
-				if (statusbarKeycodes[i] == keyCode) {
+			for (int i = 0; i < specialKeycodes.length; i++) {
+				if (specialKeycodes[i] == keyCode) {
 					performSpecialKey(i);
 					return true;
 				}
@@ -831,13 +840,13 @@ public class TapChordView extends View {
 			}
 			for (int i = 0; i < 4; i++) {
 				if (statusbarKeycodes[i] == keyCode) {
-					cancelSwitchingStatusBar();
+					cancelSwitchingStatusBar(i);
 					return true;
 				}
 			}
-			for (int i = 0; i < statusbarKeycodes.length; i++) {
-				if (statusbarKeycodes[i] == keyCode) {
-					cancelSpecialKey();
+			for (int i = 0; i < specialKeycodes.length; i++) {
+				if (specialKeycodes[i] == keyCode) {
+					cancelSpecialKey(i);
 					return true;
 				}
 			}
@@ -889,7 +898,7 @@ public class TapChordView extends View {
 		return true;
 	}
 
-	public boolean cancelSwitchingStatusBar() {
+	public boolean cancelSwitchingStatusBar(final int index) {
 		cancelSwitchingStatusBarTimer = new Timer();
 		cancelSwitchingStatusBarTimer.schedule(new TimerTask() {
 			@Override
@@ -921,6 +930,10 @@ public class TapChordView extends View {
 			}
 			invalidate(Statics.RectFToRect(Statics.getRectOfStatusBar(width, height, 1.0f)));
 			break;
+		case KeyEvent.KEYCODE_SHIFT_LEFT:
+		case KeyEvent.KEYCODE_SHIFT_RIGHT:
+			shiftKeyPressed = true;
+			break;
 		default:
 			break;
 		}
@@ -928,7 +941,7 @@ public class TapChordView extends View {
 		return true;
 	}
 	
-	public boolean cancelSpecialKey() {
+	public boolean cancelSpecialKey(final int index) {
 		cancelSpecialKeyTimer = new Timer();
 		cancelSpecialKeyTimer.schedule(new TimerTask() {
 			@Override
@@ -936,6 +949,14 @@ public class TapChordView extends View {
 				handler.post(new Runnable() {
 					@Override
 					public void run() {
+						switch (specialKeycodes[index]) {
+						case KeyEvent.KEYCODE_SHIFT_LEFT:
+						case KeyEvent.KEYCODE_SHIFT_RIGHT:
+							shiftKeyPressed = false;
+							break;
+						default:
+							break;
+						}
 						cancelSpecialKeyTimer = null;
 					}
 				});
