@@ -57,7 +57,8 @@ public class TapChordView extends View {
 			{ KeyEvent.KEYCODE_GRAVE, KeyEvent.KEYCODE_APOSTROPHE, KeyEvent.KEYCODE_BACKSLASH },
 			{ 0, 0, 0 },
 			{ 0, 0, 0 } };
-	int specialKeycodes[] = {KeyEvent.KEYCODE_SHIFT_LEFT, KeyEvent.KEYCODE_SHIFT_RIGHT, KeyEvent.KEYCODE_0, KeyEvent.KEYCODE_DEL, KeyEvent.KEYCODE_SPACE};
+	int specialKeycodes[] = {KeyEvent.KEYCODE_SHIFT_LEFT, KeyEvent.KEYCODE_SHIFT_RIGHT, KeyEvent.KEYCODE_0,
+			KeyEvent.KEYCODE_DEL, KeyEvent.KEYCODE_SPACE, KeyEvent.KEYCODE_ENTER};
 
 	int scale = 0;
 	int soundRange = 0;
@@ -924,7 +925,7 @@ public class TapChordView extends View {
 		
 		switch (specialKeycodes[index]) {
 		case KeyEvent.KEYCODE_0:
-		case KeyEvent.KEYCODE_DEL: {
+		case KeyEvent.KEYCODE_DEL:
 			boolean statusbarFlag = false;
 			for (int i = 0; i < 4; i++) {
 				if (statusbarFlags[i] >= 2)
@@ -938,7 +939,6 @@ public class TapChordView extends View {
 			} else {
 				scroll = 0;
 			}
-		}
 			invalidate();
 			break;
 		case KeyEvent.KEYCODE_SPACE:
@@ -955,6 +955,10 @@ public class TapChordView extends View {
 		case KeyEvent.KEYCODE_SHIFT_LEFT:
 		case KeyEvent.KEYCODE_SHIFT_RIGHT:
 			shiftKeyPressed = true;
+			break;
+		case KeyEvent.KEYCODE_ENTER:
+			Intent intent = new Intent((Activity) this.getContext(), SettingsActivity.class);
+			this.getContext().startActivity(intent);
 			break;
 		default:
 			break;
