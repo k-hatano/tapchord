@@ -790,7 +790,7 @@ public class TapChordView extends View {
 
 			switch (keyCode) {
 			case KeyEvent.KEYCODE_DPAD_LEFT:
-				scroll -= 8;
+				scroll -= height * 7 / 35f;
 				if (scroll < -Statics.getScrollMax(width, height))
 					scroll = -Statics.getScrollMax(width, height);
 				if (scroll > Statics.getScrollMax(width, height))
@@ -798,7 +798,7 @@ public class TapChordView extends View {
 				invalidate();
 				break;
 			case KeyEvent.KEYCODE_DPAD_RIGHT:
-				scroll += 8;
+				scroll += height * 7 / 35f;
 				if (scroll < -Statics.getScrollMax(width, height))
 					scroll = -Statics.getScrollMax(width, height);
 				if (scroll > Statics.getScrollMax(width, height))
@@ -939,6 +939,7 @@ public class TapChordView extends View {
 				scroll = 0;
 			}
 		}
+			invalidate();
 			break;
 		case KeyEvent.KEYCODE_SPACE:
 			if (scroll == 0) {
@@ -949,6 +950,7 @@ public class TapChordView extends View {
 			} else {
 				scroll = 0;
 			}
+			invalidate();
 			break;
 		case KeyEvent.KEYCODE_SHIFT_LEFT:
 		case KeyEvent.KEYCODE_SHIFT_RIGHT:
