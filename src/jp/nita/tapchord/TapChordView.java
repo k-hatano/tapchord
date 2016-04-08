@@ -939,6 +939,7 @@ public class TapChordView extends View {
 				scroll = 0;
 			}
 		}
+			break;
 		case KeyEvent.KEYCODE_SPACE:
 			if (scroll == 0) {
 				for (int i = 0; i < 4; i++) {
@@ -948,6 +949,7 @@ public class TapChordView extends View {
 			} else {
 				scroll = 0;
 			}
+			break;
 		case KeyEvent.KEYCODE_SHIFT_LEFT:
 		case KeyEvent.KEYCODE_SHIFT_RIGHT:
 			shiftKeyPressed = true;
