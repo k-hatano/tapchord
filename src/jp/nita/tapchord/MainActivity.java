@@ -247,34 +247,6 @@ public class MainActivity extends AbstractSingleMidiActivity {
 		} else if (keyCode == KeyEvent.KEYCODE_CAMERA) {
 			TapChordView.debugMode = !TapChordView.debugMode;
 			((TapChordView) findViewById(R.id.tapChordView)).invalidate();
-		}
-		return super.onKeyDown(keyCode, event);
-	}
-
-	@Override
-	public boolean onKeyUp(int keyCode, KeyEvent event) {
-		return super.onKeyUp(keyCode, event);
-	}
-
-	@Override
-	public boolean onKeyDown(int keyCode, KeyEvent event) {
-		if (keyCode == KeyEvent.KEYCODE_BACK) {
-			new AlertDialog.Builder(this).setTitle(getString(R.string.action_quit))
-					.setMessage(getString(R.string.message_quit))
-					.setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
-						@Override
-						public void onClick(DialogInterface dialog, int which) {
-							finish();
-						}
-					}).setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
-						@Override
-						public void onClick(DialogInterface dialog, int which) {
-
-						}
-					}).show();
-		} else if (keyCode == KeyEvent.KEYCODE_CAMERA) {
-			TapChordView.debugMode = !TapChordView.debugMode;
-			((TapChordView) findViewById(R.id.tapChordView)).invalidate();
 		} else {
 			boolean result = false;
 			result = ((TapChordView) findViewById(R.id.tapChordView)).keyPressed(keyCode, event);

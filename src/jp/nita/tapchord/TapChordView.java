@@ -38,7 +38,7 @@ public class TapChordView extends View {
 	int situation, destination, step, scroll, upper, darken, destScale;
 	int playing, playingX, playingY, tappedX, destinationScroll;
 	int playingID;
-	boolean , keyboardIndicatorsTapped;
+	boolean keyboardIndicatorsTapped;
 	int keyState[][] = new int[15][3];
 	int lastKeyState[][] = new int[15][3];
 	int statusbarKeycodes[] = {KeyEvent.KEYCODE_1, KeyEvent.KEYCODE_2, KeyEvent.KEYCODE_3, KeyEvent.KEYCODE_4};
@@ -994,7 +994,6 @@ public class TapChordView extends View {
 		return true;
 	}
 
->>>>>>> features/legacy
 	public void toolbarReleased(int which) {
 		if (situation == Statics.SITUATION_TRANSPOSE) {
 			switch (which) {
