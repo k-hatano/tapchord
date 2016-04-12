@@ -256,4 +256,53 @@ public class MainActivity extends AbstractSingleMidiActivity {
 		return super.onKeyUp(keyCode, event);
 	}
 
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		if (keyCode == KeyEvent.KEYCODE_BACK) {
+			new AlertDialog.Builder(this).setTitle(getString(R.string.action_quit))
+					.setMessage(getString(R.string.message_quit))
+					.setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							finish();
+						}
+					}).setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+
+						}
+					}).show();
+		} else if (keyCode == KeyEvent.KEYCODE_CAMERA) {
+			TapChordView.debugMode = !TapChordView.debugMode;
+			((TapChordView) findViewById(R.id.tapChordView)).invalidate();
+		} else {
+			boolean result = false;
+			result = ((TapChordView) findViewById(R.id.tapChordView)).keyPressed(keyCode, event);
+			if (!result) {
+				return super.onKeyDown(keyCode, event);
+			}
+		}
+		return super.onKeyDown(keyCode, event);
+	}
+
+	@Override
+	public boolean onKeyUp(int keyCode, KeyEvent event) {
+		boolean result = false;
+		result = ((TapChordView) findViewById(R.id.tapChordView)).keyReleased(keyCode, event);
+		if (!result) {
+			return super.onKeyUp(keyCode, event);
+		}
+		return super.onKeyUp(keyCode, event);
+	}
+	
+	@Override
+	public boolean onKeyLongPress(int keyCode, KeyEvent event){
+		boolean result = false;
+		result = ((TapChordView) findViewById(R.id.tapChordView)).keyLongPressed(keyCode, event);
+		if (!result) {
+			return super.onKeyLongPress(keyCode, event);
+		}
+	    return super.onKeyLongPress(keyCode, event);
+	}
+
 }
