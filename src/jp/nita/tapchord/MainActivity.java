@@ -142,13 +142,34 @@ public class MainActivity extends Activity {
 		} else if (keyCode == KeyEvent.KEYCODE_CAMERA || keyCode == KeyEvent.KEYCODE_SEARCH) {
 			TapChordView.debugMode = !TapChordView.debugMode;
 			((TapChordView) findViewById(R.id.tapChordView)).invalidate();
+		} else {
+			boolean result = false;
+			result = ((TapChordView) findViewById(R.id.tapChordView)).keyPressed(keyCode, event);
+			if (!result) {
+				return super.onKeyDown(keyCode, event);
+			}
 		}
 		return super.onKeyDown(keyCode, event);
 	}
 
 	@Override
 	public boolean onKeyUp(int keyCode, KeyEvent event) {
+		boolean result = false;
+		result = ((TapChordView) findViewById(R.id.tapChordView)).keyReleased(keyCode, event);
+		if (!result) {
+			return super.onKeyUp(keyCode, event);
+		}
 		return super.onKeyUp(keyCode, event);
+	}
+	
+	@Override
+	public boolean onKeyLongPress(int keyCode, KeyEvent event){
+		boolean result = false;
+		result = ((TapChordView) findViewById(R.id.tapChordView)).keyLongPressed(keyCode, event);
+		if (!result) {
+			return super.onKeyLongPress(keyCode, event);
+		}
+	    return super.onKeyLongPress(keyCode, event);
 	}
 
 }

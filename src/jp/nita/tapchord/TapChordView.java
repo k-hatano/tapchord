@@ -2,6 +2,8 @@ package jp.nita.tapchord;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -19,7 +21,9 @@ import android.graphics.RectF;
 import android.os.Handler;
 import android.os.Vibrator;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.util.SparseIntArray;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -35,6 +39,26 @@ public class TapChordView extends View {
 	int playing, playingX, playingY, tappedX, destinationScroll;
 	int playingID;
 	boolean darken, vibration, keyboardIndicatorsTapped;
+	int keyState[][] = new int[15][3];
+	int lastKeyState[][] = new int[15][3];
+	int statusbarKeycodes[] = {KeyEvent.KEYCODE_1, KeyEvent.KEYCODE_2, KeyEvent.KEYCODE_3, KeyEvent.KEYCODE_4};
+	int keycodes[][] = { { 0, 0, 0 },
+			{ 0, 0, 0 },
+			{ KeyEvent.KEYCODE_Q, KeyEvent.KEYCODE_A, KeyEvent.KEYCODE_Z },
+			{ KeyEvent.KEYCODE_W, KeyEvent.KEYCODE_S, KeyEvent.KEYCODE_X },
+			{ KeyEvent.KEYCODE_E, KeyEvent.KEYCODE_D, KeyEvent.KEYCODE_C },
+			{ KeyEvent.KEYCODE_R, KeyEvent.KEYCODE_F, KeyEvent.KEYCODE_V },
+			{ KeyEvent.KEYCODE_T, KeyEvent.KEYCODE_G, KeyEvent.KEYCODE_B },
+			{ KeyEvent.KEYCODE_Y, KeyEvent.KEYCODE_H, KeyEvent.KEYCODE_N },
+			{ KeyEvent.KEYCODE_U, KeyEvent.KEYCODE_J, KeyEvent.KEYCODE_M },
+			{ KeyEvent.KEYCODE_I, KeyEvent.KEYCODE_K, KeyEvent.KEYCODE_COMMA },
+			{ KeyEvent.KEYCODE_O, KeyEvent.KEYCODE_L, KeyEvent.KEYCODE_PERIOD },
+			{ KeyEvent.KEYCODE_P, KeyEvent.KEYCODE_SEMICOLON, KeyEvent.KEYCODE_SLASH },
+			{ KeyEvent.KEYCODE_GRAVE, KeyEvent.KEYCODE_APOSTROPHE, KeyEvent.KEYCODE_BACKSLASH },
+			{ 0, 0, 0 },
+			{ 0, 0, 0 } };
+	int specialKeycodes[] = {KeyEvent.KEYCODE_SHIFT_LEFT, KeyEvent.KEYCODE_SHIFT_RIGHT, KeyEvent.KEYCODE_0,
+			KeyEvent.KEYCODE_DEL, KeyEvent.KEYCODE_SPACE, KeyEvent.KEYCODE_ENTER};
 
 	int scale = 0;
 	int soundRange = 0;
@@ -57,6 +81,13 @@ public class TapChordView extends View {
 
 	SparseIntArray taps = new SparseIntArray();
 	List<Shape> shapes = new ArrayList<Shape>();
+	
+	Object keyWatcher = new Object();
+	Timer stopTimer = null;
+	Timer cancelSwitchingStatusBarTimer = null;
+	Timer cancelSpecialKeyTimer = null;
+	long lastKeyWatchedTime;
+	boolean shiftKeyPressed = false;
 
 	public TapChordView(Context context, AttributeSet attrs) {
 		super(context, attrs);
@@ -718,6 +749,246 @@ public class TapChordView extends View {
 		default:
 			break;
 		}
+		return true;
+	}
+	
+	public boolean keyPressed(int keyCode, KeyEvent event) {
+		Log.i("TapChordView", "pressed " + keyCode);
+		if (event.getRepeatCount() > 0 || event.isLongPress()) {
+			return true;
+		}
+
+		synchronized (keyWatcher) {
+			for (int x = 0; x < 15; x++) {
+				for (int y = 0; y < 3; y++) {
+					if (keycodes[x][y] == 0) continue;
+					if (keycodes[x][y] == keyCode) {
+						if (shiftKeyPressed) {
+							int newX = x + 6;
+							if (newX > 13) {
+								newX -= 12;
+							}
+							playWithKey(newX,y);
+						} else {
+							playWithKey(x,y);
+						}
+						return true;
+					}
+				}
+			}
+			for (int i = 0; i < 4; i++) {
+				if (statusbarKeycodes[i] == keyCode) {
+					switchStatusBarWithKey(i);
+					return true;
+				}
+			}
+			for (int i = 0; i < specialKeycodes.length; i++) {
+				if (specialKeycodes[i] == keyCode) {
+					performSpecialKey(i);
+					return true;
+				}
+			}
+
+			switch (keyCode) {
+			case KeyEvent.KEYCODE_DPAD_LEFT:
+				scroll -= height * 7 / 35f;
+				if (scroll < -Statics.getScrollMax(width, height))
+					scroll = -Statics.getScrollMax(width, height);
+				if (scroll > Statics.getScrollMax(width, height))
+					scroll = Statics.getScrollMax(width, height);
+				invalidate();
+				break;
+			case KeyEvent.KEYCODE_DPAD_RIGHT:
+				scroll += height * 7 / 35f;
+				if (scroll < -Statics.getScrollMax(width, height))
+					scroll = -Statics.getScrollMax(width, height);
+				if (scroll > Statics.getScrollMax(width, height))
+					scroll = Statics.getScrollMax(width, height);
+				invalidate();
+				break;
+			case KeyEvent.KEYCODE_DPAD_UP:
+			case KeyEvent.KEYCODE_DPAD_DOWN:
+				scroll = 0;
+				invalidate();
+				break;
+			default:
+				break;
+			}
+		}
+		return false;
+	}
+
+	public boolean keyLongPressed(int keyCode, KeyEvent event) {
+		Log.i("TapChordView", "longPressed " + keyCode);
+		return false;
+	}
+
+	public boolean keyReleased(int keyCode, KeyEvent event) {
+		Log.i("TapChordView", "released " + keyCode);
+		if (event.getRepeatCount() > 0 || event.isLongPress()) {
+			return true;
+		}
+
+		synchronized (keyWatcher) {
+			for (int x = 0; x < 15; x++) {
+				for (int y = 0; y < 3; y++) {
+					if (keycodes[x][y] == 0) continue;
+					if (keycodes[x][y] == keyCode) {
+						stopWithKey(x,y);
+						return true;
+					}
+				}
+			}
+			for (int i = 0; i < 4; i++) {
+				if (statusbarKeycodes[i] == keyCode) {
+					cancelSwitchingStatusBar(i);
+					return true;
+				}
+			}
+			for (int i = 0; i < specialKeycodes.length; i++) {
+				if (specialKeycodes[i] == keyCode) {
+					cancelSpecialKey(i);
+					return true;
+				}
+			}
+		}
+		
+		return false;
+	}
+	
+	public boolean playWithKey(final int x,final int y) {
+		if (stopTimer != null) {
+			stopTimer.cancel();
+			stopTimer = null;
+			return false;
+		}
+		
+		play(x - 7, y - 1);
+		
+		return true;
+	}
+	
+	public boolean stopWithKey(final int x,final int y) {
+		stopTimer = new Timer();
+		stopTimer.schedule(new TimerTask(){
+			@Override
+			public void run() {
+				handler.post(new Runnable() {
+					@Override
+					public void run() {
+						stop();
+						stopTimer = null;
+					}
+				});
+			}
+		}, 100);
+		
+		return true;
+	}
+
+	public boolean switchStatusBarWithKey(final int index) {
+		if (cancelSwitchingStatusBarTimer != null) {
+			cancelSwitchingStatusBarTimer.cancel();
+			cancelSwitchingStatusBarTimer = null;
+			return false;
+		}
+
+		statusbarFlags[index] = 2 - statusbarFlags[index];
+		invalidate(Statics.RectFToRect(Statics.getRectOfStatusBar(width, height, 1.0f)));
+
+		return true;
+	}
+
+	public boolean cancelSwitchingStatusBar(final int index) {
+		cancelSwitchingStatusBarTimer = new Timer();
+		cancelSwitchingStatusBarTimer.schedule(new TimerTask() {
+			@Override
+			public void run() {
+				handler.post(new Runnable() {
+					@Override
+					public void run() {
+						cancelSwitchingStatusBarTimer = null;
+					}
+				});
+			}
+		}, 100);
+		
+		return true;
+	}
+	
+	public boolean performSpecialKey(final int index) {
+		if (cancelSpecialKeyTimer != null) {
+			cancelSpecialKeyTimer.cancel();
+			cancelSpecialKeyTimer = null;
+			return false;
+		}
+		
+		switch (specialKeycodes[index]) {
+		case KeyEvent.KEYCODE_0:
+		case KeyEvent.KEYCODE_DEL:
+			boolean statusbarFlag = false;
+			for (int i = 0; i < 4; i++) {
+				if (statusbarFlags[i] >= 2)
+					statusbarFlag = true;
+			}
+			if (statusbarFlag) {
+				for (int i = 0; i < 4; i++) {
+					if (statusbarFlags[i] >= 2)
+						statusbarFlags[i] = 0;
+				}
+			} else {
+				scroll = 0;
+			}
+			invalidate();
+			break;
+		case KeyEvent.KEYCODE_SPACE:
+			if (scroll == 0) {
+				for (int i = 0; i < 4; i++) {
+					if (statusbarFlags[i] >= 2)
+						statusbarFlags[i] = 0;
+				}
+			} else {
+				scroll = 0;
+			}
+			invalidate();
+			break;
+		case KeyEvent.KEYCODE_SHIFT_LEFT:
+		case KeyEvent.KEYCODE_SHIFT_RIGHT:
+			shiftKeyPressed = true;
+			break;
+		case KeyEvent.KEYCODE_ENTER:
+			Intent intent = new Intent((Activity) this.getContext(), SettingsActivity.class);
+			this.getContext().startActivity(intent);
+			break;
+		default:
+			break;
+		}
+		
+		return true;
+	}
+	
+	public boolean cancelSpecialKey(final int index) {
+		cancelSpecialKeyTimer = new Timer();
+		cancelSpecialKeyTimer.schedule(new TimerTask() {
+			@Override
+			public void run() {
+				handler.post(new Runnable() {
+					@Override
+					public void run() {
+						switch (specialKeycodes[index]) {
+						case KeyEvent.KEYCODE_SHIFT_LEFT:
+						case KeyEvent.KEYCODE_SHIFT_RIGHT:
+							shiftKeyPressed = false;
+							break;
+						default:
+							break;
+						}
+						cancelSpecialKeyTimer = null;
+					}
+				});
+			}
+		}, 100);
+		
 		return true;
 	}
 
