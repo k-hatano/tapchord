@@ -150,6 +150,8 @@ public class Sound {
 
 					}
 					track.stop();
+					startedPlayingTime = System.currentTimeMillis();
+					requiredTime = startedPlayingTime - tappedTime;
 					track.release();
 					track = null;
 				} else {
@@ -176,6 +178,8 @@ public class Sound {
 						track.write(getWave(length), 0, length);
 					}
 					track.stop();
+					startedPlayingTime = System.currentTimeMillis();
+					requiredTime = startedPlayingTime - tappedTime;
 					track.release();
 					track = null;
 				}
@@ -237,6 +241,9 @@ public class Sound {
 	}
 
 	public void finish(int modeParam) {
+		if (track != null && !enableEnvelope) {
+			track.pause();
+		}
 		modeTerm = 0;
 		mode = modeParam;
 	}
