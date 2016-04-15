@@ -439,6 +439,12 @@ public class TapChordView extends View {
 		if (debugMode) {
 			paint.setColor(Statics.getColor(Statics.COLOR_BLACK, 0, darken));
 			canvas.drawText("" + Sound.requiredTime, 4, 20, textPaint);
+			
+			if (darken) {
+				canvas.drawText("" + MainActivity.light, 4, 50, textPaint);
+			} else {
+				canvas.drawText("" + MainActivity.accelerationZ, 4, 50, textPaint);
+			}
 		}
 	}
 
@@ -1219,6 +1225,10 @@ public class TapChordView extends View {
 	public void vibrate() {
 		if (vibration)
 			vib.vibrate(Statics.VIBRATION_LENGTH);
+	}
+	
+	public void sensorChanged(MainActivity activity){
+		invalidate(Statics.RectFToRect(Statics.getRectOfStatusBar(width, height, 1.0f)));
 	}
 
 }

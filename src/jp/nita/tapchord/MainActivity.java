@@ -23,6 +23,9 @@ public class MainActivity extends Activity implements SensorEventListener {
 	public static int heartBeatInterval = 5;
 	private Heart heart = null;
 	
+	public static float accelerationX = 0, accelerationY = 0, accelerationZ = 0;
+	public static float light = 0;
+	
 	private SensorManager mSensorManager;
 
 	@Override
@@ -203,9 +206,17 @@ public class MainActivity extends Activity implements SensorEventListener {
 	public void onSensorChanged(SensorEvent event) {
 		switch (event.sensor.getType()) {
 		case Sensor.TYPE_LIGHT:
-			
+			light = event.values[0];
+			break;
 		case Sensor.TYPE_ACCELEROMETER:
-			
+			accelerationX = event.values[0];
+			accelerationY = event.values[1];
+			accelerationZ = event.values[2];
+			break;
+		}
+		TapChordView view = ((TapChordView) findViewById(R.id.tapChordView));
+		if (view != null) {
+			view.sensorChanged(this);
 		}
 	}
 
