@@ -487,7 +487,7 @@ public class TapChordView extends View {
 					return false;
 				}
 			}
-		} else {
+		} else if (situation == Statics.SITUATION_NORMAL) {
 			for (i = 0; i < 4; i++) {
 				rect = Statics.getRectOfStatusBarButton(i, 0, width, height, barsShowingRate);
 				if (rect.contains(x, y)) {
