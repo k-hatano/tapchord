@@ -64,8 +64,8 @@ public class SettingsActivity extends Activity implements OnClickListener, OnIte
 	public void getPreferenceValues() {
 		scale = Statics.getPreferenceValue(this, Statics.PREF_SCALE, 0);
 		darken = Statics.getPreferenceValue(this, Statics.PREF_DARKEN, 0);
-		vibration = Statics.getPreferenceValue(this, Statics.PREF_VIBRATION, 0);
-		volume = Statics.getPreferenceValue(this, Statics.PREF_VOLUME, 0);
+		vibration = Statics.getPreferenceValue(this, Statics.PREF_VIBRATION, 1);
+		volume = Statics.getPreferenceValue(this, Statics.PREF_VOLUME, 30);
 		samplingRate = Statics.getPreferenceValue(this, Statics.PREF_SAMPLING_RATE, 0);
 		waveform = Statics.getPreferenceValue(this, Statics.PREF_WAVEFORM, 0);
 		soundRange = Statics.getPreferenceValue(this, Statics.PREF_SOUND_RANGE, 0);
