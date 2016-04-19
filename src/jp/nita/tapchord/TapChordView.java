@@ -23,6 +23,7 @@ import android.os.Vibrator;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.util.SparseIntArray;
+import android.view.ContextThemeWrapper;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -1038,10 +1039,11 @@ public class TapChordView extends View {
 	}
 
 	public void keyboardIndicatorsReleased() {
-		final TextView rangeView = new TextView(this.getContext());
+		final ContextThemeWrapper themeWrapper = new ContextThemeWrapper(this.getContext(), darken > 0 ? android.R.style.Theme_Holo : android.R.style.Theme_Holo_Light);
+		
+		final TextView rangeView = new TextView(themeWrapper);
 		rangeView.setText("" + Statics.getStringOfSoundRange(soundRange));
-		rangeView.setTextAppearance(this.getContext(), android.R.style.TextAppearance_Inverse);
-		final SeekBar seekBar = new SeekBar(this.getContext());
+		final SeekBar seekBar = new SeekBar(themeWrapper);
 		seekBar.setProgress(soundRange + 24);
 		seekBar.setMax(48);
 		seekBar.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
@@ -1058,12 +1060,12 @@ public class TapChordView extends View {
 			public void onStopTrackingTouch(SeekBar seekBar) {
 			}
 		});
-		final LinearLayout layout = new LinearLayout(this.getContext());
+		LinearLayout layout = new LinearLayout(themeWrapper);
 		layout.setOrientation(LinearLayout.VERTICAL);
 		layout.addView(rangeView);
 		layout.addView(seekBar);
 		layout.setPadding(8, 8, 8, 8);
-		new AlertDialog.Builder(this.getContext()).setTitle(this.getContext().getString(R.string.settings_sound_range))
+		new AlertDialog.Builder(themeWrapper).setTitle(this.getContext().getString(R.string.settings_sound_range))
 				.setView(layout)
 				.setPositiveButton(this.getContext().getString(R.string.ok), new DialogInterface.OnClickListener() {
 					@Override
@@ -1073,14 +1075,12 @@ public class TapChordView extends View {
 								soundRange);
 						getPreferenceValues();
 					}
-				})
-				.setNegativeButton(this.getContext().getString(R.string.cancel), new DialogInterface.OnClickListener() {
+				}).setNegativeButton(this.getContext().getString(R.string.cancel), new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
-
+						
 					}
 				}).show();
-
 		invalidate();
 	}
 
