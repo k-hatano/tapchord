@@ -708,6 +708,7 @@ public class TapChordView extends View {
 		Sound.tappedTime = System.currentTimeMillis();
 		switch (event.getAction()) {
 		case MotionEvent.ACTION_DOWN:
+		case MotionEvent.ACTION_POINTER_DOWN:
 			// Log.i("TapChordView","DOWN Count:"+event.getPointerCount());
 			actionDown(event, event.getActionIndex());
 			break;
@@ -724,6 +725,7 @@ public class TapChordView extends View {
 			}
 			break;
 		case MotionEvent.ACTION_UP:
+		case MotionEvent.ACTION_POINTER_UP:
 			// Log.i("TapChordView","UP Count:"+event.getPointerCount());
 			stop();
 			for (int l = 0; l < 4; l++) {
