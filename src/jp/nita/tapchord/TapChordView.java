@@ -666,8 +666,7 @@ public class TapChordView extends View {
 					if (pulling == 2) {
 						scroll = originalScroll + (x - tappedX);
 						if (y > height * 4 / 5) {
-							int vert = height / 5;
-							scroll = (scroll / vert) * vert;
+							scroll = 0;
 						}
 						if (scroll < -Statics.getScrollMax(width, height))
 							scroll = -Statics.getScrollMax(width, height);
@@ -675,12 +674,21 @@ public class TapChordView extends View {
 							scroll = Statics.getScrollMax(width, height);
 					} else if (pulling == 1) {
 						destinationScroll = originalScroll + (x - tappedX);
+						if (y > height * 4 / 5) {
+							destinationScroll = 0;
+						}
 					} else if (Math.abs(x - tappedX) > height / 5) {
 						originalScroll = scroll;
 						// destinationScroll=originalScroll+(x-tappedX);
 						pulling = 1;
 						step = 100 / MainActivity.heartBeatInterval;
 						startPullingAnimation();
+					}
+					if (y < height / 5) {
+						for (int i = 0; i < 4; i++) {
+							if (statusbarFlags[i] >= 2)
+								statusbarFlags[i] = 1;
+						}
 					}
 				}
 				chordPressed = true;
