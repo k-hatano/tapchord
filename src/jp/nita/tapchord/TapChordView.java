@@ -442,9 +442,13 @@ public class TapChordView extends View {
 		}
 	}
 
-	public boolean actionDown(int x, int y, int id) {
+	public boolean actionDown(MotionEvent event, int index) {
 		int i;
 		RectF rect;
+		
+		int x = (int)event.getX(index);
+		int y = (int)event.getY(index);
+		int id = (int)event.getPointerId(index);
 
 		if (situation == Statics.SITUATION_TRANSPOSE || situation == Statics.SITUATION_TRANSPOSING) {
 			rect = Statics.getRectOfToolbarButton(0, 0, width, height, 1.0f);
@@ -584,14 +588,15 @@ public class TapChordView extends View {
 		return false;
 	}
 
-	public boolean actionMove(int x, int y, int id) {
+	public boolean actionMove(MotionEvent event, int index) {
 		boolean chordPressed = false;
 		RectF rect;
-		int i, kind;
-		if (id >= 0)
-			kind = taps.get(id);
-		else
-			kind = 0;
+		
+		int x = (int)event.getX(index);
+		int y = (int)event.getY(index);
+		int id = (int)event.getPointerId(index);
+		int kind = id >= 0 ? taps.get(id) : 0;
+		
 		switch (kind) {
 		case Statics.SCROLL_NOB:
 			if (-y + originalY > height / 5) {
@@ -611,7 +616,7 @@ public class TapChordView extends View {
 			invalidate(Statics.RectFToRect(Statics.getRectOfToolbar(width, height, 1.0f)));
 			break;
 		case Statics.STATUSBAR_BUTTON:
-			for (i = 0; i < 4; i++) {
+			for (int i = 0; i < 4; i++) {
 				rect = Statics.getRectOfStatusBarButton(i, 0, width, height, barsShowingRate);
 				if (rect.contains(x, y)) {
 					if (statusbarFlags[i] >= 2 && lastTapped == i)
@@ -622,7 +627,7 @@ public class TapChordView extends View {
 				}
 			}
 			if (y > height * 7 / 35) {
-				for (i = 0; i < 4; i++) {
+				for (int i = 0; i < 4; i++) {
 					if (statusbarFlags[i] == 1) {
 						statusbarFlags[i] = 2;
 						vibrate();
@@ -645,7 +650,7 @@ public class TapChordView extends View {
 					taps.put(id, Statics.TOOLBAR_BUTTON);
 				}
 			} else {
-				for (i = 0; i < 3; i++) {
+				for (int i = 0; i < 3; i++) {
 					rect = Statics.getRectOfToolbarButton(i, 0, width, height, barsShowingRate);
 					if (rect.contains(x, y)) {
 						toolbarPressed = i;
@@ -680,7 +685,7 @@ public class TapChordView extends View {
 				}
 				chordPressed = true;
 			} else {
-				chordPressed = actionDown(x, y, id);
+				chordPressed = actionDown(event, index);
 			}
 			invalidate(Statics.RectFToRect(Statics.getRectOfButtonArea(width, height)));
 			invalidate(Statics.RectFToRect(Statics.getRectOfStatusBar(width, height, 1.0f)));
@@ -691,7 +696,7 @@ public class TapChordView extends View {
 		case Statics.KEYBOARD_INDICATORS:
 			break;
 		default:
-			chordPressed = actionDown(x, y, id);
+			chordPressed = actionDown(event, index);
 			break;
 		}
 		return chordPressed;
@@ -699,29 +704,23 @@ public class TapChordView extends View {
 
 	@SuppressLint("ClickableViewAccessibility")
 	public boolean onTouchEvent(MotionEvent event) {
-		int x, y, id;
 		boolean chordPressed = false;
 		Sound.tappedTime = System.currentTimeMillis();
 		switch (event.getAction()) {
 		case MotionEvent.ACTION_DOWN:
 			// Log.i("TapChordView","DOWN Count:"+event.getPointerCount());
-			x = (int) event.getX(event.getActionIndex());
-			y = (int) event.getY(event.getActionIndex());
-			id = event.getPointerId(event.getActionIndex());
-			actionDown(x, y, id);
+			actionDown(event, event.getActionIndex());
 			break;
 		case MotionEvent.ACTION_MOVE:
 			// Log.i("TapChordView","MOVE Count:"+event.getPointerCount());
-			for (int index = 0; index < event.getPointerCount(); index++) {
-				x = (int) event.getX(index);
-				y = (int) event.getY(index);
-				id = event.getPointerId(index);
-				chordPressed |= actionMove(x, y, id);
+			int pointerCount = event.getPointerCount();
+			for (int index = 0; index < pointerCount; index++) {
+				chordPressed |= actionMove(event, index);
 			}
 			if (chordPressed == false) {
+				stop();
 				playingID = -1;
 				pulling = 0;
-				stop();
 			}
 			break;
 		case MotionEvent.ACTION_UP:
