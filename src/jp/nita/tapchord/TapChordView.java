@@ -713,6 +713,7 @@ public class TapChordView extends View {
 			actionDown(event, event.getActionIndex());
 			break;
 		case MotionEvent.ACTION_MOVE:
+		case MotionEvent.ACTION_POINTER_UP:
 			// Log.i("TapChordView","MOVE Count:"+event.getPointerCount());
 			int pointerCount = event.getPointerCount();
 			for (int index = 0; index < pointerCount; index++) {
@@ -725,7 +726,6 @@ public class TapChordView extends View {
 			}
 			break;
 		case MotionEvent.ACTION_UP:
-		case MotionEvent.ACTION_POINTER_UP:
 			// Log.i("TapChordView","UP Count:"+event.getPointerCount());
 			stop();
 			for (int l = 0; l < 4; l++) {
