@@ -33,6 +33,8 @@
     <string name="settings_animation_quality_low">低</string>
     <string name="settings_animation_quality_medium">中</string>
     <string name="settings_animation_quality_high">高</string>
+    <string name="settings_midi_device">MIDI デバイス</string>
+    <string name="settings_midi_device_not_connected">接続されていません</string>
 
     <string name="settings_sampling_rate_hz"> Hz</string>
     <string name="special_thanks">Special Thanks to\nAkiyoshi Kamide and \nKaoru Shoji</string>
@@ -55,5 +57,6 @@
     <string name="message_midi_device_attached_2"> が接続されました。</string>
     <string name="message_midi_device_detached_1">MIDI デバイス </string>
     <string name="message_midi_device_detached_2"> が切断されました。</string>
+    <string name="message_midi_device_is_not_connected">MIDI デバイスは接続されていません。</string>
     
 </resources>

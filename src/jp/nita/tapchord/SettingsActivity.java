@@ -5,9 +5,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.hardware.usb.UsbDevice;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -28,8 +28,11 @@ import android.widget.SimpleAdapter;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
+import jp.kshoji.driver.midi.activity.AbstractSingleMidiActivity;
+import jp.kshoji.driver.midi.device.MidiInputDevice;
+import jp.kshoji.driver.midi.device.MidiOutputDevice;
 
-public class SettingsActivity extends Activity implements OnClickListener, OnItemClickListener {
+public class SettingsActivity extends AbstractSingleMidiActivity implements OnClickListener, OnItemClickListener {
 
 	int darken = 0;
 	int scale;
@@ -44,6 +47,7 @@ public class SettingsActivity extends Activity implements OnClickListener, OnIte
 	int sustainLevel;
 	int releaseTime;
 	int animationQuality;
+	String midiDeviceName;
 
 	int position = 0;
 	int selected;
@@ -75,6 +79,16 @@ public class SettingsActivity extends Activity implements OnClickListener, OnIte
 		sustainLevel = Statics.getPreferenceValue(this, Statics.PREF_SUSTAIN_LEVEL, 0);
 		releaseTime = Statics.getPreferenceValue(this, Statics.PREF_RELEASE_TIME, 0);
 		animationQuality = Statics.getPreferenceValue(this, Statics.PREF_ANIMATION_QUALITY, 0);
+	}
+	
+	public String getMidiDeviceName() {
+		MidiOutputDevice device = getMidiOutputDevice();
+		if (device == null) {
+			midiDeviceName = null;
+		} else {
+			midiDeviceName = device.getUsbDevice().getDeviceName();
+		}
+		return midiDeviceName;
 	}
 
 	public void updateSettingsListView() {
@@ -129,6 +143,11 @@ public class SettingsActivity extends Activity implements OnClickListener, OnIte
 			map.put("key", getString(R.string.settings_animation_quality));
 			map.put("value", Statics.getStringOfAnimationQuality(animationQuality, this));
 			list.add(map);
+			
+			map = new HashMap<String, String>();
+			map.put("key", getString(R.string.settings_midi_device));
+			map.put("value", midiDeviceName == null ? getString(R.string.settings_midi_device_not_connected) : midiDeviceName);
+			list.add(map);
 		}
 
 		SimpleAdapter adapter = new SimpleAdapter(this, list, android.R.layout.simple_expandable_list_item_2,
@@ -143,6 +162,7 @@ public class SettingsActivity extends Activity implements OnClickListener, OnIte
 		super.onResume();
 
 		getPreferenceValues();
+		getMidiDeviceName();
 		updateSettingsListView();
 	}
 
@@ -541,6 +561,35 @@ public class SettingsActivity extends Activity implements OnClickListener, OnIte
 					}).show();
 			break;
 		}
+		case 9: {
+			MidiOutputDevice device = getMidiOutputDevice();
+			if (device == null) {
+				new AlertDialog.Builder(this).setTitle(getString(R.string.settings_midi_device))
+				.setMessage(getString(R.string.message_midi_device_is_not_connected))
+				.setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface arg0, int which) {
+						arg0.dismiss();
+						((ListView) findViewById(R.id.settings_items)).setSelection(position);
+					}
+				}).show();
+			} else {
+				String message = device.getUsbDevice().getDeviceName();
+				message += "\nProduct ID : " + device.getUsbDevice().getProductId();
+				message += "\nVendor ID : " + device.getUsbDevice().getVendorId();
+				
+				new AlertDialog.Builder(this).setTitle(getString(R.string.settings_midi_device))
+				.setMessage(message)
+				.setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface arg0, int which) {
+						arg0.dismiss();
+						((ListView) findViewById(R.id.settings_items)).setSelection(position);
+					}
+				}).show();
+			}
+			break;
+		}
 		default:
 			return;
 		}
@@ -637,5 +686,89 @@ public class SettingsActivity extends Activity implements OnClickListener, OnIte
 		MainActivity.setAnimationQuality(aq);
 		getPreferenceValues();
 		updateSettingsListView();
+	}
+
+	@Override
+	public void onDeviceDetached(UsbDevice usbDevice) {
+		getMidiDeviceName();
+		updateSettingsListView();
+	}
+
+	@Override
+	public void onDeviceAttached(UsbDevice usbDevice) {
+		getMidiDeviceName();
+		updateSettingsListView();
+	}
+
+	@Override
+	public void onMidiMiscellaneousFunctionCodes(MidiInputDevice sender, int cable, int byte1, int byte2, int byte3) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onMidiCableEvents(MidiInputDevice sender, int cable, int byte1, int byte2, int byte3) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onMidiSystemCommonMessage(MidiInputDevice sender, int cable, byte[] bytes) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onMidiSystemExclusive(MidiInputDevice sender, int cable, byte[] systemExclusive) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onMidiNoteOff(MidiInputDevice sender, int cable, int channel, int note, int velocity) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onMidiNoteOn(MidiInputDevice sender, int cable, int channel, int note, int velocity) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onMidiPolyphonicAftertouch(MidiInputDevice sender, int cable, int channel, int note, int pressure) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onMidiControlChange(MidiInputDevice sender, int cable, int channel, int function, int value) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onMidiProgramChange(MidiInputDevice sender, int cable, int channel, int program) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onMidiChannelAftertouch(MidiInputDevice sender, int cable, int channel, int pressure) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onMidiPitchWheel(MidiInputDevice sender, int cable, int channel, int amount) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onMidiSingleByte(MidiInputDevice sender, int cable, int byte1) {
+		// TODO Auto-generated method stub
+		
 	}
 }
