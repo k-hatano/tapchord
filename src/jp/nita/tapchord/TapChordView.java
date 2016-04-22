@@ -665,8 +665,9 @@ public class TapChordView extends View {
 				if (situation == Statics.SITUATION_NORMAL) {
 					if (pulling == 2) {
 						scroll = originalScroll + (x - tappedX);
-						if (y > height * 4 / 5) {
+						if (y > height * 4 / 5 && scroll != 0) {
 							scroll = 0;
+							vibrate();
 						}
 						if (scroll < -Statics.getScrollMax(width, height))
 							scroll = -Statics.getScrollMax(width, height);
@@ -685,9 +686,15 @@ public class TapChordView extends View {
 						startPullingAnimation();
 					}
 					if (y < height / 5) {
+						boolean statusbarFlagsModified = false;
 						for (int i = 0; i < 4; i++) {
-							if (statusbarFlags[i] >= 2)
+							if (statusbarFlags[i] >= 2) {
 								statusbarFlags[i] = 1;
+								statusbarFlagsModified = true;
+							}
+						}
+						if (statusbarFlagsModified) {
+							vibrate();
 						}
 					}
 				}
