@@ -685,7 +685,7 @@ public class TapChordView extends View {
 						step = 100 / MainActivity.heartBeatInterval;
 						startPullingAnimation();
 					}
-					if (y < height / 5) {
+					if ((y < height / 5) && event.getPointerCount() == 1) {
 						boolean statusbarFlagsModified = false;
 						for (int i = 0; i < 4; i++) {
 							if (statusbarFlags[i] >= 2) {
