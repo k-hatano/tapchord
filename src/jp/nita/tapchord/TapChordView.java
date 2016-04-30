@@ -665,10 +665,6 @@ public class TapChordView extends View {
 				if (situation == Statics.SITUATION_NORMAL) {
 					if (pulling == 2) {
 						scroll = originalScroll + (x - tappedX);
-						if (y > height * 4 / 5 && scroll != 0) {
-							scroll = 0;
-							vibrate();
-						}
 						if (scroll < -Statics.getScrollMax(width, height))
 							scroll = -Statics.getScrollMax(width, height);
 						if (scroll > Statics.getScrollMax(width, height))
@@ -696,6 +692,10 @@ public class TapChordView extends View {
 						if (statusbarFlagsModified) {
 							vibrate();
 						}
+					}
+					if ((y > height * 4 / 5 && scroll != 0) && event.getPointerCount() == 1) {
+						scroll = 0;
+						vibrate();
 					}
 				}
 				chordPressed = true;
