@@ -1228,7 +1228,7 @@ public class TapChordView extends View {
 		scale = Statics.getPreferenceValue(this.getContext(), Statics.PREF_SCALE, 0);
 		darken = Statics.getPreferenceValue(this.getContext(), Statics.PREF_DARKEN, 0) > 0;
 		soundRange = Statics.getPreferenceValue(this.getContext(), Statics.PREF_SOUND_RANGE, 0);
-		vibration = Statics.getPreferenceValue(this.getContext(), Statics.PREF_VIBRATION, 0) > 0;
+		vibration = Statics.getPreferenceValue(this.getContext(), Statics.PREF_VIBRATION, 1) > 0;
 		stepMax = 100.0f / MainActivity.heartBeatInterval;
 	}
 
