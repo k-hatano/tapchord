@@ -71,6 +71,7 @@ public class TapChordView extends View {
 	int scalePressed = Statics.FARAWAY;
 	float stepMax = 1.0f;
 	float barsShowingRate = 1.0f;
+	int flashEffectStep = 0;
 
 	private Vibrator vib;
 
@@ -535,6 +536,9 @@ public class TapChordView extends View {
 					scroll = 0;
 				}
 				taps.put(id, Statics.SCROLL_BAR);
+				if (darken) {
+					flashEffectStep = 1000 / MainActivity.heartBeatInterval;
+				}
 				vibrate();
 				invalidate(Statics.RectFToRect(Statics.getRectOfToolbar(width, height, 1.0f)));
 				return false;
@@ -1027,6 +1031,9 @@ public class TapChordView extends View {
 				break;
 			case 1:
 				setDarken(!darken);
+				if (darken) {
+					flashEffectStep = 300 / MainActivity.heartBeatInterval;
+				}
 				break;
 			case 2:
 				originalScroll = scroll;
@@ -1180,6 +1187,19 @@ public class TapChordView extends View {
 			if (scroll > Statics.getScrollMax(width, height))
 				scroll = Statics.getScrollMax(width, height);
 			handler.post(new Repainter());
+		}
+		if (flashEffectStep > 0) {
+			flashEffectStep--;
+			int stepMod = 10 / MainActivity.heartBeatInterval;
+			if (stepMod == 0)
+				stepMod = 1;
+			if ((flashEffectStep % stepMod == 0) && (int)(Math.random() * 10) == 0) {
+				Shape shape = new Shape(new PointF((float)(Math.random() * width), height / 2));
+				shape.style = Shape.STYLE_LINE;
+				shape.radStart = 100;
+				shape.radEnd = 100;
+				shapes.add(shape);
+			}
 		}
 		if (shapes.size() > 0) {
 			for (int i = shapes.size() - 1; i >= 0; i--) {
