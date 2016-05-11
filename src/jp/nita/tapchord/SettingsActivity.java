@@ -302,7 +302,7 @@ public class SettingsActivity extends Activity implements OnClickListener, OnIte
 			break;
 		}
 		case 5: {
-			CharSequence list[] = new String[6];
+			CharSequence list[] = new String[7];
 			for (int i = 0; i < list.length; i++) {
 				list[i] = Statics.getValueOfWaveform(i, this);
 			}
