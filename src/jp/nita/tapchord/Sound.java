@@ -90,30 +90,42 @@ public class Sound {
 	public static double shepardTone(long term, int frequency, int sampleRate, int soundRange, int which) {
 		switch (which) {
 		case 6: {
-			double r = 0, g = 0;
-			double note = (Math.log(frequency) / Math.log(2)) * 12;
+			double r = 0, g = 0, n = 0, gg = 0;
+			double note = (Math.log(frequency / 440.0) / Math.log(2.0)) * 12 - 6;
 			
-			Log.i("Sound", "note:"+note+" soundRange:"+(soundRange + 50));
+			Log.i("Sound", "note:"+note+" soundRange:"+soundRange);
 
-			g = gaussian(note - (soundRange + 6 - 24) + 50);
-			Log.i("Sound", "n:" + (note - (soundRange + 56 - 24)) + " g:" + g);
+			n = note - 24;
+			g = gaussian(n);
+			Log.i("Sound", "n:" + n + " g:" + g);
 			r += Math.sin(0.5 * Math.PI * term * frequency / sampleRate) * g;
+			gg += g;
 
-			g = gaussian(note - (soundRange + 6 - 12) + 50);
-			Log.i("Sound", "n:" + (note - (soundRange + 56 - 12)) + " g:" + g);
+			n = note - 12;
+			g = gaussian(n);
+			Log.i("Sound", "n:" + n + " g:" + g);
 			r += Math.sin(1.0 * Math.PI * term * frequency / sampleRate) * g;
+			gg += g;
 
-			g = gaussian(note - (soundRange + 6) + 50);
-			Log.i("Sound", "n:" + (note - (soundRange + 56)) + " g:" + g);
+			n = note;
+			g = gaussian(n);
+			Log.i("Sound", "n:" + n + " g:" + g);
 			r += Math.sin(2.0 * Math.PI * term * frequency / sampleRate) * g;
+			gg += g;
 
-			g = gaussian(note - (soundRange + 6 + 12) + 50);
-			Log.i("Sound", "n:" + (note - (soundRange + 56 + 12)) + " g:" + g);
+			n = note + 12;
+			g = gaussian(n);
+			Log.i("Sound", "n:" + n + " g:" + g);
 			r += Math.sin(4.0 * Math.PI * term * frequency / sampleRate) * g;
+			gg += g;
 
-			g = gaussian(note - (soundRange + 6 + 24) + 50);
-			Log.i("Sound", "n:" + (note - (soundRange + 56 + 24)) + " g:" + g);
+			n = note + 24;
+			g = gaussian(n);
+			Log.i("Sound", "n:" + n + " g:" + g);
 			r += Math.sin(8.0 * Math.PI * term * frequency / sampleRate) * g;
+			gg += g;
+			
+			Log.i("Sound", "gg:" + gg);
 
 			return r;
 		}
@@ -124,7 +136,7 @@ public class Sound {
 
 	public static double gaussian(double t) {
 		final double sqrt_pi = Math.sqrt(2 * Math.PI);
-		double sigma = 0.4;
+		double sigma = 1;
 		return (1 / (sigma * sqrt_pi)) * Math.exp(-(t / 12) * (t / 12) / (2 * sigma * sigma));
 	}
 
