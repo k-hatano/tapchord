@@ -163,9 +163,9 @@ public class MainActivity extends Activity implements SensorEventListener {
 
 						}
 					}).show();
-		} else if (keyCode == KeyEvent.KEYCODE_CAMERA) {
-			TapChordView.debugMode = !TapChordView.debugMode;
-			((TapChordView) findViewById(R.id.tapChordView)).invalidate();
+//		} else if (keyCode == KeyEvent.KEYCODE_CAMERA) {
+//			TapChordView.debugMode = !TapChordView.debugMode;
+//			((TapChordView) findViewById(R.id.tapChordView)).invalidate();
 		} else {
 			boolean result = false;
 			result = ((TapChordView) findViewById(R.id.tapChordView)).keyPressed(keyCode, event);
