@@ -150,7 +150,7 @@ public class Sound {
 					track = null;
 				}
 
-				volume = Statics.getValueOfVolume(Statics.getPreferenceValue(context, Statics.PREF_VOLUME, 0));
+				volume = Statics.getValueOfVolume(Statics.getPreferenceValue(context, Statics.PREF_VOLUME, 30));
 				soundRange = Statics.getValueOfVolume(Statics.getPreferenceValue(context, Statics.PREF_SOUND_RANGE, 0));
 				sampleRate = Statics
 						.getValueOfSamplingRate(Statics.getPreferenceValue(context, Statics.PREF_SAMPLING_RATE, 0));

@@ -302,8 +302,8 @@ public class SettingsActivity extends Activity implements OnClickListener, OnIte
 			break;
 		}
 		case 5: {
-			CharSequence list[] = new String[7];
-			for (int i = 0; i < 7; i++) {
+			CharSequence list[] = new String[6];
+			for (int i = 0; i < list.length; i++) {
 				list[i] = Statics.getValueOfWaveform(i, this);
 			}
 			new AlertDialog.Builder(SettingsActivity.this).setTitle(getString(R.string.settings_waveform))
