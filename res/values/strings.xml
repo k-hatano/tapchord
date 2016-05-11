@@ -50,5 +50,8 @@
     <string name="enable">Enable</string>
     <string name="disable">Disable</string>
     <string name="disabled">Disabled</string>
+    <string name="mm">M.M.</string>
+    <string name="metronome">Metronome</string>
+    <string name="bpm">bpm</string>
 
 </resources>

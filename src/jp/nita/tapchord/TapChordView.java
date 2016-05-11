@@ -26,6 +26,7 @@ import android.util.SparseIntArray;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -38,7 +39,8 @@ public class TapChordView extends View {
 	int situation, destination, step, scroll, upper, destScale;
 	int playing, playingX, playingY, tappedX, destinationScroll;
 	int playingID;
-	boolean darken, vibration, keyboardIndicatorsTapped;
+	int metronomeBpm;
+	boolean darken, vibration, keyboardIndicatorsTapped, metronome;
 	int keyState[][] = new int[15][3];
 	int lastKeyState[][] = new int[15][3];
 	int statusbarKeycodes[] = {KeyEvent.KEYCODE_1, KeyEvent.KEYCODE_2, KeyEvent.KEYCODE_3, KeyEvent.KEYCODE_4};
@@ -324,7 +326,7 @@ public class TapChordView extends View {
 
 		textPaint.setColor(Statics.getColor(Statics.COLOR_BLACK, 0, darken));
 
-		for (x = 0; x < 3; x++) {
+		for (x = 0; x < 4; x++) {
 			d = (toolbarPressed == x) ? 1 : 0;
 			paint.setColor(Statics.getColor(Statics.COLOR_PURPLE, d, darken));
 			rect = Statics.getRectOfToolbarButton(x, 0, width, height, barsShowingRate);
@@ -338,6 +340,9 @@ public class TapChordView extends View {
 				str = getContext().getString(R.string.darken);
 				break;
 			case 2:
+				str = getContext().getString(R.string.mm);
+				break;
+			case 3:
 				str = Statics.getStringOfScale(scale);
 				break;
 			default:
@@ -469,7 +474,7 @@ public class TapChordView extends View {
 				return false;
 			}
 		} else {
-			for (i = 0; i < 3; i++) {
+			for (i = 0; i < 4; i++) {
 				rect = Statics.getRectOfToolbarButton(i, 0, width, height, barsShowingRate);
 				if (rect.contains(x, y)) {
 					toolbarPressed = i;
@@ -1036,6 +1041,9 @@ public class TapChordView extends View {
 				}
 				break;
 			case 2:
+				showMetronomeSettingDialog();
+				break;
+			case 3:
 				originalScroll = scroll;
 				startAnimation(1 - situation);
 				break;
@@ -1102,6 +1110,54 @@ public class TapChordView extends View {
 					}
 				}).show();
 
+		invalidate();
+	}
+	
+	public void showMetronomeSettingDialog() {
+		final CheckBox onCheckBox = new CheckBox(this.getContext());
+		onCheckBox.setTextAppearance(this.getContext(), android.R.style.TextAppearance_Inverse);
+		onCheckBox.setText(this.getContext().getString(R.string.on));
+		onCheckBox.setChecked(false);
+		final TextView textView = new TextView(this.getContext());
+		textView.setText("120" + " " + this.getContext().getString(R.string.bpm));
+		textView.setTextAppearance(this.getContext(), android.R.style.TextAppearance_Inverse);
+		final SeekBar seekBar = new SeekBar(this.getContext());
+		seekBar.setProgress(60);
+		seekBar.setMax(120);
+		seekBar.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
+			@Override
+			public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+				textView.setText((seekBar.getProgress() + 60) + " " + seekBar.getContext().getString(R.string.bpm));
+			}
+
+			@Override
+			public void onStartTrackingTouch(SeekBar seekBar) {
+			}
+
+			@Override
+			public void onStopTrackingTouch(SeekBar seekBar) {
+			}
+		});
+		final LinearLayout layout = new LinearLayout(this.getContext());
+		layout.setOrientation(LinearLayout.VERTICAL);
+		layout.addView(onCheckBox);
+		layout.addView(textView);
+		layout.addView(seekBar);
+		layout.setPadding(8, 8, 8, 8);
+		new AlertDialog.Builder(this.getContext()).setTitle(this.getContext().getString(R.string.metronome))
+				.setView(layout)
+				.setPositiveButton(this.getContext().getString(R.string.ok), new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						
+					}
+				})
+				.setNegativeButton(this.getContext().getString(R.string.cancel), new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+
+					}
+				}).show();
 		invalidate();
 	}
 

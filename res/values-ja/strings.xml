@@ -50,5 +50,8 @@
     <string name="enable">有効</string>
     <string name="disable">有効</string>
     <string name="disabled">無効</string>
+    <string name="mm">M.M.</string>
+    <string name="metronome">メトロノーム</string>
+    <string name="bpm">bpm</string>
     
 </resources>
