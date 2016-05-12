@@ -59,6 +59,7 @@ public class Sound {
 	}
 
 	public static double wave(double t, int which) {
+//		Log.i("Sound", "t:"+t);
 		switch (which) {
 		case 0:
 			return Math.sin(2.0 * Math.PI * t);
@@ -91,41 +92,42 @@ public class Sound {
 		switch (which) {
 		case 6: {
 			double r = 0, g = 0, n = 0, gg = 0;
+			double t = term * frequency / sampleRate;
 			double note = (Math.log(frequency / 440.0) / Math.log(2.0)) * 12 - 6;
 			
-			Log.i("Sound", "note:"+note+" soundRange:"+soundRange);
+//			Log.i("Sound", "note:"+note+" soundRange:"+soundRange);
 
-			n = note - 24;
+			n = note - soundRange - 24;
 			g = gaussian(n);
-			Log.i("Sound", "n:" + n + " g:" + g);
-			r += Math.sin(0.5 * Math.PI * term * frequency / sampleRate) * g;
+//			Log.i("Sound", "n:" + n + " g:" + g);
+			r += Math.sin(0.5 * Math.PI * t) * g;
 			gg += g;
 
-			n = note - 12;
+			n = note - soundRange - 12;
 			g = gaussian(n);
-			Log.i("Sound", "n:" + n + " g:" + g);
-			r += Math.sin(1.0 * Math.PI * term * frequency / sampleRate) * g;
+//			Log.i("Sound", "n:" + n + " g:" + g);
+			r += Math.sin(1.0 * Math.PI * t) * g;
 			gg += g;
 
-			n = note;
+			n = note - soundRange;
 			g = gaussian(n);
-			Log.i("Sound", "n:" + n + " g:" + g);
-			r += Math.sin(2.0 * Math.PI * term * frequency / sampleRate) * g;
+//			Log.i("Sound", "n:" + n + " g:" + g);
+			r += Math.sin(2.0 * Math.PI * t) * g;
 			gg += g;
 
-			n = note + 12;
+			n = note - soundRange + 12;
 			g = gaussian(n);
-			Log.i("Sound", "n:" + n + " g:" + g);
-			r += Math.sin(4.0 * Math.PI * term * frequency / sampleRate) * g;
+//			Log.i("Sound", "n:" + n + " g:" + g);
+			r += Math.sin(4.0 * Math.PI * t) * g;
 			gg += g;
 
-			n = note + 24;
+			n = note - soundRange + 24;
 			g = gaussian(n);
-			Log.i("Sound", "n:" + n + " g:" + g);
-			r += Math.sin(8.0 * Math.PI * term * frequency / sampleRate) * g;
+//			Log.i("Sound", "n:" + n + " g:" + g);
+			r += Math.sin(8.0 * Math.PI * t) * g;
 			gg += g;
 			
-			Log.i("Sound", "gg:" + gg);
+//			Log.i("Sound", "gg:" + gg);
 
 			return r;
 		}
@@ -139,6 +141,73 @@ public class Sound {
 		double sigma = 1;
 		return (1 / (sigma * sqrt_pi)) * Math.exp(-(t / 12) * (t / 12) / (2 * sigma * sigma));
 	}
+	
+	public short[] getWave(int length) {
+		short[] w = new short[length];
+		for (int i = 0; i < length; i++) {
+			double s = 0;
+			switch (waveform) {
+			case 0:
+			case 1:
+			case 2:
+			case 3:
+			case 4:
+			case 5:
+				for (int j = 0; j < frequencies.length; j++) {
+					s += wave((double) term * frequencies[j] / sampleRate, waveform);
+				}
+				break;
+			case 6:
+				for (int j = 0; j < frequencies.length; j++) {
+					s += shepardTone(term, frequencies[j], sampleRate, soundRange, waveform);
+				}
+				break;
+			}
+
+			s *= volume / 400.0 * (Short.MAX_VALUE);
+
+			if (enableEnvelope) {
+				if (mode == MODE_ATTACK && modeTerm >= attackLength) {
+					modeTerm = 0;
+					mode = MODE_DECAY;
+				}
+				if (mode == MODE_DECAY && modeTerm >= decayLength) {
+					modeTerm = 0;
+					mode = MODE_SUSTAIN;
+				}
+				if (mode == MODE_RELEASE && modeTerm > releaseLength) {
+					modeTerm = 0;
+					mode = MODE_FINISHED;
+				}
+
+				if (mode == MODE_ATTACK) {
+					s = s * ((double) modeTerm / (double) attackLength);
+				} else if (mode == MODE_DECAY) {
+					s = (s * (double) (decayLength - modeTerm) / (double) decayLength
+							+ s * sustainLevel * (double) modeTerm / (double) decayLength);
+				} else if (mode == MODE_SUSTAIN) {
+					s = s * sustainLevel;
+				} else if (mode == MODE_RELEASE) {
+					s = s * ((double) (releaseLength - modeTerm) / (double) releaseLength) * sustainLevel;
+				} else {
+					s = 0;
+				}
+			}
+
+			if (s >= Short.MAX_VALUE)
+				s = (double) Short.MAX_VALUE;
+			if (s <= -Short.MAX_VALUE)
+				s = (double) (-Short.MAX_VALUE);
+			w[i] = (short) s;
+
+			term++;
+			if (mode != MODE_SUSTAIN)
+				modeTerm++;
+			if (term >= sampleRate)
+				term -= sampleRate;
+		}
+		return w;
+	}
 
 	class WaveGenerator extends Thread {
 		public void run() {
@@ -151,7 +220,7 @@ public class Sound {
 				}
 
 				volume = Statics.getValueOfVolume(Statics.getPreferenceValue(context, Statics.PREF_VOLUME, 30));
-				soundRange = Statics.getValueOfVolume(Statics.getPreferenceValue(context, Statics.PREF_SOUND_RANGE, 0));
+				soundRange = Statics.getPreferenceValue(context, Statics.PREF_SOUND_RANGE, 0);
 				sampleRate = Statics
 						.getValueOfSamplingRate(Statics.getPreferenceValue(context, Statics.PREF_SAMPLING_RATE, 0));
 				waveform = Statics.getPreferenceValue(context, Statics.PREF_WAVEFORM, 0);
@@ -225,73 +294,6 @@ public class Sound {
 					track = null;
 				}
 			}
-		}
-
-		public short[] getWave(int length) {
-			short[] w = new short[length];
-			for (int i = 0; i < length; i++) {
-				double s = 0;
-				switch (waveform) {
-				case 0:
-				case 1:
-				case 2:
-				case 3:
-				case 4:
-				case 5:
-					for (int j = 0; j < frequencies.length; j++) {
-						s += wave((double) term * frequencies[j] / sampleRate, waveform);
-					}
-					break;
-				case 6:
-					for (int j = 0; j < frequencies.length; j++) {
-						s += shepardTone(term, frequencies[j], sampleRate, soundRange, waveform);
-					}
-					break;
-				}
-
-				s *= volume / 400.0 * (Short.MAX_VALUE);
-
-				if (enableEnvelope) {
-					if (mode == MODE_ATTACK && modeTerm >= attackLength) {
-						modeTerm = 0;
-						mode = MODE_DECAY;
-					}
-					if (mode == MODE_DECAY && modeTerm >= decayLength) {
-						modeTerm = 0;
-						mode = MODE_SUSTAIN;
-					}
-					if (mode == MODE_RELEASE && modeTerm > releaseLength) {
-						modeTerm = 0;
-						mode = MODE_FINISHED;
-					}
-
-					if (mode == MODE_ATTACK) {
-						s = s * ((double) modeTerm / (double) attackLength);
-					} else if (mode == MODE_DECAY) {
-						s = (s * (double) (decayLength - modeTerm) / (double) decayLength
-								+ s * sustainLevel * (double) modeTerm / (double) decayLength);
-					} else if (mode == MODE_SUSTAIN) {
-						s = s * sustainLevel;
-					} else if (mode == MODE_RELEASE) {
-						s = s * ((double) (releaseLength - modeTerm) / (double) releaseLength) * sustainLevel;
-					} else {
-						s = 0;
-					}
-				}
-
-				if (s >= Short.MAX_VALUE)
-					s = (double) Short.MAX_VALUE;
-				if (s <= -Short.MAX_VALUE)
-					s = (double) (-Short.MAX_VALUE);
-				w[i] = (short) s;
-
-				term++;
-				if (mode != MODE_SUSTAIN)
-					modeTerm++;
-				if (term >= sampleRate)
-					term -= sampleRate;
-			}
-			return w;
 		}
 
 	}
