@@ -92,7 +92,7 @@ public class Sound {
 		switch (which) {
 		case 6: {
 			double r = 0, g = 0, n = 0, gg = 0;
-			double t = term * frequency / sampleRate;
+			double t = (double)term * frequency / sampleRate;
 			double note = (Math.log(frequency / 440.0) / Math.log(2.0)) * 12 - 6;
 			
 //			Log.i("Sound", "note:"+note+" soundRange:"+soundRange);
@@ -101,31 +101,31 @@ public class Sound {
 			g = gaussian(n);
 //			Log.i("Sound", "n:" + n + " g:" + g);
 			r += Math.sin(0.5 * Math.PI * t) * g;
-			gg += g;
+//			gg += g;
 
 			n = note - soundRange - 12;
 			g = gaussian(n);
 //			Log.i("Sound", "n:" + n + " g:" + g);
 			r += Math.sin(1.0 * Math.PI * t) * g;
-			gg += g;
+//			gg += g;
 
 			n = note - soundRange;
 			g = gaussian(n);
 //			Log.i("Sound", "n:" + n + " g:" + g);
 			r += Math.sin(2.0 * Math.PI * t) * g;
-			gg += g;
+//			gg += g;
 
 			n = note - soundRange + 12;
 			g = gaussian(n);
 //			Log.i("Sound", "n:" + n + " g:" + g);
 			r += Math.sin(4.0 * Math.PI * t) * g;
-			gg += g;
+//			gg += g;
 
 			n = note - soundRange + 24;
 			g = gaussian(n);
 //			Log.i("Sound", "n:" + n + " g:" + g);
 			r += Math.sin(8.0 * Math.PI * t) * g;
-			gg += g;
+//			gg += g;
 			
 //			Log.i("Sound", "gg:" + gg);
 
@@ -135,11 +135,12 @@ public class Sound {
 			return Math.sin(2.0 * Math.PI * term * frequency / sampleRate);
 		}
 	}
+	
+	final static double SQRT_PI = Math.sqrt(2 * Math.PI);
+	final static double SIGMA = 1;
 
 	public static double gaussian(double t) {
-		final double sqrt_pi = Math.sqrt(2 * Math.PI);
-		double sigma = 1;
-		return (1 / (sigma * sqrt_pi)) * Math.exp(-(t / 12) * (t / 12) / (2 * sigma * sigma));
+		return (1 / (SIGMA * SQRT_PI)) * Math.exp(-(t / 12) * (t / 12) / (2 * SIGMA * SIGMA));
 	}
 	
 	public short[] getWave(int length) {
