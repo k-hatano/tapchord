@@ -139,9 +139,9 @@ public class MainActivity extends Activity {
 
 						}
 					}).show();
-//		} else if (keyCode == KeyEvent.KEYCODE_CAMERA) {
-//			TapChordView.debugMode = !TapChordView.debugMode;
-//			((TapChordView) findViewById(R.id.tapChordView)).invalidate();
+		} else if (keyCode == KeyEvent.KEYCODE_CAMERA || keyCode == KeyEvent.KEYCODE_BACKSLASH) {
+			TapChordView.debugMode = !TapChordView.debugMode;
+			((TapChordView) findViewById(R.id.tapChordView)).invalidate();
 		} else {
 			boolean result = false;
 			result = ((TapChordView) findViewById(R.id.tapChordView)).keyPressed(keyCode, event);
