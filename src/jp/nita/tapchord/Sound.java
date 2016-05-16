@@ -91,43 +91,25 @@ public class Sound {
 	public static double shepardTone(long term, int frequency, int sampleRate, int soundRange, int which) {
 		switch (which) {
 		case 6: {
-			double r = 0, g = 0, n = 0, gg = 0;
+			double r = 0, g = 0;
 			double t = (double)term * frequency / sampleRate;
 			double note = (Math.log(frequency / 440.0) / Math.log(2.0)) * 12 - 6;
-			
-//			Log.i("Sound", "note:"+note+" soundRange:"+soundRange);
+			double n = (note - soundRange) / 12.0;
 
-			n = note - soundRange - 24;
-			g = gaussian(n);
-//			Log.i("Sound", "n:" + n + " g:" + g);
+			g = gaussian(n - 2);
 			r += Math.sin(0.5 * Math.PI * t) * g;
-//			gg += g;
 
-			n = note - soundRange - 12;
-			g = gaussian(n);
-//			Log.i("Sound", "n:" + n + " g:" + g);
+			g = gaussian(n - 1);
 			r += Math.sin(1.0 * Math.PI * t) * g;
-//			gg += g;
 
-			n = note - soundRange;
 			g = gaussian(n);
-//			Log.i("Sound", "n:" + n + " g:" + g);
 			r += Math.sin(2.0 * Math.PI * t) * g;
-//			gg += g;
 
-			n = note - soundRange + 12;
-			g = gaussian(n);
-//			Log.i("Sound", "n:" + n + " g:" + g);
+			g = gaussian(n + 1);
 			r += Math.sin(4.0 * Math.PI * t) * g;
-//			gg += g;
 
-			n = note - soundRange + 24;
-			g = gaussian(n);
-//			Log.i("Sound", "n:" + n + " g:" + g);
+			g = gaussian(n + 2);
 			r += Math.sin(8.0 * Math.PI * t) * g;
-//			gg += g;
-			
-//			Log.i("Sound", "gg:" + gg);
 
 			return r;
 		}
@@ -136,11 +118,12 @@ public class Sound {
 		}
 	}
 	
-	final static double SQRT_PI = Math.sqrt(2 * Math.PI);
 	final static double SIGMA = 1;
+	final static double SIGMA_SQRT_PI = SIGMA * Math.sqrt(2 * Math.PI);
+	final static double SIGMA_SQUARED_2 = 2 * SIGMA * SIGMA;
 
 	public static double gaussian(double t) {
-		return (1 / (SIGMA * SQRT_PI)) * Math.exp(-(t / 12) * (t / 12) / (2 * SIGMA * SIGMA));
+		return (1.0 / SIGMA_SQRT_PI) * Math.exp(- t * t / SIGMA_SQUARED_2);
 	}
 	
 	public short[] getWave(int length) {
