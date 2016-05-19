@@ -87,13 +87,15 @@ public class Sound {
 			return Math.sin(2.0 * Math.PI * t);
 		}
 	}
+	
+	final static double LOG_2 = Math.log(2.0);
 
 	public static double shepardTone(long term, int frequency, int sampleRate, int soundRange, int which) {
 		switch (which) {
 		case 6: {
 			double r = 0, g = 0;
 			double t = (double)term * frequency / sampleRate;
-			double note = (Math.log(frequency / 440.0) / Math.log(2.0)) * 12 - 6;
+			double note = (Math.log(frequency / 440.0) / LOG_2) * 12 - 6;
 			double n = (note - soundRange) / 12.0;
 
 			g = gaussian(n - 2);
