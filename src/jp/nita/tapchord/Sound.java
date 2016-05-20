@@ -120,7 +120,7 @@ public class Sound {
 		}
 	}
 	
-	final static double SIGMA = 1;
+	final static double SIGMA = 0.45;
 	final static double SIGMA_SQRT_PI = SIGMA * Math.sqrt(2 * Math.PI);
 	final static double SIGMA_SQUARED_2 = 2 * SIGMA * SIGMA;
 

@@ -585,7 +585,7 @@ public class Statics {
 		case 5:
 			return context.getString(R.string.settings_waveform_eighth_pulse_wave);
 		case 6:
-			return context.getString(R.string.settings_waveform_pseudo_shepard_tone);
+			return context.getString(R.string.settings_waveform_shepard_tone);
 		default:
 			return "";
 		}
