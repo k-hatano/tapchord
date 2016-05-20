@@ -38,7 +38,7 @@ public class TapChordView extends View {
 	int situation, destination, step, scroll, upper, destScale;
 	int playing, playingX, playingY, tappedX, destinationScroll;
 	int playingID;
-	boolean darken, vibration, keyboardIndicatorsTapped;
+	boolean darken, vibration, keyboardIndicatorsTapped, isScrolling;
 	int keyState[][] = new int[15][3];
 	int lastKeyState[][] = new int[15][3];
 	int statusbarKeycodes[] = {KeyEvent.KEYCODE_1, KeyEvent.KEYCODE_2, KeyEvent.KEYCODE_3, KeyEvent.KEYCODE_4};
@@ -223,6 +223,8 @@ public class TapChordView extends View {
 				}
 				if (situation == Statics.SITUATION_TRANSPOSE || destination == Statics.SITUATION_TRANSPOSE) {
 					c = Statics.COLOR_LIGHTGRAY;
+				} else if (darken && isScrolling) {
+					c = Statics.COLOR_DARKGRAY;
 				}
 				paint.setColor(Statics.getColor(c, d, darken));
 
@@ -512,9 +514,14 @@ public class TapChordView extends View {
 				originalX = x;
 				originalY = y;
 				originalScroll = scroll;
+				isScrolling = true;
 				taps.put(id, Statics.SCROLL_NOB);
 				vibrate();
-				invalidate(Statics.RectFToRect(Statics.getRectOfToolbar(width, height, 1.0f)));
+				if (darken) {
+					invalidate();
+				} else {
+					invalidate(Statics.RectFToRect(Statics.getRectOfToolbar(width, height, 1.0f)));
+				}
 				return false;
 			} else if (Statics.getRectOfStatusBarButton(3, 0, width, height, barsShowingRate).right < Statics
 					.getRectOfKeyboardIndicator(0, 0, width, height, barsShowingRate).left
@@ -528,17 +535,20 @@ public class TapChordView extends View {
 				return false;
 			} else if (Statics.getRectOfToolbar(width, height, 1.0f).contains(x, y)) {
 				if (scroll == 0) {
+					boolean statusbarFlag = false;
 					for (i = 0; i < 4; i++) {
-						if (statusbarFlags[i] >= 2)
+						if (statusbarFlags[i] >= 2) {
 							statusbarFlags[i] = 0;
+							statusbarFlag = true;
+						}
+					}
+					if (!statusbarFlag && darken) {
+						flashEffectStep = 1000 / MainActivity.heartBeatInterval;
 					}
 				} else {
 					scroll = 0;
 				}
 				taps.put(id, Statics.SCROLL_BAR);
-				if (darken) {
-					flashEffectStep = 1000 / MainActivity.heartBeatInterval;
-				}
 				vibrate();
 				invalidate(Statics.RectFToRect(Statics.getRectOfToolbar(width, height, 1.0f)));
 				return false;
@@ -760,6 +770,7 @@ public class TapChordView extends View {
 			toolbarPressed = -1;
 			scalePressed = Statics.FARAWAY;
 			keyboardIndicatorsTapped = false;
+			isScrolling = false;
 			playingID = -1;
 			pulling = 0;
 			upper = 0;
@@ -1196,8 +1207,8 @@ public class TapChordView extends View {
 			if ((flashEffectStep % stepMod == 0) && (int)(Math.random() * 10) == 0) {
 				Shape shape = new Shape(new PointF((float)(Math.random() * width), height / 2));
 				shape.style = Shape.STYLE_LINE;
-				shape.radStart = 100;
-				shape.radEnd = 100;
+				shape.radStart = 80;
+				shape.radEnd = 80;
 				shapes.add(shape);
 			}
 		}
