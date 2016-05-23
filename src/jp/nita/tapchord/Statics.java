@@ -26,7 +26,7 @@ public class Statics {
 	final public static int STATUSBAR_BUTTON = 2;
 	final public static int SCROLL_NOB = 3;
 	final public static int TOOLBAR_BUTTON = 4;
-	final public static int SCROLL_BAR = 5;
+	final public static int TOOL_BAR = 5;
 	final public static int TRANSPOSE_SCALE_BUTTON = 6;
 	final public static int STATUS_BAR = 7;
 	final public static int KEYBOARD_INDICATORS = 8;

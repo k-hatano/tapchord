@@ -223,7 +223,7 @@ public class TapChordView extends View {
 				}
 				if (situation == Statics.SITUATION_TRANSPOSE || destination == Statics.SITUATION_TRANSPOSE) {
 					c = Statics.COLOR_LIGHTGRAY;
-				} else if (darken && isScrolling) {
+				} else if (darken && (isScrolling || pulling > 0)) {
 					c = Statics.COLOR_DARKGRAY;
 				}
 				paint.setColor(Statics.getColor(c, d, darken));
@@ -548,7 +548,7 @@ public class TapChordView extends View {
 				} else {
 					scroll = 0;
 				}
-				taps.put(id, Statics.SCROLL_BAR);
+				taps.put(id, Statics.TOOL_BAR);
 				vibrate();
 				invalidate(Statics.RectFToRect(Statics.getRectOfToolbar(width, height, 1.0f)));
 				return false;
@@ -719,7 +719,11 @@ public class TapChordView extends View {
 			invalidate(Statics.RectFToRect(Statics.getRectOfButtonArea(width, height)));
 			invalidate(Statics.RectFToRect(Statics.getRectOfStatusBar(width, height, 1.0f)));
 			break;
-		case Statics.SCROLL_BAR:
+		case Statics.TOOL_BAR:
+			if (flashEffectStep > 0) {
+				flashEffectStep = 300 / MainActivity.heartBeatInterval;
+			}
+			break;
 		case Statics.TRANSPOSE_SCALE_BUTTON:
 		case Statics.STATUS_BAR:
 		case Statics.KEYBOARD_INDICATORS:
