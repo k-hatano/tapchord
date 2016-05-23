@@ -725,15 +725,25 @@ public class TapChordView extends View {
 			}
 			invalidate(Statics.RectFToRect(Statics.getRectOfButtonArea(width, height)));
 			invalidate(Statics.RectFToRect(Statics.getRectOfStatusBar(width, height, 1.0f)));
+			invalidate(Statics.RectFToRect(Statics.getRectOfToolbar(width, height, 1.0f)));
 			break;
 		case Statics.TOOL_BAR:
 			if (flashEffectStep > 0) {
 				flashEffectStep = 300 / MainActivity.heartBeatInterval;
 			}
 			break;
+		case Statics.KEYBOARD_INDICATORS:
+			{
+				if (keyboardIndicatorsTapped != Statics.getRectOfKeyboardIndicators(0, width, height, 1.0f).contains(event.getX(), event.getY())) {
+					keyboardIndicatorsTapped = Statics.getRectOfKeyboardIndicators(0, width, height, 1.0f).contains(x, y);
+					if (keyboardIndicatorsTapped) {
+						vibrate();
+					}
+					invalidate(Statics.RectFToRect(Statics.getRectOfKeyboardIndicators(0, width, height, 1.0f)));
+				}
+			}
 		case Statics.TRANSPOSE_SCALE_BUTTON:
 		case Statics.STATUS_BAR:
-		case Statics.KEYBOARD_INDICATORS:
 			break;
 		default:
 			chordPressed = actionDown(event, index);
@@ -776,8 +786,11 @@ public class TapChordView extends View {
 				toolbarReleased(toolbarPressed);
 			if (scalePressed != Statics.FARAWAY)
 				scaleReleased(scalePressed);
-			if (keyboardIndicatorsTapped)
-				keyboardIndicatorsReleased();
+			if (keyboardIndicatorsTapped) {
+				if (Statics.getRectOfKeyboardIndicators(0, width, height, 1.0f).contains(event.getX(), event.getY())) {
+					keyboardIndicatorsReleased();
+				}
+			}
 			toolbarPressed = -1;
 			scalePressed = Statics.FARAWAY;
 			keyboardIndicatorsTapped = false;
