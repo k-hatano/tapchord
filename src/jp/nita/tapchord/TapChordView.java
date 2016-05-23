@@ -971,8 +971,15 @@ public class TapChordView extends View {
 			return false;
 		}
 
-		statusbarFlags[index] = 2 - statusbarFlags[index];
+		if (lastTapped == index && System.currentTimeMillis() - lastTappedTime < 400) {
+			statusbarFlags[index] = 2;
+		} else {
+			statusbarFlags[index] = 1;
+		}
 		invalidate(Statics.RectFToRect(Statics.getRectOfStatusBar(width, height, 1.0f)));
+		
+		lastTapped = index;
+		lastTappedTime = System.currentTimeMillis();
 
 		return true;
 	}
@@ -985,6 +992,10 @@ public class TapChordView extends View {
 				handler.post(new Runnable() {
 					@Override
 					public void run() {
+						if (statusbarFlags[index] == 1) {
+							statusbarFlags[index] = 0;
+							invalidate(Statics.RectFToRect(Statics.getRectOfStatusBar(width, height, 1.0f)));
+						}
 						cancelSwitchingStatusBarTimer = null;
 					}
 				});
