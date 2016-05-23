@@ -38,7 +38,7 @@ public class TapChordView extends View {
 	int situation, destination, step, scroll, upper, destScale;
 	int playing, playingX, playingY, tappedX, destinationScroll;
 	int playingID;
-	boolean darken, vibration, keyboardIndicatorsTapped, isScrolling;
+	boolean darken, vibration, keyboardIndicatorsTapped, isScrolling, scalePullingDown;
 	int keyState[][] = new int[15][3];
 	int lastKeyState[][] = new int[15][3];
 	int statusbarKeycodes[] = {KeyEvent.KEYCODE_1, KeyEvent.KEYCODE_2, KeyEvent.KEYCODE_3, KeyEvent.KEYCODE_4};
@@ -173,6 +173,9 @@ public class TapChordView extends View {
 			} else {
 				textPaint.setColor(Statics.getColor(Statics.COLOR_BLACK, 0, darken));
 				str = Statics.getStringOfScale(x + scale);
+			}
+			if (x == 0 && scalePullingDown) {
+				str = getContext().getString(R.string.ok);
 			}
 			w = textPaint.measureText(str);
 			canvas.drawText(str, rect.centerX() - w / 2,
@@ -494,6 +497,7 @@ public class TapChordView extends View {
 			for (i = -7; i <= 7; i++) {
 				rect = Statics.getRectOfButton(i, -2, width, height, scroll);
 				if (rect.contains(x, y)) {
+					scalePullingDown = false;
 					scalePressed = i;
 					taps.put(id, Statics.TRANSPOSE_SCALE_BUTTON);
 					vibrate();
@@ -743,6 +747,17 @@ public class TapChordView extends View {
 				}
 			}
 		case Statics.TRANSPOSE_SCALE_BUTTON:
+			if (scalePressed == 0 ) {
+				if (!scalePullingDown && y > height * 7 / 35) {
+					scalePullingDown = true;
+					vibrate();
+					invalidate(Statics.RectFToRect(Statics.getRectOfStatusBar(width, height, 1.0f)));
+				} else if (scalePullingDown && y < height * 7 / 35) {
+					scalePullingDown = false;
+					vibrate();
+					invalidate(Statics.RectFToRect(Statics.getRectOfStatusBar(width, height, 1.0f)));
+				}
+			}
 		case Statics.STATUS_BAR:
 			break;
 		default:
@@ -782,15 +797,22 @@ public class TapChordView extends View {
 				if (statusbarFlags[l] == 1)
 					statusbarFlags[l] = 0;
 			}
-			if (toolbarPressed >= 0)
+			if (toolbarPressed >= 0) {
 				toolbarReleased(toolbarPressed);
-			if (scalePressed != Statics.FARAWAY)
+			}
+			if (scalePullingDown) {
+				scalePullingDown = false;
+				originalScroll = scroll;
+				startAnimation(Statics.SITUATION_NORMAL);
+			} else if (scalePressed != Statics.FARAWAY && scalePressed != scale) {
 				scaleReleased(scalePressed);
+			}
 			if (keyboardIndicatorsTapped) {
 				if (Statics.getRectOfKeyboardIndicators(0, width, height, 1.0f).contains(event.getX(), event.getY())) {
 					keyboardIndicatorsReleased();
 				}
 			}
+			
 			toolbarPressed = -1;
 			scalePressed = Statics.FARAWAY;
 			keyboardIndicatorsTapped = false;
@@ -1071,6 +1093,7 @@ public class TapChordView extends View {
 				}
 				break;
 			case 2:
+				scalePullingDown = false;
 				originalScroll = scroll;
 				startAnimation(1 - situation);
 				break;
