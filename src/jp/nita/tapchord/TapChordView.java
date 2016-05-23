@@ -735,7 +735,7 @@ public class TapChordView extends View {
 	public boolean onTouchEvent(MotionEvent event) {
 		boolean chordPressed = false;
 		Sound.tappedTime = System.currentTimeMillis();
-		switch (event.getAction()) {
+		switch (event.getActionMasked()) {
 		case MotionEvent.ACTION_DOWN:
 		case MotionEvent.ACTION_POINTER_DOWN:
 			// Log.i("TapChordView","DOWN Count:"+event.getPointerCount());
