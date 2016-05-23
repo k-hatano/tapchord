@@ -277,6 +277,9 @@ public class TapChordView extends View {
 						c = Statics.COLOR_BLUE;
 						break;
 					}
+					if (darken) {
+						c = Statics.COLOR_DARKGRAY;
+					}
 					paint.setColor(Statics.getColor(c, 0, darken));
 
 					int sc = scroll;
@@ -287,7 +290,11 @@ public class TapChordView extends View {
 				}
 			}
 
-			paint.setColor(Statics.getColor(Statics.COLOR_RED, 0, darken));
+			if (darken) {
+				paint.setColor(Statics.getColor(Statics.COLOR_DARKGRAY, 0, darken));
+			} else {
+				paint.setColor(Statics.getColor(Statics.COLOR_RED, 0, darken));
+			}
 
 			int sc = scroll;
 			if (situation == Statics.SITUATION_TRANSPOSING)
