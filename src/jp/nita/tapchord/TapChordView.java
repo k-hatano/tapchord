@@ -392,19 +392,20 @@ public class TapChordView extends View {
 			for (int i = 0; i < shapes.size(); i++) {
 				Shape shape = shapes.get(i);
 				paint.setAlpha(255 * shape.lifetime / Shape.getMaxLifetime());
+				float sx = shape.center.x;
+				float sy = shape.center.y;
+				final float degreeRadianRate = (float)(Math.PI * 2 / 360.0);
 
 				if (shape.style == Shape.STYLE_LINE) {
 					float r = shape.radStart;
-					float ax = shape.center.x - (float) (Math.cos(r / 360.0 * Math.PI * 2) * width);
-					float ay = shape.center.y - (float) (Math.sin(r / 360.0 * Math.PI * 2) * width);
-					float bx = shape.center.x + (float) (Math.cos(r / 360.0 * Math.PI * 2) * width);
-					float by = shape.center.y + (float) (Math.sin(r / 360.0 * Math.PI * 2) * width);
+					float ax = sx - (float) (Math.cos(r * degreeRadianRate) * width);
+					float ay = sy - (float) (Math.sin(r * degreeRadianRate) * width);
+					float bx = sx + (float) (Math.cos(r * degreeRadianRate) * width);
+					float by = sy + (float) (Math.sin(r * degreeRadianRate) * width);
 					canvas.drawLine(ax, ay, bx, by, paint);
 				}
 				if (shape.style == Shape.STYLE_CIRCLE) {
-					float cx = shape.center.x;
-					float cy = shape.center.y;
-					canvas.drawCircle(cx, cy,
+					canvas.drawCircle(sx, sy,
 							(float) (height * (0.2f
 									+ (float) (Shape.getMaxLifetime() - shape.lifetime) / Shape.getMaxLifetime())
 									* 0.8f),
@@ -416,12 +417,12 @@ public class TapChordView extends View {
 							* 0.7f);
 					float r = ((shape.radStart * shape.lifetime)
 							+ (shape.radEnd * (Shape.getMaxLifetime() - shape.lifetime))) / Shape.getMaxLifetime();
-					float ax = shape.center.x + (float) (Math.cos((r) / 360.0 * Math.PI * 2) * l);
-					float ay = shape.center.y + (float) (Math.sin((r) / 360.0 * Math.PI * 2) * l);
-					float bx = shape.center.x + (float) (Math.cos((r + 120) / 360.0 * Math.PI * 2) * l);
-					float by = shape.center.y + (float) (Math.sin((r + 120) / 360.0 * Math.PI * 2) * l);
-					float cx = shape.center.x + (float) (Math.cos((r + 240) / 360.0 * Math.PI * 2) * l);
-					float cy = shape.center.y + (float) (Math.sin((r + 240) / 360.0 * Math.PI * 2) * l);
+					float ax = sx + (float) (Math.cos((r) * degreeRadianRate) * l);
+					float ay = sy + (float) (Math.sin((r) * degreeRadianRate) * l);
+					float bx = sx + (float) (Math.cos((r + 120) * degreeRadianRate) * l);
+					float by = sy + (float) (Math.sin((r + 120) * degreeRadianRate) * l);
+					float cx = sx + (float) (Math.cos((r + 240) * degreeRadianRate) * l);
+					float cy = sy + (float) (Math.sin((r + 240) * degreeRadianRate) * l);
 					canvas.drawLine(ax, ay, bx, by, paint);
 					canvas.drawLine(bx, by, cx, cy, paint);
 					canvas.drawLine(cx, cy, ax, ay, paint);
@@ -432,14 +433,14 @@ public class TapChordView extends View {
 							* 0.7f);
 					float r = ((shape.radStart * shape.lifetime)
 							+ (shape.radEnd * (Shape.getMaxLifetime() - shape.lifetime))) / Shape.getMaxLifetime();
-					float ax = shape.center.x + (float) (Math.cos((r) / 360.0 * Math.PI * 2) * l);
-					float ay = shape.center.y + (float) (Math.sin((r) / 360.0 * Math.PI * 2) * l);
-					float bx = shape.center.x + (float) (Math.cos((r + 90) / 360.0 * Math.PI * 2) * l);
-					float by = shape.center.y + (float) (Math.sin((r + 90) / 360.0 * Math.PI * 2) * l);
-					float cx = shape.center.x + (float) (Math.cos((r + 180) / 360.0 * Math.PI * 2) * l);
-					float cy = shape.center.y + (float) (Math.sin((r + 180) / 360.0 * Math.PI * 2) * l);
-					float dx = shape.center.x + (float) (Math.cos((r + 270) / 360.0 * Math.PI * 2) * l);
-					float dy = shape.center.y + (float) (Math.sin((r + 270) / 360.0 * Math.PI * 2) * l);
+					float ax = sx + (float) (Math.cos((r) * degreeRadianRate) * l);
+					float ay = sy + (float) (Math.sin((r) * degreeRadianRate) * l);
+					float bx = sx + (float) (Math.cos((r + 90) * degreeRadianRate) * l);
+					float by = sy + (float) (Math.sin((r + 90) * degreeRadianRate) * l);
+					float cx = sx + (float) (Math.cos((r + 180) * degreeRadianRate) * l);
+					float cy = sy + (float) (Math.sin((r + 180) * degreeRadianRate) * l);
+					float dx = sx + (float) (Math.cos((r + 270) * degreeRadianRate) * l);
+					float dy = sy + (float) (Math.sin((r + 270) * degreeRadianRate) * l);
 					canvas.drawLine(ax, ay, bx, by, paint);
 					canvas.drawLine(bx, by, cx, cy, paint);
 					canvas.drawLine(cx, cy, dx, dy, paint);
