@@ -87,8 +87,8 @@ public final class R {
         public static final int settings_waveform=0x7f060008;
         public static final int settings_waveform_eighth_pulse_wave=0x7f06000e;
         public static final int settings_waveform_fourth_pulse_wave=0x7f06000d;
-        public static final int settings_waveform_pseudo_shepard_tone=0x7f06000f;
         public static final int settings_waveform_sawtooth_wave=0x7f06000a;
+        public static final int settings_waveform_shepard_tone=0x7f06000f;
         public static final int settings_waveform_sine_wave=0x7f060009;
         public static final int settings_waveform_square_wave=0x7f06000b;
         public static final int settings_waveform_triangle_wave=0x7f06000c;

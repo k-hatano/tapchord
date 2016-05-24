@@ -16,7 +16,7 @@
     <string name="settings_waveform_triangle_wave">Triangle Wave</string>
     <string name="settings_waveform_fourth_pulse_wave">1:3 Pulse Wave</string>
     <string name="settings_waveform_eighth_pulse_wave">1:7 Pulse Wave</string>
-    <string name="settings_waveform_pseudo_shepard_tone">Pseudo Shepard Tone</string>
+    <string name="settings_waveform_shepard_tone">Shepard Tone</string>
     <string name="settings_sound_range">Sound Range</string>
     <string name="settings_envelope">Envelope</string>
     <string name="settings_attack_time">Attack Time</string>

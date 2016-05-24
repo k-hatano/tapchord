@@ -19,14 +19,14 @@ public class Statics {
 
 	final public static int SITUATION_NORMAL = 0;
 	final public static int SITUATION_TRANSPOSE = 1;
-	final public static int SITUATION_TRANSPOSING = 2;
+	final public static int SITUATION_TRANSPOSE_MOVING = 2;
 	// final public static int SITUATION_PULLING=3;
 
 	final public static int CHORD_BUTTON = 1;
 	final public static int STATUSBAR_BUTTON = 2;
 	final public static int SCROLL_NOB = 3;
 	final public static int TOOLBAR_BUTTON = 4;
-	final public static int SCROLL_BAR = 5;
+	final public static int TOOL_BAR = 5;
 	final public static int TRANSPOSE_SCALE_BUTTON = 6;
 	final public static int STATUS_BAR = 7;
 	final public static int KEYBOARD_INDICATORS = 8;
@@ -77,9 +77,9 @@ public class Statics {
 
 	public static String TENSIONS[] = { "add9", "-5/aug", "7", "M7" };
 
-	public static int getColor(int which, int pressed, int dark) {
+	public static int color(int which, int pressed, boolean dark) {
 		int r, g, b;
-		if (dark == 0) {
+		if (!dark) {
 			switch (which) {
 			case COLOR_BLACK:
 				r = 0x00;
@@ -246,12 +246,12 @@ public class Statics {
 		return Color.argb(255, r, g, b);
 	}
 
-	public static RectF getRectOfButtonArea(int width, int height) {
+	public static RectF rectOfButtonArea(int width, int height) {
 		float vert = height * 7 / 35f;
 		return new RectF(0, vert, width, height - vert);
 	}
 
-	public static RectF getRectOfButton(int x, int y, int width, int height, int scroll) {
+	public static RectF rectOfButton(int x, int y, int width, int height, int scroll) {
 		float vert = height * 7 / 35f;
 		float pX = width / 2 + x * vert;
 		float pY = height / 2 + y * vert;
@@ -259,42 +259,42 @@ public class Statics {
 				pX + vert / 2 - vert / 14 + scroll, pY + vert / 2 - vert / 14);
 	}
 
-	public static Point getXYOfButton(int x, int y, int width, int height, int scroll) {
+	public static Point pointOfButton(int x, int y, int width, int height, int scroll) {
 		int vert = (int) (height * 7 / 35f);
 		int resX = (int) Math.floor((float) (x - width / 2 - scroll) / vert + 0.5);
 		int resY = (int) Math.floor((float) (y - height / 2) / vert + 0.5);
 		return new Point(resX, resY);
 	}
 
-	public static Point getTopLeftOfButton(int x, int y, int width, int height, int scroll) {
+	public static Point topLeftOfButton(int x, int y, int width, int height, int scroll) {
 		int vert = (int) (height * 7 / 35f);
 		int resL = x / vert;
 		int resT = y / vert;
 		return new Point(resL, resT);
 	}
 
-	public static Point getBottomRightButton(int x, int y, int width, int height, int scroll) {
+	public static Point bottomRightButton(int x, int y, int width, int height, int scroll) {
 		int vert = (int) (height * 7 / 35f);
 		int resB = (width - x) / vert;
 		int resR = (height - y) / vert;
 		return new Point(resB, resR);
 	}
 
-	public static int getScrollMax(int width, int height) {
+	public static int scrollMax(int width, int height) {
 		float vert = height / 35f;
 		float max = (vert * 7) * 15;
 		float nob = width;
 		return (int) (max - nob) / 2;
 	}
 
-	public static RectF getRectOfScrollBar(int width, int height, float showingRate) {
+	public static RectF rectOfScrollBar(int width, int height, float showingRate) {
 		float vert = height / 35f;
 		float max = (vert * 7) * 15;
 		float hidingDelta = vert * (1.0f - showingRate) * 7;
 		return new RectF(vert * 2, vert * 30.5f + hidingDelta, vert * 2 + max / 5, vert * 32.5f + hidingDelta);
 	}
 
-	public static RectF getRectOfScrollNob(int pos, int upper, int width, int height, float showingRate) {
+	public static RectF rectOfScrollNob(int pos, int upper, int width, int height, float showingRate) {
 		float vert = height / 35f;
 		float max = (vert * 7) * 15;
 		float nob = width / 5;
@@ -303,17 +303,17 @@ public class Statics {
 		return new RectF(x - nob / 2, vert * 30f - upper + hidingDelta, x + nob / 2, vert * 33f - upper + hidingDelta);
 	}
 
-	public static int getRadiusOfButton(int height) {
+	public static int radiusOfButton(int height) {
 		return height * 7 / 70 - 8;
 	}
 
-	public static RectF getRectOfStatusBar(int width, int height, float showingRate) {
+	public static RectF rectOfStatusBar(int width, int height, float showingRate) {
 		float vert = height * 7 / 35f;
 		float hidingDelta = vert * (1.0f - showingRate);
 		return new RectF(0, 0 - hidingDelta, width, height * 7 / 35 - hidingDelta);
 	}
 
-	public static RectF getRectOfStatusBarButton(int x, int y, int width, int height, float showingRate) {
+	public static RectF rectOfStatusBarButton(int x, int y, int width, int height, float showingRate) {
 		float vert = height * 7 / 35f;
 		float pX = x * vert + vert / 2;
 		float hidingDelta = vert * (1.0f - showingRate);
@@ -321,13 +321,13 @@ public class Statics {
 				vert - vert / 14 - hidingDelta);
 	}
 
-	public static RectF getRectOfToolbar(int width, int height, float showingRate) {
+	public static RectF rectOfToolbar(int width, int height, float showingRate) {
 		float vert = height * 7 / 35f;
 		float hidingDelta = vert * (1.0f - showingRate);
 		return new RectF(0, height * 28 / 35 + hidingDelta, width, height + hidingDelta);
 	}
 
-	public static RectF getRectOfToolbarButton(int x, int y, int width, int height, float showingRate) {
+	public static RectF rectOfToolbarButton(int x, int y, int width, int height, float showingRate) {
 		float vert = height * 7 / 35f;
 		float pX = x * vert + vert / 2;
 		float hidingDelta = vert * (1.0f - showingRate);
@@ -335,7 +335,7 @@ public class Statics {
 				width - (pX - vert / 2) - vert / 14, height - vert / 14 + hidingDelta);
 	}
 
-	public static RectF getRectOfToolbarTransposingButton(int x, int y, int width, int height, float showingRate) {
+	public static RectF rectOfToolbarTransposingButton(int x, int y, int width, int height, float showingRate) {
 		float vert = height * 7 / 35f;
 		float pX = x * vert + vert / 2;
 		float hidingDelta = vert * (1.0f - showingRate);
@@ -343,7 +343,7 @@ public class Statics {
 				height - vert / 14 + hidingDelta);
 	}
 
-	public static RectF getRectOfKeyboardIndicator(int i, int shrink, int width, int height, float showingRate) {
+	public static RectF rectOfKeyboardIndicator(int i, int shrink, int width, int height, float showingRate) {
 		float vert = height / 35f;
 		float hidingDelta = vert * 7 * (1.0f - showingRate);
 		RectF r = null;
@@ -402,13 +402,13 @@ public class Statics {
 		return r;
 	}
 
-	public static RectF getRectOfKeyboardIndicators(int shrink, int width, int height, float showingRate) {
+	public static RectF rectOfKeyboardIndicators(int shrink, int width, int height, float showingRate) {
 		float vert = height / 35f;
 		float hidingDelta = vert * 7 * (1.0f - showingRate);
 		return new RectF(width - vert * 23 + shrink, 0, width, vert * 7 - shrink - hidingDelta);
 	}
 
-	public static int getFrequencyOfNote(int note, int soundRange) {
+	public static int frequencyOfNote(int note, int soundRange) {
 		double f = 440.0;
 		int n = note;
 		while (n < soundRange || n >= soundRange + 12) {
@@ -420,7 +420,7 @@ public class Statics {
 		return (int) Math.round(f * Math.pow(2, (n - 9) / 12.0));
 	}
 
-	public static Integer[] getNotesOfChord(int x, int y, int[] tensions) {
+	public static Integer[] notesOfChord(int x, int y, int[] tensions) {
 		List<Integer> notes = new ArrayList<Integer>();
 
 		if (y >= 1)
@@ -468,7 +468,7 @@ public class Statics {
 	}
 
 	public static Integer[] getMidiNotesOfChord(int x, int y, int[] tensions, int soundRange) {
-		Integer notesOfChord[] = getNotesOfChord(x, y, tensions);
+		Integer notesOfChord[] = notesOfChord(x, y, tensions);
 		soundRange += 72;
 		for (int i = 0; i < notesOfChord.length; i++) {
 			int n = notesOfChord[i];
@@ -486,19 +486,19 @@ public class Statics {
 	public static Integer[] convertNotesToFrequencies(Integer[] notes, int soundRange) {
 		List<Integer> freqs = new ArrayList<Integer>();
 		for (int i = 0; i < notes.length; i++) {
-			freqs.add(getFrequencyOfNote(notes[i], soundRange));
+			freqs.add(frequencyOfNote(notes[i], soundRange));
 		}
 		Integer fs[] = freqs.toArray(new Integer[0]);
 		return fs;
 	}
 
-	public static String getStringOfScale(int i) {
+	public static String stringOfScale(int i) {
 		if (i < -7 || i > 7)
 			return "";
 		return SCALES[i + 7];
 	}
 
-	public static int getPreferenceValue(Context context, String key, int def) {
+	public static int preferenceValue(Context context, String key, int def) {
 		SharedPreferences pref = context.getSharedPreferences(PREF_KEY, Activity.MODE_PRIVATE);
 		return pref.getInt(key, def);
 	}
@@ -510,7 +510,7 @@ public class Statics {
 		editor.commit();
 	}
 
-	public static String getStringOfAnimationQuality(int aq, Context context) {
+	public static String stringOfAnimationQuality(int aq, Context context) {
 		switch (aq) {
 		case -1:
 			return context.getString(R.string.settings_animation_quality_low);
@@ -523,7 +523,7 @@ public class Statics {
 		}
 	}
 
-	public static String getLongStringOfScale(int i) {
+	public static String longStringOfScale(int i) {
 		switch (i) {
 		case -7:
 			return "b7 : Cb / Abm";
@@ -560,18 +560,18 @@ public class Statics {
 		}
 	}
 
-	public static String getOnOrOffString(Context context, int v) {
+	public static String onOrOffString(Context context, int v) {
 		if (v > 0)
 			return context.getString(R.string.on);
 		else
 			return context.getString(R.string.off);
 	}
 
-	public static int getValueOfVolume(int i) {
+	public static int valueOfVolume(int i) {
 		return i + 50;
 	}
 
-	public static int getValueOfSamplingRate(int i) {
+	public static int valueOfSamplingRate(int i) {
 		switch (i) {
 		case -3:
 			return 8000;
@@ -586,7 +586,7 @@ public class Statics {
 		}
 	}
 
-	public static String getValueOfWaveform(int i, Context context) {
+	public static String valueOfWaveform(int i, Context context) {
 		switch (i) {
 		case 0:
 			return context.getString(R.string.settings_waveform_sine_wave);
@@ -601,29 +601,29 @@ public class Statics {
 		case 5:
 			return context.getString(R.string.settings_waveform_eighth_pulse_wave);
 		case 6:
-			return context.getString(R.string.settings_waveform_pseudo_shepard_tone);
+			return context.getString(R.string.settings_waveform_shepard_tone);
 		default:
 			return "";
 		}
 	}
 
-	public static float getValueOfAttackDecayReleaseTime(int i) {
+	public static float valueOfAttackDecayReleaseTime(int i) {
 		return i / 1000.0f;
 	}
 
-	public static String getStringOfSoundRange(int soundRange) {
-		return getShortStringOfSoundRange(soundRange) + " - " + getShortStringOfSoundRange(soundRange + 11);
+	public static String stringOfSoundRange(int soundRange) {
+		return shortStringOfSoundRange(soundRange) + " - " + shortStringOfSoundRange(soundRange + 11);
 	}
 
-	public static String getStringOfSingleTime(int t, Context context) {
+	public static String stringOfSingleTime(int t, Context context) {
 		return "" + t / 1000.0f + context.getString(R.string.settings_attack_decay_release_time_seconds);
 	}
 
-	public static String getStringOfSustainLevel(int s, Context context) {
+	public static String stringOfSustainLevel(int s, Context context) {
 		return "" + (s + 100) + context.getString(R.string.settings_sustain_level_percent);
 	}
 
-	public static String getStringOfEnvelope(int e, int a, int d, int s, int r, Context context) {
+	public static String stringOfEnvelope(int e, int a, int d, int s, int r, Context context) {
 		if (e > 0) {
 			return "" + a / 1000.0f + context.getString(R.string.settings_attack_decay_release_time_seconds) + " - "
 					+ d / 1000.0f + context.getString(R.string.settings_attack_decay_release_time_seconds) + " - "
@@ -634,7 +634,7 @@ public class Statics {
 		}
 	}
 
-	public static String getShortStringOfSoundRange(int soundRange) {
+	public static String shortStringOfSoundRange(int soundRange) {
 		int octave = 4;
 		while (soundRange < 0 || soundRange >= 12) {
 			if (soundRange < 0) {
