@@ -109,7 +109,7 @@ public class Sound {
 			g = gaussianTable[n - 12 + gaussianTable.length / 2];
 			r += Math.sin(1.0 * Math.PI * t) * g;
 
-			g = gaussianTable[n + 100];
+			g = gaussianTable[n + gaussianTable.length / 2];
 			r += Math.sin(2.0 * Math.PI * t) * g;
 
 			g = gaussianTable[n + 12 + gaussianTable.length / 2];
