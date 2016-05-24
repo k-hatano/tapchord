@@ -205,18 +205,18 @@ public class Sound {
 					track = null;
 				}
 
-				volume = Statics.getValueOfVolume(Statics.getPreferenceValue(context, Statics.PREF_VOLUME, 30));
-				soundRange = Statics.getPreferenceValue(context, Statics.PREF_SOUND_RANGE, 0);
+				volume = Statics.valueOfVolume(Statics.preferenceValue(context, Statics.PREF_VOLUME, 30));
+				soundRange = Statics.preferenceValue(context, Statics.PREF_SOUND_RANGE, 0);
 				sampleRate = Statics
-						.getValueOfSamplingRate(Statics.getPreferenceValue(context, Statics.PREF_SAMPLING_RATE, 0));
-				waveform = Statics.getPreferenceValue(context, Statics.PREF_WAVEFORM, 0);
-				enableEnvelope = Statics.getPreferenceValue(context, Statics.PREF_ENABLE_ENVELOPE, 0) > 0;
+						.valueOfSamplingRate(Statics.preferenceValue(context, Statics.PREF_SAMPLING_RATE, 0));
+				waveform = Statics.preferenceValue(context, Statics.PREF_WAVEFORM, 0);
+				enableEnvelope = Statics.preferenceValue(context, Statics.PREF_ENABLE_ENVELOPE, 0) > 0;
 
 				if (enableEnvelope) {
-					final int attack = Statics.getPreferenceValue(context, Statics.PREF_ATTACK_TIME, 0);
-					final int decay = Statics.getPreferenceValue(context, Statics.PREF_DECAY_TIME, 0);
-					final int sustain = Statics.getPreferenceValue(context, Statics.PREF_SUSTAIN_LEVEL, 0) + 100;
-					final int release = Statics.getPreferenceValue(context, Statics.PREF_RELEASE_TIME, 0);
+					final int attack = Statics.preferenceValue(context, Statics.PREF_ATTACK_TIME, 0);
+					final int decay = Statics.preferenceValue(context, Statics.PREF_DECAY_TIME, 0);
+					final int sustain = Statics.preferenceValue(context, Statics.PREF_SUSTAIN_LEVEL, 0) + 100;
+					final int release = Statics.preferenceValue(context, Statics.PREF_RELEASE_TIME, 0);
 
 					attackLength = attack * sampleRate / 1000;
 					decayLength = decay * sampleRate / 1000;

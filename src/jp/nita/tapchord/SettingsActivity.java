@@ -45,7 +45,7 @@ public class SettingsActivity extends Activity implements OnClickListener, OnIte
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		getPreferenceValues();
+		updatePreferenceValues();
 		setTheme(android.R.style.Theme_Light);
 
 		setContentView(R.layout.activity_settings);
@@ -55,20 +55,20 @@ public class SettingsActivity extends Activity implements OnClickListener, OnIte
 		button.setOnClickListener(this);
 	}
 
-	public void getPreferenceValues() {
-		scale = Statics.getPreferenceValue(this, Statics.PREF_SCALE, 0);
-		darken = Statics.getPreferenceValue(this, Statics.PREF_DARKEN, 0);
-		vibration = Statics.getPreferenceValue(this, Statics.PREF_VIBRATION, 1);
-		volume = Statics.getPreferenceValue(this, Statics.PREF_VOLUME, 30);
-		samplingRate = Statics.getPreferenceValue(this, Statics.PREF_SAMPLING_RATE, 0);
-		waveform = Statics.getPreferenceValue(this, Statics.PREF_WAVEFORM, 0);
-		soundRange = Statics.getPreferenceValue(this, Statics.PREF_SOUND_RANGE, 0);
-		enableEnvelope = Statics.getPreferenceValue(this, Statics.PREF_ENABLE_ENVELOPE, 0);
-		attackTime = Statics.getPreferenceValue(this, Statics.PREF_ATTACK_TIME, 0);
-		decayTime = Statics.getPreferenceValue(this, Statics.PREF_DECAY_TIME, 0);
-		sustainLevel = Statics.getPreferenceValue(this, Statics.PREF_SUSTAIN_LEVEL, 0);
-		releaseTime = Statics.getPreferenceValue(this, Statics.PREF_RELEASE_TIME, 0);
-		animationQuality = Statics.getPreferenceValue(this, Statics.PREF_ANIMATION_QUALITY, 0);
+	public void updatePreferenceValues() {
+		scale = Statics.preferenceValue(this, Statics.PREF_SCALE, 0);
+		darken = Statics.preferenceValue(this, Statics.PREF_DARKEN, 0);
+		vibration = Statics.preferenceValue(this, Statics.PREF_VIBRATION, 1);
+		volume = Statics.preferenceValue(this, Statics.PREF_VOLUME, 30);
+		samplingRate = Statics.preferenceValue(this, Statics.PREF_SAMPLING_RATE, 0);
+		waveform = Statics.preferenceValue(this, Statics.PREF_WAVEFORM, 0);
+		soundRange = Statics.preferenceValue(this, Statics.PREF_SOUND_RANGE, 0);
+		enableEnvelope = Statics.preferenceValue(this, Statics.PREF_ENABLE_ENVELOPE, 0);
+		attackTime = Statics.preferenceValue(this, Statics.PREF_ATTACK_TIME, 0);
+		decayTime = Statics.preferenceValue(this, Statics.PREF_DECAY_TIME, 0);
+		sustainLevel = Statics.preferenceValue(this, Statics.PREF_SUSTAIN_LEVEL, 0);
+		releaseTime = Statics.preferenceValue(this, Statics.PREF_RELEASE_TIME, 0);
+		animationQuality = Statics.preferenceValue(this, Statics.PREF_ANIMATION_QUALITY, 0);
 	}
 
 	public void updateSettingsListView() {
@@ -79,32 +79,32 @@ public class SettingsActivity extends Activity implements OnClickListener, OnIte
 
 			map = new HashMap<String, String>();
 			map.put("key", getString(R.string.settings_scale));
-			map.put("value", Statics.getLongStringOfScale(scale));
+			map.put("value", Statics.longStringOfScale(scale));
 			list.add(map);
 
 			map = new HashMap<String, String>();
 			map.put("key", getString(R.string.settings_darken));
-			map.put("value", Statics.getOnOrOffString(this, darken));
+			map.put("value", Statics.onOrOffString(this, darken));
 			list.add(map);
 
 			map = new HashMap<String, String>();
 			map.put("key", getString(R.string.settings_vibration));
-			map.put("value", Statics.getOnOrOffString(this, vibration));
+			map.put("value", Statics.onOrOffString(this, vibration));
 			list.add(map);
 
 			map = new HashMap<String, String>();
 			map.put("key", getString(R.string.settings_volume));
-			map.put("value", "" + Statics.getValueOfVolume(volume));
+			map.put("value", "" + Statics.valueOfVolume(volume));
 			list.add(map);
 
 			map = new HashMap<String, String>();
 			map.put("key", getString(R.string.settings_sound_range));
-			map.put("value", "" + Statics.getStringOfSoundRange(soundRange));
+			map.put("value", "" + Statics.stringOfSoundRange(soundRange));
 			list.add(map);
 
 			map = new HashMap<String, String>();
 			map.put("key", getString(R.string.settings_waveform));
-			map.put("value", Statics.getValueOfWaveform(waveform, this));
+			map.put("value", Statics.valueOfWaveform(waveform, this));
 			list.add(map);
 
 			/*
@@ -116,13 +116,13 @@ public class SettingsActivity extends Activity implements OnClickListener, OnIte
 
 			map = new HashMap<String, String>();
 			map.put("key", getString(R.string.settings_sampling_rate));
-			map.put("value", "" + Statics.getValueOfSamplingRate(samplingRate) + " "
+			map.put("value", "" + Statics.valueOfSamplingRate(samplingRate) + " "
 					+ getString(R.string.settings_sampling_rate_hz));
 			list.add(map);
 
 			map = new HashMap<String, String>();
 			map.put("key", getString(R.string.settings_animation_quality));
-			map.put("value", Statics.getStringOfAnimationQuality(animationQuality, this));
+			map.put("value", Statics.stringOfAnimationQuality(animationQuality, this));
 			list.add(map);
 		}
 
@@ -137,7 +137,7 @@ public class SettingsActivity extends Activity implements OnClickListener, OnIte
 	public void onResume() {
 		super.onResume();
 
-		getPreferenceValues();
+		updatePreferenceValues();
 		updateSettingsListView();
 	}
 
@@ -173,7 +173,7 @@ public class SettingsActivity extends Activity implements OnClickListener, OnIte
 		case 0: {
 			CharSequence list[] = new String[15];
 			for (int i = -7; i <= 7; i++)
-				list[i + 7] = Statics.getLongStringOfScale(i);
+				list[i + 7] = Statics.longStringOfScale(i);
 			new AlertDialog.Builder(SettingsActivity.this).setTitle(getString(R.string.settings_scale))
 					.setSingleChoiceItems(list, scale + 7, new DialogInterface.OnClickListener() {
 						@Override
@@ -262,7 +262,7 @@ public class SettingsActivity extends Activity implements OnClickListener, OnIte
 		}
 		case 4: {
 			final TextView rangeView = new TextView(this);
-			rangeView.setText("" + Statics.getStringOfSoundRange(soundRange));
+			rangeView.setText("" + Statics.stringOfSoundRange(soundRange));
 			rangeView.setTextAppearance(this, android.R.style.TextAppearance_Inverse);
 			final SeekBar seekBar = new SeekBar(this);
 			seekBar.setProgress(soundRange + 24);
@@ -270,7 +270,7 @@ public class SettingsActivity extends Activity implements OnClickListener, OnIte
 			seekBar.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
 				@Override
 				public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-					rangeView.setText("" + Statics.getStringOfSoundRange(seekBar.getProgress() - 24));
+					rangeView.setText("" + Statics.stringOfSoundRange(seekBar.getProgress() - 24));
 				}
 
 				@Override
@@ -304,7 +304,7 @@ public class SettingsActivity extends Activity implements OnClickListener, OnIte
 		case 5: {
 			CharSequence list[] = new String[7];
 			for (int i = 0; i < list.length; i++) {
-				list[i] = Statics.getValueOfWaveform(i, this);
+				list[i] = Statics.valueOfWaveform(i, this);
 			}
 			new AlertDialog.Builder(SettingsActivity.this).setTitle(getString(R.string.settings_waveform))
 					.setSingleChoiceItems(list, waveform, new DialogInterface.OnClickListener() {
@@ -485,7 +485,7 @@ public class SettingsActivity extends Activity implements OnClickListener, OnIte
 		case 6: {
 			CharSequence list[] = new String[4];
 			for (int i = 0; i < 4; i++) {
-				list[i] = "" + Statics.getValueOfSamplingRate(i - 3) + " "
+				list[i] = "" + Statics.valueOfSamplingRate(i - 3) + " "
 						+ getString(R.string.settings_sampling_rate_hz);
 			}
 			new AlertDialog.Builder(SettingsActivity.this).setTitle(getString(R.string.settings_sampling_rate))
@@ -502,7 +502,7 @@ public class SettingsActivity extends Activity implements OnClickListener, OnIte
 		case 7: {
 			CharSequence list[] = new String[3];
 			for (int i = 0; i < 3; i++) {
-				list[i] = "" + Statics.getStringOfAnimationQuality(i - 1, SettingsActivity.this);
+				list[i] = "" + Statics.stringOfAnimationQuality(i - 1, SettingsActivity.this);
 			}
 			new AlertDialog.Builder(SettingsActivity.this).setTitle(getString(R.string.settings_animation_quality))
 					.setSingleChoiceItems(list, animationQuality + 1, new DialogInterface.OnClickListener() {
@@ -523,14 +523,14 @@ public class SettingsActivity extends Activity implements OnClickListener, OnIte
 	public void setScale(int s) {
 		scale = s;
 		Statics.setPreferenceValue(this, Statics.PREF_SCALE, scale);
-		getPreferenceValues();
+		updatePreferenceValues();
 		updateSettingsListView();
 	}
 
 	public void setDarken(int d) {
 		darken = d;
 		Statics.setPreferenceValue(this, Statics.PREF_DARKEN, darken);
-		getPreferenceValues();
+		updatePreferenceValues();
 		updateSettingsListView();
 
 	}
@@ -538,70 +538,70 @@ public class SettingsActivity extends Activity implements OnClickListener, OnIte
 	public void setVibration(int v) {
 		vibration = v;
 		Statics.setPreferenceValue(this, Statics.PREF_VIBRATION, vibration);
-		getPreferenceValues();
+		updatePreferenceValues();
 		updateSettingsListView();
 	}
 
 	public void setSamplingRate(int sr) {
 		samplingRate = sr;
 		Statics.setPreferenceValue(this, Statics.PREF_SAMPLING_RATE, samplingRate);
-		getPreferenceValues();
+		updatePreferenceValues();
 		updateSettingsListView();
 	}
 
 	public void setVolume(int v) {
 		volume = v;
 		Statics.setPreferenceValue(this, Statics.PREF_VOLUME, volume);
-		getPreferenceValues();
+		updatePreferenceValues();
 		updateSettingsListView();
 	}
 
 	public void setSoundRange(int sr) {
 		soundRange = sr;
 		Statics.setPreferenceValue(this, Statics.PREF_SOUND_RANGE, sr);
-		getPreferenceValues();
+		updatePreferenceValues();
 		updateSettingsListView();
 	}
 
 	public void setAttackTime(int at) {
 		attackTime = at;
 		Statics.setPreferenceValue(this, Statics.PREF_ATTACK_TIME, at);
-		getPreferenceValues();
+		updatePreferenceValues();
 		updateSettingsListView();
 	}
 
 	public void setDecayTime(int dt) {
 		decayTime = dt;
 		Statics.setPreferenceValue(this, Statics.PREF_DECAY_TIME, dt);
-		getPreferenceValues();
+		updatePreferenceValues();
 		updateSettingsListView();
 	}
 
 	public void setSustainLevel(int sl) {
 		sustainLevel = sl;
 		Statics.setPreferenceValue(this, Statics.PREF_SUSTAIN_LEVEL, sl - 100);
-		getPreferenceValues();
+		updatePreferenceValues();
 		updateSettingsListView();
 	}
 
 	public void setReleaseTime(int rt) {
 		releaseTime = rt;
 		Statics.setPreferenceValue(this, Statics.PREF_RELEASE_TIME, rt);
-		getPreferenceValues();
+		updatePreferenceValues();
 		updateSettingsListView();
 	}
 
 	public void setWaveform(int wf) {
 		waveform = wf;
 		Statics.setPreferenceValue(this, Statics.PREF_WAVEFORM, waveform);
-		getPreferenceValues();
+		updatePreferenceValues();
 		updateSettingsListView();
 	}
 
 	public void setEnableEnvelope(int ee) {
 		enableEnvelope = ee;
 		Statics.setPreferenceValue(this, Statics.PREF_ENABLE_ENVELOPE, enableEnvelope);
-		getPreferenceValues();
+		updatePreferenceValues();
 		updateSettingsListView();
 	}
 
@@ -609,7 +609,7 @@ public class SettingsActivity extends Activity implements OnClickListener, OnIte
 		animationQuality = aq;
 		Statics.setPreferenceValue(this, Statics.PREF_ANIMATION_QUALITY, animationQuality);
 		MainActivity.setAnimationQuality(aq);
-		getPreferenceValues();
+		updatePreferenceValues();
 		updateSettingsListView();
 	}
 }
