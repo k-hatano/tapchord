@@ -53,10 +53,9 @@
     <string name="disable">有効</string>
     <string name="disabled">無効</string>
     
-    <string name="message_midi_device_attached_1">MIDI デバイス </string>
-    <string name="message_midi_device_attached_2"> が接続されました。</string>
-    <string name="message_midi_device_detached_1">MIDI デバイス </string>
-    <string name="message_midi_device_detached_2"> が切断されました。</string>
+    <string name="message_midi_device_attached">MIDI デバイスが接続されました。</string>
+    <string name="message_midi_device_detached">MIDI デバイスが切断されました。</string>
     <string name="message_midi_device_is_not_connected">MIDI デバイスは接続されていません。</string>
+    <string name="message_getting_midi_device_info_failed">MIDI デバイスの情報の取得に失敗しました。</string>
     
 </resources>

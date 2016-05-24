@@ -53,10 +53,9 @@
     <string name="disable">Disable</string>
     <string name="disabled">Disabled</string>
     
-    <string name="message_midi_device_attached_1">MIDI device </string>
-    <string name="message_midi_device_attached_2"> attached.</string>
-    <string name="message_midi_device_detached_1">MIDI device </string>
-    <string name="message_midi_device_detached_2"> detached.</string>
+    <string name="message_midi_device_attached">MIDI device attached.</string>
+    <string name="message_midi_device_detached">MIDI device detached.</string>
     <string name="message_midi_device_is_not_connected">MIDI device is not connected.</string>
+    <string name="message_getting_midi_device_info_failed">Getting information of MIDI device failed.</string>
 
 </resources>

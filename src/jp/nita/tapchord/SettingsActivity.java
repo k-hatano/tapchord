@@ -574,9 +574,14 @@ public class SettingsActivity extends AbstractSingleMidiActivity implements OnCl
 					}
 				}).show();
 			} else {
-				String message = device.getUsbDevice().getDeviceName();
-				message += "\nProduct ID : " + device.getUsbDevice().getProductId();
-				message += "\nVendor ID : " + device.getUsbDevice().getVendorId();
+				String message;
+				String result[] = Statics.getMidiDeviceInfo(this,device.getUsbDevice());
+				if (result == null || result.length < 2) {
+					message = getString(R.string.message_getting_midi_device_info_failed);
+				} else {
+					message = "Product : " + result[1];
+					message += "\nVendor : " + result[0];
+				}
 				
 				new AlertDialog.Builder(this).setTitle(getString(R.string.settings_midi_device))
 				.setMessage(message)

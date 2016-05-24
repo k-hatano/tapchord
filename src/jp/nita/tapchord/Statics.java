@@ -1,5 +1,6 @@
 package jp.nita.tapchord;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,6 +12,11 @@ import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.RectF;
+import android.hardware.usb.UsbConstants;
+import android.hardware.usb.UsbDevice;
+import android.hardware.usb.UsbDeviceConnection;
+import android.hardware.usb.UsbInterface;
+import android.hardware.usb.UsbManager;
 
 public class Statics {
 
@@ -652,4 +658,54 @@ public class Statics {
 	public static Rect RectFToRect(RectF rectf) {
 		return new Rect((int) rectf.left, (int) rectf.top, (int) rectf.right, (int) rectf.bottom);
 	}
+	
+	public static String[] getMidiDeviceInfo(Context context, UsbDevice device) {
+		final int STD_USB_REQUEST_GET_DESCRIPTOR = 0x06;
+		final int LIBUSB_DT_STRING = 0x03;
+
+		boolean forceClaim = true;
+
+		byte[] buffer = new byte[255];
+		int indexManufacturer = 14;
+		int indexProduct = 15;
+		String stringManufacturer = "";
+		String stringProduct = "";
+
+		UsbManager manager = (UsbManager) context.getSystemService(Context.USB_SERVICE);
+		UsbDeviceConnection usbDeviceConnection = manager.openDevice(device);
+		if (usbDeviceConnection != null) {
+			UsbInterface usbInterface = device.getInterface(0);
+			usbDeviceConnection.claimInterface(usbInterface, forceClaim);
+
+			byte[] rawDescriptors = usbDeviceConnection.getRawDescriptors();
+
+			int lengthManufacturer = usbDeviceConnection.controlTransfer(
+					UsbConstants.USB_DIR_IN | UsbConstants.USB_TYPE_STANDARD, STD_USB_REQUEST_GET_DESCRIPTOR,
+					(LIBUSB_DT_STRING << 8) | rawDescriptors[indexManufacturer], 0, buffer, 0xFF, 0);
+			try {
+				stringManufacturer = new String(buffer, 2, lengthManufacturer - 2, "UTF-16LE");
+			} catch (UnsupportedEncodingException e) {
+				e.printStackTrace();
+				return null;
+			}
+
+			int lengthProduct = usbDeviceConnection.controlTransfer(
+					UsbConstants.USB_DIR_IN | UsbConstants.USB_TYPE_STANDARD, STD_USB_REQUEST_GET_DESCRIPTOR,
+					(LIBUSB_DT_STRING << 8) | rawDescriptors[indexProduct], 0, buffer, 0xFF, 0);
+			try {
+				stringProduct = new String(buffer, 2, lengthProduct - 2, "UTF-16LE");
+			} catch (UnsupportedEncodingException e) {
+				e.printStackTrace();
+				return null;
+			}
+			
+			String[] result = new String[2];
+			result[0] = stringManufacturer;
+			result[1] = stringProduct;
+			return result;
+		} else {
+			return null;
+		}
+	}
+
 }
