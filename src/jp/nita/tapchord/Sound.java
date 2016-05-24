@@ -14,6 +14,7 @@ public class Sound {
 	Integer[] frequencies = new Integer[0];
 	WaveGenerator generator = null;
 	static AudioTrack track = null;
+	static double gaussianTable[] = new double[100];
 
 	int mode;
 	long term, modeTerm;
@@ -43,6 +44,10 @@ public class Sound {
 	public Sound(Integer[] freqs, Context cont) {
 		frequencies = freqs;
 		context = cont;
+		
+		for (int i = 0; i < gaussianTable.length; i++) {
+			gaussianTable[i] = gaussian(i - gaussianTable.length / 2);
+		}
 	}
 
 	public void play() {
@@ -96,21 +101,21 @@ public class Sound {
 			double r = 0, g = 0;
 			double t = (double)term * frequency / sampleRate;
 			double note = (Math.log(frequency / 440.0) / LOG_2) * 12 - 6;
-			double n = (note - soundRange) / 12.0;
+			int n = (int)Math.round(note - soundRange);
 
-			g = gaussian(n - 2);
+			g = gaussianTable[n - 24 + gaussianTable.length / 2];
 			r += Math.sin(0.5 * Math.PI * t) * g;
 
-			g = gaussian(n - 1);
+			g = gaussianTable[n - 12 + gaussianTable.length / 2];
 			r += Math.sin(1.0 * Math.PI * t) * g;
 
-			g = gaussian(n);
+			g = gaussianTable[n + 100];
 			r += Math.sin(2.0 * Math.PI * t) * g;
 
-			g = gaussian(n + 1);
+			g = gaussianTable[n + 12 + gaussianTable.length / 2];
 			r += Math.sin(4.0 * Math.PI * t) * g;
 
-			g = gaussian(n + 2);
+			g = gaussianTable[n + 24 + gaussianTable.length / 2];
 			r += Math.sin(8.0 * Math.PI * t) * g;
 
 			return r;
@@ -125,7 +130,8 @@ public class Sound {
 	final static double SIGMA_SQUARED_2 = 2 * SIGMA * SIGMA;
 
 	public static double gaussian(double t) {
-		return (1.0 / SIGMA_SQRT_PI) * Math.exp(- t * t / SIGMA_SQUARED_2);
+		double tOn12 = t / 12.0;
+		return (1.0 / SIGMA_SQRT_PI) * Math.exp(- tOn12 * tOn12 / SIGMA_SQUARED_2);
 	}
 	
 	public short[] getWave(int length) {
