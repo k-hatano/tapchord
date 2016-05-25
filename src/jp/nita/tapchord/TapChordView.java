@@ -804,7 +804,7 @@ public class TapChordView extends View {
 				scalePullingDown = false;
 				originalScroll = scroll;
 				startAnimation(Statics.SITUATION_NORMAL);
-			} else if (scalePressed != Statics.FARAWAY && scalePressed != scale) {
+			} else if (scalePressed != Statics.FARAWAY && scalePressed != 0) {
 				scaleReleased(scalePressed);
 			}
 			if (indicatorsTapped) {
