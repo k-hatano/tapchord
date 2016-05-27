@@ -16,7 +16,7 @@
     <string name="settings_waveform_triangle_wave">三角波</string>
     <string name="settings_waveform_fourth_pulse_wave">1:3 パルス</string>
     <string name="settings_waveform_eighth_pulse_wave">1:7 パルス</string>
-    <string name="settings_waveform_pseudo_shepard_tone">似非シェパードトーン</string>
+    <string name="settings_waveform_shepard_tone">シェパードトーン</string>
     <string name="settings_sound_range">音域</string>
     <string name="settings_envelope">エンベロープ</string>
     <string name="settings_attack_time">アタックタイム</string>

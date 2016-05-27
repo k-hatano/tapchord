@@ -32,7 +32,7 @@ public class MainActivity extends Activity implements SensorEventListener {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		updatePreferenceValues();
+		updatePreferences();
 		setVolumeControlStream(AudioManager.STREAM_MUSIC);
 		heart = new Heart();
 		heart.start();
@@ -142,8 +142,8 @@ public class MainActivity extends Activity implements SensorEventListener {
 		}
 	}
 
-	public void updatePreferenceValues() {
-		int animationQuality = Statics.getPreferenceValue(this, Statics.PREF_ANIMATION_QUALITY, 0);
+	public void updatePreferences() {
+		int animationQuality = Statics.preferenceValue(this, Statics.PREF_ANIMATION_QUALITY, 0);
 		setAnimationQuality(animationQuality);
 	}
 
@@ -163,9 +163,9 @@ public class MainActivity extends Activity implements SensorEventListener {
 
 						}
 					}).show();
-//		} else if (keyCode == KeyEvent.KEYCODE_CAMERA) {
-//			TapChordView.debugMode = !TapChordView.debugMode;
-//			((TapChordView) findViewById(R.id.tapChordView)).invalidate();
+		} else if (keyCode == KeyEvent.KEYCODE_CAMERA || keyCode == KeyEvent.KEYCODE_BACKSLASH) {
+			TapChordView.debugMode = !TapChordView.debugMode;
+			((TapChordView) findViewById(R.id.tapChordView)).invalidate();
 		} else {
 			boolean result = false;
 			result = ((TapChordView) findViewById(R.id.tapChordView)).keyPressed(keyCode, event);
