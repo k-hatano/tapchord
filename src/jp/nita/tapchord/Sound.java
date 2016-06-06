@@ -4,6 +4,7 @@ import android.content.Context;
 import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioTrack;
+import android.util.Log;
 
 public class Sound {
 	static long tappedTime = 0;
@@ -13,6 +14,7 @@ public class Sound {
 	Integer[] frequencies = new Integer[0];
 	WaveGenerator generator = null;
 	static AudioTrack track = null;
+	static double gaussianTable[] = new double[100];
 
 	int mode;
 	long term, modeTerm;
@@ -42,6 +44,10 @@ public class Sound {
 	public Sound(Integer[] freqs, Context cont) {
 		frequencies = freqs;
 		context = cont;
+		
+		for (int i = 0; i < gaussianTable.length; i++) {
+			gaussianTable[i] = gaussian(i - gaussianTable.length / 2);
+		}
 	}
 
 	public void play() {
@@ -58,6 +64,7 @@ public class Sound {
 	}
 
 	public static double wave(double t, int which) {
+//		Log.i("Sound", "t:"+t);
 		switch (which) {
 		case 0:
 			return Math.sin(2.0 * Math.PI * t);
@@ -81,22 +88,117 @@ public class Sound {
 			return t - Math.floor(t) < 1.0 / 4.0 ? 0.5 : -0.5;
 		case 5:
 			return t - Math.floor(t) < 1.0 / 8.0 ? 0.5 : -0.5;
-		case 6: {
-			double r = 0;
-			r += Math.sin(0.5 * Math.PI * t) * gaussian(0.05);
-			r += Math.sin(1.0 * Math.PI * t) * gaussian(0.15);
-			r += Math.sin(2.0 * Math.PI * t) * gaussian(0.6);
-			r += Math.sin(4.0 * Math.PI * t) * gaussian(0.15);
-			r += Math.sin(8.0 * Math.PI * t) * gaussian(0.05);
-			return r;
-		}
 		default:
 			return Math.sin(2.0 * Math.PI * t);
 		}
 	}
+	
+	final static double LOG_2 = Math.log(2.0);
+
+	public static double shepardTone(long term, int frequency, int sampleRate, int soundRange, int which) {
+		switch (which) {
+		case 6: {
+			double r = 0, g = 0;
+			double t = (double)term * frequency / sampleRate;
+			double note = (Math.log(frequency / 440.0) / LOG_2) * 12 - 6;
+			int n = (int)Math.round(note - soundRange);
+
+			g = gaussianTable[n - 24 + gaussianTable.length / 2];
+			r += Math.sin(0.5 * Math.PI * t) * g;
+
+			g = gaussianTable[n - 12 + gaussianTable.length / 2];
+			r += Math.sin(1.0 * Math.PI * t) * g;
+
+			g = gaussianTable[n + gaussianTable.length / 2];
+			r += Math.sin(2.0 * Math.PI * t) * g;
+
+			g = gaussianTable[n + 12 + gaussianTable.length / 2];
+			r += Math.sin(4.0 * Math.PI * t) * g;
+
+			g = gaussianTable[n + 24 + gaussianTable.length / 2];
+			r += Math.sin(8.0 * Math.PI * t) * g;
+
+			return r;
+		}
+		default:
+			return Math.sin(2.0 * Math.PI * term * frequency / sampleRate);
+		}
+	}
+	
+	final static double SIGMA = 0.45;
+	final static double SIGMA_SQRT_PI = SIGMA * Math.sqrt(2 * Math.PI);
+	final static double SIGMA_SQUARED_2 = 2 * SIGMA * SIGMA;
 
 	public static double gaussian(double t) {
-		return t;
+		double tOn12 = t / 12.0;
+		return (1.0 / SIGMA_SQRT_PI) * Math.exp(- tOn12 * tOn12 / SIGMA_SQUARED_2);
+	}
+	
+	public short[] getWave(int length) {
+		short[] w = new short[length];
+		for (int i = 0; i < length; i++) {
+			double s = 0;
+			switch (waveform) {
+			case 0:
+			case 1:
+			case 2:
+			case 3:
+			case 4:
+			case 5:
+				for (int j = 0; j < frequencies.length; j++) {
+					s += wave((double) term * frequencies[j] / sampleRate, waveform);
+				}
+				break;
+			case 6:
+				for (int j = 0; j < frequencies.length; j++) {
+					s += shepardTone(term, frequencies[j], sampleRate, soundRange, waveform);
+				}
+				break;
+			}
+
+			s *= volume / 400.0 * (Short.MAX_VALUE);
+
+			if (enableEnvelope) {
+				if (mode == MODE_ATTACK && modeTerm >= attackLength) {
+					modeTerm = 0;
+					mode = MODE_DECAY;
+				}
+				if (mode == MODE_DECAY && modeTerm >= decayLength) {
+					modeTerm = 0;
+					mode = MODE_SUSTAIN;
+				}
+				if (mode == MODE_RELEASE && modeTerm > releaseLength) {
+					modeTerm = 0;
+					mode = MODE_FINISHED;
+				}
+
+				if (mode == MODE_ATTACK) {
+					s = s * ((double) modeTerm / (double) attackLength);
+				} else if (mode == MODE_DECAY) {
+					s = (s * (double) (decayLength - modeTerm) / (double) decayLength
+							+ s * sustainLevel * (double) modeTerm / (double) decayLength);
+				} else if (mode == MODE_SUSTAIN) {
+					s = s * sustainLevel;
+				} else if (mode == MODE_RELEASE) {
+					s = s * ((double) (releaseLength - modeTerm) / (double) releaseLength) * sustainLevel;
+				} else {
+					s = 0;
+				}
+			}
+
+			if (s >= Short.MAX_VALUE)
+				s = (double) Short.MAX_VALUE;
+			if (s <= -Short.MAX_VALUE)
+				s = (double) (-Short.MAX_VALUE);
+			w[i] = (short) s;
+
+			term++;
+			if (mode != MODE_SUSTAIN)
+				modeTerm++;
+			if (term >= sampleRate)
+				term -= sampleRate;
+		}
+		return w;
 	}
 
 	class WaveGenerator extends Thread {
@@ -109,18 +211,18 @@ public class Sound {
 					track = null;
 				}
 
-				volume = Statics.getValueOfVolume(Statics.getPreferenceValue(context, Statics.PREF_VOLUME, 30));
-				soundRange = Statics.getValueOfVolume(Statics.getPreferenceValue(context, Statics.PREF_SOUND_RANGE, 0));
+				volume = Statics.valueOfVolume(Statics.preferenceValue(context, Statics.PREF_VOLUME, 30));
+				soundRange = Statics.preferenceValue(context, Statics.PREF_SOUND_RANGE, 0);
 				sampleRate = Statics
-						.getValueOfSamplingRate(Statics.getPreferenceValue(context, Statics.PREF_SAMPLING_RATE, 0));
-				waveform = Statics.getPreferenceValue(context, Statics.PREF_WAVEFORM, 0);
-				enableEnvelope = Statics.getPreferenceValue(context, Statics.PREF_ENABLE_ENVELOPE, 0) > 0;
+						.valueOfSamplingRate(Statics.preferenceValue(context, Statics.PREF_SAMPLING_RATE, 0));
+				waveform = Statics.preferenceValue(context, Statics.PREF_WAVEFORM, 0);
+				enableEnvelope = Statics.preferenceValue(context, Statics.PREF_ENABLE_ENVELOPE, 0) > 0;
 
 				if (enableEnvelope) {
-					final int attack = Statics.getPreferenceValue(context, Statics.PREF_ATTACK_TIME, 0);
-					final int decay = Statics.getPreferenceValue(context, Statics.PREF_DECAY_TIME, 0);
-					final int sustain = Statics.getPreferenceValue(context, Statics.PREF_SUSTAIN_LEVEL, 0) + 100;
-					final int release = Statics.getPreferenceValue(context, Statics.PREF_RELEASE_TIME, 0);
+					final int attack = Statics.preferenceValue(context, Statics.PREF_ATTACK_TIME, 0);
+					final int decay = Statics.preferenceValue(context, Statics.PREF_DECAY_TIME, 0);
+					final int sustain = Statics.preferenceValue(context, Statics.PREF_SUSTAIN_LEVEL, 0) + 100;
+					final int release = Statics.preferenceValue(context, Statics.PREF_RELEASE_TIME, 0);
 
 					attackLength = attack * sampleRate / 1000;
 					decayLength = decay * sampleRate / 1000;
@@ -161,7 +263,6 @@ public class Sound {
 					releaseLength = 0;
 
 					sustainLevel = 1.0;
-
 					length = AudioTrack.getMinBufferSize(sampleRate, AudioFormat.CHANNEL_CONFIGURATION_MONO,
 							AudioFormat.ENCODING_PCM_16BIT);
 					track = new AudioTrack(AudioManager.STREAM_MUSIC, sampleRate,
@@ -171,6 +272,7 @@ public class Sound {
 					mode = MODE_SUSTAIN;
 					term = 0;
 					modeTerm = 0;
+
 					startedPlayingTime = System.currentTimeMillis();
 					requiredTime = startedPlayingTime - tappedTime;
 					track.play();
@@ -184,58 +286,6 @@ public class Sound {
 					track = null;
 				}
 			}
-		}
-
-		public short[] getWave(int length) {
-			short[] w = new short[length];
-			for (int i = 0; i < length; i++) {
-				double s = 0;
-				for (int j = 0; j < frequencies.length; j++) {
-					s += wave((double) term * frequencies[j] / sampleRate, waveform);
-				}
-				s *= volume / 400.0 * (Short.MAX_VALUE);
-
-				if (enableEnvelope) {
-					if (mode == MODE_ATTACK && modeTerm >= attackLength) {
-						modeTerm = 0;
-						mode = MODE_DECAY;
-					}
-					if (mode == MODE_DECAY && modeTerm >= decayLength) {
-						modeTerm = 0;
-						mode = MODE_SUSTAIN;
-					}
-					if (mode == MODE_RELEASE && modeTerm > releaseLength) {
-						modeTerm = 0;
-						mode = MODE_FINISHED;
-					}
-
-					if (mode == MODE_ATTACK) {
-						s = s * ((double) modeTerm / (double) attackLength);
-					} else if (mode == MODE_DECAY) {
-						s = (s * (double) (decayLength - modeTerm) / (double) decayLength
-								+ s * sustainLevel * (double) modeTerm / (double) decayLength);
-					} else if (mode == MODE_SUSTAIN) {
-						s = s * sustainLevel;
-					} else if (mode == MODE_RELEASE) {
-						s = s * ((double) (releaseLength - modeTerm) / (double) releaseLength) * sustainLevel;
-					} else {
-						s = 0;
-					}
-				}
-
-				if (s >= Short.MAX_VALUE)
-					s = (double) Short.MAX_VALUE;
-				if (s <= -Short.MAX_VALUE)
-					s = (double) (-Short.MAX_VALUE);
-				w[i] = (short) s;
-
-				term++;
-				if (mode != MODE_SUSTAIN)
-					modeTerm++;
-				if (term >= sampleRate)
-					term -= sampleRate;
-			}
-			return w;
 		}
 
 	}
