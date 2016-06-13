@@ -690,14 +690,16 @@ public class TapChordView extends View {
 				if (situation == Statics.SITUATION_NORMAL) {
 					if (pulling == 2) {
 						scroll = originalScroll + (x - tappedX);
-						if (scroll < -Statics.scrollMax(width, height))
-							scroll = -Statics.scrollMax(width, height);
-						if (scroll > Statics.scrollMax(width, height))
-							scroll = Statics.scrollMax(width, height);
 					} else if (pulling == 1) {
 						destScroll = originalScroll + (x - tappedX);
 						if (y > height * 4 / 5) {
 							destScroll = 0;
+						}
+						if (destScroll < -Statics.scrollMax(width, height)) {
+							destScroll = -Statics.scrollMax(width, height) + (Statics.scrollMax(width, height) + destScroll) / 4;
+						}
+						if (destScroll > Statics.scrollMax(width, height)) {
+							destScroll = Statics.scrollMax(width, height) - (Statics.scrollMax(width, height) - destScroll) / 4;
 						}
 					} else if (Math.abs(x - tappedX) > height / 5) {
 						originalScroll = scroll;
@@ -812,6 +814,10 @@ public class TapChordView extends View {
 					keyboardIndicatorsReleased();
 				}
 			}
+			if (scroll < -Statics.scrollMax(width, height))
+				scroll = -Statics.scrollMax(width, height);
+			if (scroll > Statics.scrollMax(width, height))
+				scroll = Statics.scrollMax(width, height);
 			
 			toolbarPressed = -1;
 			scalePressed = Statics.FARAWAY;
@@ -1277,10 +1283,6 @@ public class TapChordView extends View {
 		if (pulling == 1) {
 			int max = 100 / MainActivity.heartBeatInterval;
 			scroll = (destScroll * (max - step) + scroll * step) / max;
-			if (scroll < -Statics.scrollMax(width, height))
-				scroll = -Statics.scrollMax(width, height);
-			if (scroll > Statics.scrollMax(width, height))
-				scroll = Statics.scrollMax(width, height);
 			handler.post(new Repainter());
 		}
 		if (flashEffectStep > 0) {
