@@ -468,7 +468,7 @@ public class TapChordView extends View {
 		}
 		float vert = height * 7.0f / 35.0f;
 		float ax = (float) (width - vert * 3.3f) - buttonsExpanding;
-		float ay = (float) (height - vert * 0.5f);
+		float ay = (float) (height - vert * 0.5f) + vert * (1.0f - barsShowingRate);
 		float bx = ax + (float) (height * 0.02f);
 		float by = ay + (float) (height * 0.02f);
 		float cx = ax + (float) (height * 0.02f);
