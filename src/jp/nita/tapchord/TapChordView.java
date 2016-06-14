@@ -27,6 +27,7 @@ import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.SeekBar.OnSeekBarChangeListener;
@@ -145,12 +146,39 @@ public class TapChordView extends View {
 			w = textPaint.measureText(str);
 			canvas.drawText(str, rect.centerX() - w / 2,
 					rect.centerY() - (fontMetrics.ascent + fontMetrics.descent) / 2, textPaint);
-
+			
 			d = (toolbarPressed == 1) ? 1 : 0;
+			paint.setColor(Statics.color(Statics.COLOR_PURPLE, d, darken));
+			rect = Statics.rectOfToolbarButton(1, 0, width, height, 1.0f);
+			canvas.drawOval(rect, paint);
+			str = Statics.SCALES[7];
+			w = textPaint.measureText(str);
+			canvas.drawText(str, rect.centerX() - w / 2,
+					rect.centerY() - (fontMetrics.ascent + fontMetrics.descent) / 2, textPaint);
+
+			d = (toolbarPressed == 2) ? 1 : 0;
 			paint.setColor(Statics.color(Statics.COLOR_PURPLE, d, darken));
 			rect = Statics.rectOfToolbarTransposingButton(0, 0, width, height, 1.0f);
 			canvas.drawOval(rect, paint);
-			str = Statics.SCALES[7];
+			str = getContext().getString(R.string.settings_volume_short);
+			w = textPaint.measureText(str);
+			canvas.drawText(str, rect.centerX() - w / 2,
+					rect.centerY() - (fontMetrics.ascent + fontMetrics.descent) / 2, textPaint);
+			
+			d = (toolbarPressed == 3) ? 1 : 0;
+			paint.setColor(Statics.color(Statics.COLOR_PURPLE, d, darken));
+			rect = Statics.rectOfToolbarTransposingButton(1, 0, width, height, 1.0f);
+			canvas.drawOval(rect, paint);
+			str = getContext().getString(R.string.settings_sound_range_short);
+			w = textPaint.measureText(str);
+			canvas.drawText(str, rect.centerX() - w / 2,
+					rect.centerY() - (fontMetrics.ascent + fontMetrics.descent) / 2, textPaint);
+			
+			d = (toolbarPressed == 4) ? 1 : 0;
+			paint.setColor(Statics.color(Statics.COLOR_PURPLE, d, darken));
+			rect = Statics.rectOfToolbarTransposingButton(2, 0, width, height, 1.0f);
+			canvas.drawOval(rect, paint);
+			str = getContext().getString(R.string.settings_waveform_short);
 			w = textPaint.measureText(str);
 			canvas.drawText(str, rect.centerX() - w / 2,
 					rect.centerY() - (fontMetrics.ascent + fontMetrics.descent) / 2, textPaint);
@@ -464,21 +492,25 @@ public class TapChordView extends View {
 		int id = (int)event.getPointerId(index);
 
 		if (situation == Statics.SITUATION_TRANSPOSE || situation == Statics.SITUATION_TRANSPOSE_MOVING) {
-			rect = Statics.rectOfToolbarButton(0, 0, width, height, 1.0f);
-			if (rect.contains(x, y)) {
-				toolbarPressed = 0;
-				taps.put(id, Statics.TOOLBAR_BUTTON);
-				vibrate();
-				invalidate(Statics.RectFToRect(Statics.rectOfToolbar(width, height, 1.0f)));
-				return false;
+			for (int i = 0; i < 2; i++) {
+				rect = Statics.rectOfToolbarButton(i, 0, width, height, 1.0f);
+				if (rect.contains(x, y)) {
+					toolbarPressed = i;
+					taps.put(id, Statics.TOOLBAR_BUTTON);
+					vibrate();
+					invalidate(Statics.RectFToRect(Statics.rectOfToolbar(width, height, 1.0f)));
+					return false;
+				}
 			}
-			rect = Statics.rectOfToolbarTransposingButton(0, 0, width, height, 1.0f);
-			if (rect.contains(x, y)) {
-				toolbarPressed = 1;
-				taps.put(id, Statics.TOOLBAR_BUTTON);
-				vibrate();
-				invalidate(Statics.RectFToRect(Statics.rectOfToolbar(width, height, 1.0f)));
-				return false;
+			for (int i = 0; i < 3; i++) {
+				rect = Statics.rectOfToolbarTransposingButton(i, 0, width, height, 1.0f);
+				if (rect.contains(x, y)) {
+					toolbarPressed = i + 2;
+					taps.put(id, Statics.TOOLBAR_BUTTON);
+					vibrate();
+					invalidate(Statics.RectFToRect(Statics.rectOfToolbar(width, height, 1.0f)));
+					return false;
+				}
 			}
 		} else {
 			for (int i = 0; i < 3; i++) {
@@ -665,14 +697,19 @@ public class TapChordView extends View {
 			toolbarPressed = -1;
 			if (situation == Statics.SITUATION_TRANSPOSE || situation == Statics.SITUATION_TRANSPOSE_MOVING) {
 				rect = Statics.rectOfToolbarButton(0, 0, width, height, 1.0f);
-				if (rect.contains(x, y)) {
-					toolbarPressed = 0;
-					taps.put(id, Statics.TOOLBAR_BUTTON);
+				for (int i = 0; i < 2; i++) {
+					rect = Statics.rectOfToolbarButton(i, 0, width, height, 1.0f);
+					if (rect.contains(x, y)) {
+						toolbarPressed = i;
+						taps.put(id, Statics.TOOLBAR_BUTTON);
+					}
 				}
-				rect = Statics.rectOfToolbarTransposingButton(0, 0, width, height, 1.0f);
-				if (rect.contains(x, y)) {
-					toolbarPressed = 1;
-					taps.put(id, Statics.TOOLBAR_BUTTON);
+				for (int i = 0; i < 3; i++) {
+					rect = Statics.rectOfToolbarTransposingButton(i, 0, width, height, 1.0f);
+					if (rect.contains(x, y)) {
+						toolbarPressed = i + 2;
+						taps.put(id, Statics.TOOLBAR_BUTTON);
+					}
 				}
 			} else {
 				for (int i = 0; i < 3; i++) {
@@ -1116,6 +1153,15 @@ public class TapChordView extends View {
 			case 1:
 				startTransposingAnimation(0);
 				break;
+			case 2:
+				showVolumeSettingAlert();
+				break;
+			case 3:
+				showSoundRangeSettingAlert();
+				break;
+			case 4:
+				showWaveformSettingAlert();
+				break;
 			}
 		} else {
 			switch (which) {
@@ -1154,6 +1200,53 @@ public class TapChordView extends View {
 	}
 
 	public void keyboardIndicatorsReleased() {
+		showSoundRangeSettingAlert();
+	}
+	
+	public void showVolumeSettingAlert() {
+		int vol = Statics.preferenceValue(getContext(), Statics.PREF_VOLUME, 30) + 50;
+		final TextView volumeView = new TextView(getContext());
+		volumeView.setText("" + vol);
+		volumeView.setTextAppearance(getContext(), android.R.style.TextAppearance_Inverse);
+		final SeekBar seekBar = new SeekBar(getContext());
+		seekBar.setProgress(vol);
+		seekBar.setMax(100);
+		seekBar.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
+			@Override
+			public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+				volumeView.setText("" + progress);
+			}
+
+			@Override
+			public void onStartTrackingTouch(SeekBar seekBar) {
+			}
+
+			@Override
+			public void onStopTrackingTouch(SeekBar seekBar) {
+			}
+		});
+		final LinearLayout layout = new LinearLayout(getContext());
+		layout.setOrientation(LinearLayout.VERTICAL);
+		layout.addView(volumeView);
+		layout.addView(seekBar);
+		layout.setPadding(8, 8, 8, 8);
+		new AlertDialog.Builder(getContext()).setTitle(getContext().getString(R.string.settings_volume)).setView(layout)
+				.setPositiveButton(getContext().getString(R.string.ok), new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						int vol = seekBar.getProgress() - 50;
+						Statics.setPreferenceValue(TapChordView.this.getContext(), Statics.PREF_VOLUME,
+								vol);
+					}
+				}).setNegativeButton(getContext().getString(R.string.cancel), new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						
+					}
+				}).show();
+	}
+	
+	public void showSoundRangeSettingAlert() {
 		final TextView rangeView = new TextView(this.getContext());
 		rangeView.setText("" + Statics.stringOfSoundRange(soundRange));
 		rangeView.setTextAppearance(this.getContext(), android.R.style.TextAppearance_Inverse);
@@ -1198,6 +1291,23 @@ public class TapChordView extends View {
 				}).show();
 
 		invalidate();
+	}
+	
+	public void showWaveformSettingAlert() {
+		int waveform = Statics.preferenceValue(getContext(), Statics.PREF_WAVEFORM, 0);
+		CharSequence list[] = new String[7];
+		for (int i = 0; i < list.length; i++) {
+			list[i] = Statics.valueOfWaveform(i, getContext());
+		}
+		new AlertDialog.Builder(getContext()).setTitle(getContext().getString(R.string.settings_waveform))
+				.setSingleChoiceItems(list, waveform, new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface arg0, int arg1) {
+						Statics.setPreferenceValue(TapChordView.this.getContext(), Statics.PREF_WAVEFORM,
+								arg1);
+						arg0.dismiss();
+					}
+				}).show();
 	}
 
 	public void play(int x, int y) {
