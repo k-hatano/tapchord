@@ -229,7 +229,11 @@ public class TapChordView extends View {
 				} else if (darken && (isScrolling || pulling > 0)) {
 					c = Statics.COLOR_DARKGRAY;
 				}
-				paint.setColor(Statics.color(c, d, darken));
+				int tmpColor = Statics.color(c, d, darken);
+				if (scale + x < -7 || scale + x > 7) {
+					tmpColor = Statics.fadeColor(tmpColor,darken,0.4f);
+				}
+				paint.setColor(tmpColor);
 
 				rect = Statics.rectOfButton(x, y, width, height, scroll);
 				canvas.drawOval(rect, paint);
