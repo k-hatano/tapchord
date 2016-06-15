@@ -54,5 +54,7 @@
     <string name="settings_volume_short">Volume</string>
     <string name="settings_sound_range_short">Range</string>
     <string name="settings_waveform_short">Form</string>
+    
+    <string name="crashed">Crashed!</string>
 
 </resources>
