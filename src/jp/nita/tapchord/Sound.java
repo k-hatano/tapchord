@@ -102,20 +102,21 @@ public class Sound {
 			double t = (double)term * frequency / sampleRate;
 			double note = (Math.log(frequency / 440.0) / LOG_2) * 12 - 6;
 			int n = (int)Math.round(note - soundRange);
+			int gaussianLengthHalved = gaussianTable.length / 2;
 
-			g = gaussianTable[n - 24 + gaussianTable.length / 2];
+			g = gaussianTable[n - 24 + gaussianLengthHalved];
 			r += Math.sin(0.5 * Math.PI * t) * g;
 
-			g = gaussianTable[n - 12 + gaussianTable.length / 2];
+			g = gaussianTable[n - 12 + gaussianLengthHalved];
 			r += Math.sin(1.0 * Math.PI * t) * g;
 
-			g = gaussianTable[n + gaussianTable.length / 2];
+			g = gaussianTable[n + gaussianLengthHalved];
 			r += Math.sin(2.0 * Math.PI * t) * g;
 
-			g = gaussianTable[n + 12 + gaussianTable.length / 2];
+			g = gaussianTable[n + 12 + gaussianLengthHalved];
 			r += Math.sin(4.0 * Math.PI * t) * g;
 
-			g = gaussianTable[n + 24 + gaussianTable.length / 2];
+			g = gaussianTable[n + 24 + gaussianLengthHalved];
 			r += Math.sin(8.0 * Math.PI * t) * g;
 
 			return r;
@@ -126,12 +127,12 @@ public class Sound {
 	}
 	
 	final static double SIGMA = 0.45;
-	final static double SIGMA_SQRT_PI = SIGMA * Math.sqrt(2 * Math.PI);
+	final static double SIGMA_SQRT_PI_INVERSE = 1 / ( SIGMA * Math.sqrt(2 * Math.PI) );
 	final static double SIGMA_SQUARED_2 = 2 * SIGMA * SIGMA;
 
 	public static double gaussian(double t) {
 		double tOn12 = t / 12.0;
-		return (1.0 / SIGMA_SQRT_PI) * Math.exp(- tOn12 * tOn12 / SIGMA_SQUARED_2);
+		return SIGMA_SQRT_PI_INVERSE * Math.exp(- tOn12 * tOn12 / SIGMA_SQUARED_2);
 	}
 	
 	public short[] getWave(int length) {
