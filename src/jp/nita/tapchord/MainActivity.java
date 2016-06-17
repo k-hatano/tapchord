@@ -38,12 +38,7 @@ public class MainActivity extends Activity implements SensorEventListener {
 		heart.start();
 		
 		mSensorManager = (SensorManager)getSystemService(Context.SENSOR_SERVICE);
-		List<Sensor> sensors = mSensorManager.getSensorList(Sensor.TYPE_LIGHT);
-		if (sensors.size() > 0)  {
-			Sensor sensor = sensors.get(0);
-			mSensorManager.registerListener(this, sensor, SensorManager.SENSOR_DELAY_UI);
-		}
-		sensors = mSensorManager.getSensorList(Sensor.TYPE_ACCELEROMETER);
+		List<Sensor> sensors = mSensorManager.getSensorList(Sensor.TYPE_ACCELEROMETER);
 		if (sensors.size() > 0)  {
 			Sensor sensor = sensors.get(0);
 			mSensorManager.registerListener(this, sensor, SensorManager.SENSOR_DELAY_UI);
@@ -205,9 +200,6 @@ public class MainActivity extends Activity implements SensorEventListener {
 	@Override
 	public void onSensorChanged(SensorEvent event) {
 		switch (event.sensor.getType()) {
-		case Sensor.TYPE_LIGHT:
-			light = event.values[0];
-			break;
 		case Sensor.TYPE_ACCELEROMETER:
 			accelerationX = event.values[0];
 			accelerationY = event.values[1];
@@ -216,7 +208,7 @@ public class MainActivity extends Activity implements SensorEventListener {
 		}
 		TapChordView view = ((TapChordView) findViewById(R.id.tapChordView));
 		if (view != null) {
-			view.sensorChanged(this);
+			view.sensorChanged(event);
 		}
 	}
 
