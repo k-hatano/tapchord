@@ -15,6 +15,7 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Paint.FontMetrics;
 import android.graphics.Paint.Style;
+import android.hardware.SensorEvent;
 import android.graphics.Point;
 import android.graphics.PointF;
 import android.graphics.RectF;
@@ -74,6 +75,7 @@ public class TapChordView extends View {
 	float stepMax = 1.0f;
 	float barsShowingRate = 1.0f;
 	int flashEffectStep = 0;
+	float lightPitch = 1.0f;
 
 	private Vibrator vib;
 
@@ -262,6 +264,9 @@ public class TapChordView extends View {
 				if (scale + x < -7 || scale + x > 7) {
 					tmpColor = Statics.fadeColor(tmpColor,darken,0.4f);
 				}
+                if (darken) {
+                    tmpColor = Statics.fadeColor(Statics.color(c, d, darken), darken, lightPitch);
+                }
 				paint.setColor(tmpColor);
 
 				rect = Statics.rectOfButton(x, y, width, height, scroll);
@@ -514,6 +519,12 @@ public class TapChordView extends View {
 		if (debugMode) {
 			paint.setColor(Statics.color(Statics.COLOR_BLACK, 0, darken));
 			canvas.drawText("" + Sound.requiredTime, 4, 20, textPaint);
+			
+			if (darken) {
+				canvas.drawText("" + MainActivity.light, 4, 50, textPaint);
+			} else {
+				canvas.drawText("" + MainActivity.accelerationZ, 4, 50, textPaint);
+			}
 		}
 	}
 
@@ -1508,6 +1519,17 @@ public class TapChordView extends View {
 	public void vibrate() {
 		if (vibration)
 			vib.vibrate(Statics.VIBRATION_LENGTH);
+	}
+	
+	public void sensorChanged(SensorEvent event){
+		if (darken) {
+			float x = event.values[0];
+			float y = event.values[1];
+			float z = event.values[2];
+			lightPitch = (float)(Math.abs(Math.atan2(z, Math.sqrt(x * x + y * y)))/Math.PI);
+			Log.i("TapChordView","lightPitch : "+lightPitch);
+			invalidate();
+		}
 	}
 
 }
