@@ -291,7 +291,7 @@ public class Sound {
 	}
 
 	public void finish(int modeParam) {
-		if (track != null && enableEnvelope == 0) {
+		if (track != null && track.getState() == AudioTrack.STATE_INITIALIZED && enableEnvelope == 0) {
 			track.pause();
 		}
 		modeTerm = 0;
