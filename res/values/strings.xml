@@ -33,6 +33,7 @@
     <string name="settings_animation_quality_low">Low</string>
     <string name="settings_animation_quality_medium">Medium</string>
     <string name="settings_animation_quality_high">High</string>
+    <string name="settings_screen_auto_rotation">Screen Auto-Rotation</string>
 
     <string name="settings_sampling_rate_hz"> Hz</string>
     <string name="special_thanks">Special Thanks to\nAkiyoshi Kamide</string>

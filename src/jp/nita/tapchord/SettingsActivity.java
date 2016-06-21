@@ -8,6 +8,7 @@ import java.util.Map;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -38,6 +39,7 @@ public class SettingsActivity extends Activity implements OnClickListener, OnIte
 	int sustainLevel;
 	int releaseTime;
 	int animationQuality;
+	int autoRotation;
 
 	int position = 0;
 	int selected;
@@ -69,6 +71,7 @@ public class SettingsActivity extends Activity implements OnClickListener, OnIte
 		sustainLevel = Statics.preferenceValue(this, Statics.PREF_SUSTAIN_LEVEL, 0);
 		releaseTime = Statics.preferenceValue(this, Statics.PREF_RELEASE_TIME, 0);
 		animationQuality = Statics.preferenceValue(this, Statics.PREF_ANIMATION_QUALITY, 0);
+		autoRotation = Statics.preferenceValue(this, Statics.PREF_SCREEN_AUTO_ROTATION, 0);
 	}
 
 	public void updateSettingsListView() {
@@ -123,6 +126,11 @@ public class SettingsActivity extends Activity implements OnClickListener, OnIte
 			map = new HashMap<String, String>();
 			map.put("key", getString(R.string.settings_animation_quality));
 			map.put("value", Statics.stringOfAnimationQuality(animationQuality, this));
+			list.add(map);
+			
+			map = new HashMap<String, String>();
+			map.put("key", getString(R.string.settings_screen_auto_rotation));
+			map.put("value", Statics.onOrOffString(this, autoRotation));
 			list.add(map);
 		}
 
@@ -515,6 +523,26 @@ public class SettingsActivity extends Activity implements OnClickListener, OnIte
 					}).show();
 			break;
 		}
+		case 8: {
+			CharSequence list[] = new String[2];
+			list[0] = getString(R.string.off);
+			list[1] = getString(R.string.on);
+			new AlertDialog.Builder(SettingsActivity.this).setTitle(getString(R.string.settings_screen_auto_rotation))
+					.setSingleChoiceItems(list, autoRotation, new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface arg0, int arg1) {
+							setAutoRotation(arg1);
+							if (autoRotation > 0) {
+								setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
+							} else {
+								setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+							}
+							arg0.dismiss();
+							((ListView) findViewById(R.id.settings_items)).setSelection(position);
+						}
+					}).show();
+			break;
+		}
 		default:
 			return;
 		}
@@ -609,6 +637,13 @@ public class SettingsActivity extends Activity implements OnClickListener, OnIte
 		animationQuality = aq;
 		Statics.setPreferenceValue(this, Statics.PREF_ANIMATION_QUALITY, animationQuality);
 		MainActivity.setAnimationQuality(aq);
+		updatePreferenceValues();
+		updateSettingsListView();
+	}
+
+	public void setAutoRotation(int ar) {
+		autoRotation = ar;
+		Statics.setPreferenceValue(this, Statics.PREF_SCREEN_AUTO_ROTATION, autoRotation);
 		updatePreferenceValues();
 		updateSettingsListView();
 	}
