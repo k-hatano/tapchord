@@ -825,17 +825,20 @@ public class TapChordView extends View {
 					keyboardIndicatorsReleased();
 				}
 			}
-			if (scroll < -Statics.scrollMax(width, height))
-				scroll = -Statics.scrollMax(width, height);
-			if (scroll > Statics.scrollMax(width, height))
-				scroll = Statics.scrollMax(width, height);
-			
+			if (scroll < -Statics.scrollMax(width, height)) {
+				destScroll = -Statics.scrollMax(width, height);
+				startPullingAnimation();
+			} else if (scroll > Statics.scrollMax(width, height)) {
+				destScroll = Statics.scrollMax(width, height);
+				startPullingAnimation();
+			} else {
+				pulling = 0;
+			}
 			toolbarPressed = -1;
 			scalePressed = Statics.FARAWAY;
 			indicatorsTapped = false;
 			isScrolling = false;
 			playingID = -1;
-			pulling = 0;
 			upper = 0;
 			taps = new SparseIntArray();
 			invalidate();
