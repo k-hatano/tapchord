@@ -289,7 +289,7 @@ public class TapChordView extends View {
 				if (darken && !isScrolling) {
 					tmpColor = Statics.fadeColor(Statics.color(c, d, darken), darken, lightPitch);
 				} else {
-					tmpColor = Statics.color(c, d, darken));
+					tmpColor = Statics.color(c, d, darken);
 				}
                 if (scale + x < -7 || scale + x > 7) {
                     tmpColor = Statics.fadeColor(tmpColor,darken,0.4f);
