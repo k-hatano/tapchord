@@ -136,11 +136,19 @@ public class TapChordView extends View {
 		if (situation == Statics.SITUATION_TRANSPOSE || situation == Statics.SITUATION_TRANSPOSE_MOVING
 				|| destination == Statics.SITUATION_TRANSPOSE || destination == Statics.SITUATION_TRANSPOSE_MOVING) {
 			paint.setStyle(Style.FILL);
-			paint.setColor(Statics.color(Statics.COLOR_PASTELGRAY, 0, darken));
+			if (darken) {
+				paint.setColor(Statics.fadeColor(Statics.color(Statics.COLOR_PASTELGRAY, 0, darken), darken, lightPitch));
+			} else {
+				paint.setColor(Statics.color(Statics.COLOR_PASTELGRAY, 0, darken));
+			}
 			canvas.drawRect(Statics.rectOfToolbar(width, height, 1.0f), paint);
 
 			d = (toolbarPressed == 0) ? 1 : 0;
-			paint.setColor(Statics.color(Statics.COLOR_PURPLE, d, darken));
+			if (darken) {
+				paint.setColor(Statics.fadeColor(Statics.color(Statics.COLOR_PURPLE, d, darken), darken, lightPitch));
+			} else {
+				paint.setColor(Statics.color(Statics.COLOR_PURPLE, d, darken));
+			}
 			rect = Statics.rectOfToolbarButton(0, 0, width, height, 1.0f);
 			canvas.drawOval(rect, paint);
 			str = getContext().getString(R.string.ok);
@@ -149,7 +157,11 @@ public class TapChordView extends View {
 					rect.centerY() - (fontMetrics.ascent + fontMetrics.descent) / 2, textPaint);
 
 			d = (toolbarPressed == 1) ? 1 : 0;
-			paint.setColor(Statics.color(Statics.COLOR_PURPLE, d, darken));
+			if (darken) {
+				paint.setColor(Statics.fadeColor(Statics.color(Statics.COLOR_PURPLE, d, darken), darken, lightPitch));
+			} else {
+				paint.setColor(Statics.color(Statics.COLOR_PURPLE, d, darken));
+			}
 			rect = Statics.rectOfToolbarTransposingButton(0, 0, width, height, 1.0f);
 			canvas.drawOval(rect, paint);
 			str = Statics.SCALES[7];
@@ -232,7 +244,7 @@ public class TapChordView extends View {
 					c = Statics.COLOR_DARKGRAY;
 				}
 				
-				if (darken) {
+				if (darken && !isScrolling) {
 					paint.setColor(Statics.fadeColor(Statics.color(c, d, darken), darken, lightPitch));
 				} else {
 					paint.setColor(Statics.color(c, d, darken));
@@ -323,7 +335,11 @@ public class TapChordView extends View {
 
 		for (int x = 0; x < 4; x++) {
 			d = (statusbarFlags[x] > 0) ? 1 : 0;
-			paint.setColor(Statics.color(Statics.COLOR_ORANGE, d, darken));
+			if (darken) {
+				paint.setColor(Statics.fadeColor(Statics.color(Statics.COLOR_ORANGE, d, darken), darken, lightPitch));
+			} else {
+				paint.setColor(Statics.color(Statics.COLOR_ORANGE, d, darken));
+			}
 			rect = Statics.rectOfStatusBarButton(x, 0, width, height, barsShowingRate);
 			canvas.drawOval(rect, paint);
 
@@ -345,7 +361,11 @@ public class TapChordView extends View {
 
 		for (int x = 0; x < 3; x++) {
 			d = (toolbarPressed == x) ? 1 : 0;
-			paint.setColor(Statics.color(Statics.COLOR_PURPLE, d, darken));
+			if (darken) {
+				paint.setColor(Statics.fadeColor(Statics.color(Statics.COLOR_PURPLE, d, darken), darken, lightPitch));
+			} else {
+				paint.setColor(Statics.color(Statics.COLOR_PURPLE, d, darken));
+			}
 			rect = Statics.rectOfToolbarButton(x, 0, width, height, barsShowingRate);
 			canvas.drawOval(rect, paint);
 
@@ -1379,7 +1399,7 @@ public class TapChordView extends View {
 			float x = event.values[0];
 			float y = event.values[1];
 			float z = event.values[2];
-			lightPitch = (float)(Math.abs(Math.atan2(z, Math.sqrt(x * x + y * y)))/Math.PI);
+			lightPitch = (float)(Math.abs(Math.atan2(z, Math.sqrt(x * x + y * y)))/Math.PI) / 2 + 0.5f;
 			Log.i("TapChordView","lightPitch : "+lightPitch);
 			invalidate();
 		}
