@@ -33,7 +33,7 @@ import android.widget.TextView;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 
 public class TapChordView extends View {
-	static boolean debugMode = false;
+	static boolean debugMode = true;
 
 	int width, height, originalX, originalY, originalScroll;
 	int situation, destination, step, scroll, upper, destScale;
@@ -462,9 +462,7 @@ public class TapChordView extends View {
 			canvas.drawText("" + Sound.requiredTime, 4, 20, textPaint);
 			
 			if (darken) {
-				canvas.drawText("" + MainActivity.light, 4, 50, textPaint);
-			} else {
-				canvas.drawText("" + MainActivity.accelerationZ, 4, 50, textPaint);
+				canvas.drawText("" + lightPitch, 4, 50, textPaint);
 			}
 		}
 	}
@@ -918,19 +916,23 @@ public class TapChordView extends View {
 				break;
 			}
 			case KeyEvent.KEYCODE_CAMERA: {
-				boolean statusbarFlag = false;
-				if (scroll != 0) {
-					statusbarFlag = true;
-					scroll = 0;
-				}
-				for (int i = 0; i < 4; i++) {
-					if (statusbarFlags[i] >= 2) {
-						statusbarFlags[i] = 0;
+				if (statusbarFlags[1] > 0) {
+					debugMode = !debugMode;
+				} else {
+					boolean statusbarFlag = false;
+					if (scroll != 0) {
 						statusbarFlag = true;
+						scroll = 0;
 					}
-				}
-				if (!statusbarFlag && darken) {
-					flashEffectStep = 1000 / MainActivity.heartBeatInterval;
+					for (int i = 0; i < 4; i++) {
+						if (statusbarFlags[i] >= 2) {
+							statusbarFlags[i] = 0;
+							statusbarFlag = true;
+						}
+					}
+					if (!statusbarFlag && darken) {
+						flashEffectStep = 1000 / MainActivity.heartBeatInterval;
+					}
 				}
 				invalidate();
 				break;
