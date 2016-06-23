@@ -33,7 +33,7 @@ public class Sound {
 
 	int length;
 	int attackLength, decayLength, sustainLength, releaseLength;
-	int enableEnvelope;
+	boolean enableEnvelope;
 
 	double sustainLevel;
 
@@ -158,7 +158,7 @@ public class Sound {
 
 			s *= volume / 400.0 * (Short.MAX_VALUE);
 
-			if (enableEnvelope > 0) {
+			if (enableEnvelope) {
 				if (mode == MODE_ATTACK && modeTerm >= attackLength) {
 					modeTerm = 0;
 					mode = MODE_DECAY;
@@ -216,9 +216,9 @@ public class Sound {
 				sampleRate = Statics
 						.valueOfSamplingRate(Statics.preferenceValue(context, Statics.PREF_SAMPLING_RATE, 0));
 				waveform = Statics.preferenceValue(context, Statics.PREF_WAVEFORM, 0);
-				enableEnvelope = Statics.preferenceValue(context, Statics.PREF_ENABLE_ENVELOPE, 0);
+				enableEnvelope = Statics.preferenceValue(context, Statics.PREF_ENABLE_ENVELOPE, 0) > 0;
 
-				if (enableEnvelope > 0) {
+				if (enableEnvelope) {
 					int attack = Statics.preferenceValue(context, Statics.PREF_ATTACK_TIME, 0);
 					int decay = Statics.preferenceValue(context, Statics.PREF_DECAY_TIME, 0);
 					int sustain = Statics.preferenceValue(context, Statics.PREF_SUSTAIN_LEVEL, 0) + 100;
@@ -291,7 +291,7 @@ public class Sound {
 	}
 
 	public void finish(int modeParam) {
-		if (track != null && track.getState() == AudioTrack.STATE_INITIALIZED && enableEnvelope == 0) {
+		if (track != null && track.getState() == AudioTrack.STATE_INITIALIZED && !enableEnvelope) {
 			track.pause();
 		}
 		modeTerm = 0;
