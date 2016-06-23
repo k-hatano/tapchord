@@ -7,11 +7,8 @@ import java.util.Map;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-<<<<<<< HEAD
 import android.hardware.usb.UsbDevice;
-=======
 import android.content.pm.ActivityInfo;
->>>>>>> features/legacy_chaos
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -604,6 +601,7 @@ public class SettingsActivity extends AbstractSingleMidiActivity implements OnCl
 					}
 				}).show();
 			}
+		}
 		case 10: {
 			CharSequence list[] = new String[2];
 			list[0] = getString(R.string.off);
