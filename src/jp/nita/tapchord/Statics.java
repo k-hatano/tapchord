@@ -69,6 +69,7 @@ public class Statics {
 	public static final String PREF_RELEASE_TIME = "release_time";
 	public static final String PREF_ENABLE_ENVELOPE = "enable_envelope";
 	public static final String PREF_ANIMATION_QUALITY = "animation_quality";
+	public static final String PREF_SCREEN_AUTO_ROTATION = "screen_auto_rotation";
 
 	public static final int VIBRATION_LENGTH = 40;
 
@@ -250,6 +251,20 @@ public class Statics {
 		}
 
 		return Color.argb(255, r, g, b);
+	}
+	
+	public static int fadeColor(int color, boolean dark, float rate) {
+		if (dark) {
+			return Color.argb(255, 
+					(int)(Color.red(color) * rate), 
+					(int)(Color.green(color) * rate), 
+					(int)(Color.blue(color) * rate));
+		} else {
+			return Color.argb(255, 
+					(int)(255 - (255 - Color.red(color)) * rate), 
+					(int)(255 - (255 - Color.green(color)) * rate), 
+					(int)(255 - (255 - Color.blue(color)) * rate));
+		}
 	}
 
 	public static RectF rectOfButtonArea(int width, int height) {

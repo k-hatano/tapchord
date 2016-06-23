@@ -15,6 +15,7 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Paint.FontMetrics;
 import android.graphics.Paint.Style;
+import android.hardware.SensorEvent;
 import android.graphics.Point;
 import android.graphics.PointF;
 import android.graphics.RectF;
@@ -28,12 +29,13 @@ import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 
 public class TapChordView extends View {
-	static boolean debugMode = false;
+	static boolean debugMode = true;
 
 	int width, height, originalX, originalY, originalScroll;
 	int situation, destination, step, scroll, upper, destScale;
@@ -64,6 +66,7 @@ public class TapChordView extends View {
 	int scale = 0;
 	int soundRange = 0;
 	int pulling = 0;
+	float buttonsExpanding = 0;
 
 	int statusbarFlags[] = { 0, 0, 0, 0 };
 	int lastTapped = -1;
@@ -73,6 +76,7 @@ public class TapChordView extends View {
 	float stepMax = 1.0f;
 	float barsShowingRate = 1.0f;
 	int flashEffectStep = 0;
+	float lightPitch = 1.0f;
 
 	private Vibrator vib;
 
@@ -136,23 +140,74 @@ public class TapChordView extends View {
 		if (situation == Statics.SITUATION_TRANSPOSE || situation == Statics.SITUATION_TRANSPOSE_MOVING
 				|| destination == Statics.SITUATION_TRANSPOSE || destination == Statics.SITUATION_TRANSPOSE_MOVING) {
 			paint.setStyle(Style.FILL);
-			paint.setColor(Statics.color(Statics.COLOR_PASTELGRAY, 0, darken));
+			if (darken) {
+				paint.setColor(Statics.fadeColor(Statics.color(Statics.COLOR_PASTELGRAY, 0, darken), darken, lightPitch));
+			} else {
+				paint.setColor(Statics.color(Statics.COLOR_PASTELGRAY, 0, darken));
+			}
 			canvas.drawRect(Statics.rectOfToolbar(width, height, 1.0f), paint);
 
 			d = (toolbarPressed == 0) ? 1 : 0;
-			paint.setColor(Statics.color(Statics.COLOR_PURPLE, d, darken));
+			if (darken) {
+				paint.setColor(Statics.fadeColor(Statics.color(Statics.COLOR_PURPLE, d, darken), darken, lightPitch));
+			} else {
+				paint.setColor(Statics.color(Statics.COLOR_PURPLE, d, darken));
+			}
 			rect = Statics.rectOfToolbarButton(0, 0, width, height, 1.0f);
 			canvas.drawOval(rect, paint);
 			str = getContext().getString(R.string.ok);
 			w = textPaint.measureText(str);
 			canvas.drawText(str, rect.centerX() - w / 2,
 					rect.centerY() - (fontMetrics.ascent + fontMetrics.descent) / 2, textPaint);
-
+			
 			d = (toolbarPressed == 1) ? 1 : 0;
-			paint.setColor(Statics.color(Statics.COLOR_PURPLE, d, darken));
-			rect = Statics.rectOfToolbarTransposingButton(0, 0, width, height, 1.0f);
+			if (darken) {
+				paint.setColor(Statics.fadeColor(Statics.color(Statics.COLOR_PURPLE, d, darken), darken, lightPitch));
+			} else {
+				paint.setColor(Statics.color(Statics.COLOR_PURPLE, d, darken));
+			}
+			rect = Statics.rectOfToolbarButton(1, 0, width, height, 1.0f);
 			canvas.drawOval(rect, paint);
 			str = Statics.SCALES[7];
+			w = textPaint.measureText(str);
+			canvas.drawText(str, rect.centerX() - w / 2,
+					rect.centerY() - (fontMetrics.ascent + fontMetrics.descent) / 2, textPaint);
+
+			d = (toolbarPressed == 2) ? 1 : 0;
+            if (darken) {
+                paint.setColor(Statics.fadeColor(Statics.color(Statics.COLOR_PURPLE, d, darken), darken, lightPitch));
+            } else {
+                paint.setColor(Statics.color(Statics.COLOR_PURPLE, d, darken));
+            }
+			rect = Statics.rectOfToolbarTransposingButton(0, 0, width, height, 1.0f);
+			canvas.drawOval(rect, paint);
+			str = getContext().getString(R.string.settings_volume_short);
+			w = textPaint.measureText(str);
+			canvas.drawText(str, rect.centerX() - w / 2,
+					rect.centerY() - (fontMetrics.ascent + fontMetrics.descent) / 2, textPaint);
+			
+			d = (toolbarPressed == 3) ? 1 : 0;
+            if (darken) {
+                paint.setColor(Statics.fadeColor(Statics.color(Statics.COLOR_PURPLE, d, darken), darken, lightPitch));
+            } else {
+                paint.setColor(Statics.color(Statics.COLOR_PURPLE, d, darken));
+            }
+			rect = Statics.rectOfToolbarTransposingButton(1, 0, width, height, 1.0f);
+			canvas.drawOval(rect, paint);
+			str = getContext().getString(R.string.settings_sound_range_short);
+			w = textPaint.measureText(str);
+			canvas.drawText(str, rect.centerX() - w / 2,
+					rect.centerY() - (fontMetrics.ascent + fontMetrics.descent) / 2, textPaint);
+			
+			d = (toolbarPressed == 4) ? 1 : 0;
+            if (darken) {
+                paint.setColor(Statics.fadeColor(Statics.color(Statics.COLOR_PURPLE, d, darken), darken, lightPitch));
+            } else {
+                paint.setColor(Statics.color(Statics.COLOR_PURPLE, d, darken));
+            }
+			rect = Statics.rectOfToolbarTransposingButton(2, 0, width, height, 1.0f);
+			canvas.drawOval(rect, paint);
+			str = getContext().getString(R.string.settings_waveform_short);
 			w = textPaint.measureText(str);
 			canvas.drawText(str, rect.centerX() - w / 2,
 					rect.centerY() - (fontMetrics.ascent + fontMetrics.descent) / 2, textPaint);
@@ -231,7 +286,17 @@ public class TapChordView extends View {
 				} else if (darken && (isScrolling || pulling > 0)) {
 					c = Statics.COLOR_DARKGRAY;
 				}
-				paint.setColor(Statics.color(c, d, darken));
+                
+				int tmpColor;
+				if (darken && !isScrolling) {
+					tmpColor = Statics.fadeColor(Statics.color(c, d, darken), darken, lightPitch);
+				} else {
+					tmpColor = Statics.color(c, d, darken);
+				}
+                if (scale + x < -7 || scale + x > 7) {
+                    tmpColor = Statics.fadeColor(tmpColor,darken,0.4f);
+                }
+				paint.setColor(tmpColor);
 
 				rect = Statics.rectOfButton(x, y, width, height, scroll);
 				canvas.drawOval(rect, paint);
@@ -318,7 +383,11 @@ public class TapChordView extends View {
 
 		for (int x = 0; x < 4; x++) {
 			d = (statusbarFlags[x] > 0) ? 1 : 0;
-			paint.setColor(Statics.color(Statics.COLOR_ORANGE, d, darken));
+			if (darken) {
+				paint.setColor(Statics.fadeColor(Statics.color(Statics.COLOR_ORANGE, d, darken), darken, lightPitch));
+			} else {
+				paint.setColor(Statics.color(Statics.COLOR_ORANGE, d, darken));
+			}
 			rect = Statics.rectOfStatusBarButton(x, 0, width, height, barsShowingRate);
 			canvas.drawOval(rect, paint);
 
@@ -338,10 +407,21 @@ public class TapChordView extends View {
 
 		textPaint.setColor(Statics.color(Statics.COLOR_BLACK, 0, darken));
 
+		for (int x = 0; x < buttonsExpanding / (height / 5); x++) {
+			paint.setColor(Statics.color(Statics.COLOR_PURPLE, 0, darken));
+			rect = Statics.rectOfToolbarButton(x, 0, width, height, barsShowingRate);
+			canvas.drawOval(rect, paint);
+		}
+		
 		for (int x = 0; x < 3; x++) {
 			d = (toolbarPressed == x) ? 1 : 0;
-			paint.setColor(Statics.color(Statics.COLOR_PURPLE, d, darken));
+			if (darken) {
+				paint.setColor(Statics.fadeColor(Statics.color(Statics.COLOR_PURPLE, d, darken), darken, lightPitch));
+			} else {
+				paint.setColor(Statics.color(Statics.COLOR_PURPLE, d, darken));
+			}
 			rect = Statics.rectOfToolbarButton(x, 0, width, height, barsShowingRate);
+			rect.offset(-buttonsExpanding, 0);
 			canvas.drawOval(rect, paint);
 
 			switch (x) {
@@ -381,10 +461,12 @@ public class TapChordView extends View {
 
 		paint.setColor(Statics.color(Statics.COLOR_GRAY, 0, darken));
 		rect = Statics.rectOfScrollBar(width, height, barsShowingRate);
+		rect.offset(-buttonsExpanding, 0);
 		canvas.drawRect(rect, paint);
 
 		paint.setColor(Statics.color(Statics.COLOR_DARKGRAY, 0, darken));
 		rect = Statics.rectOfScrollNob(scroll, upper, width, height, barsShowingRate);
+		rect.offset(-buttonsExpanding, 0);
 		canvas.drawRect(rect, paint);
 
 		if (darken) {
@@ -450,11 +532,34 @@ public class TapChordView extends View {
 				}
 			}
 		}
+		
+		paint.setStyle(Style.STROKE);
+		paint.setStrokeWidth(height / 128);
+		if (buttonsExpanding > 0) {
+			paint.setColor(Statics.color(Statics.COLOR_DARKGRAY, 0, darken));
+		} else {
+			paint.setColor(Statics.color(Statics.COLOR_GRAY, 0, darken));
+		}
+		float vert = height * 7.0f / 35.0f;
+		float ax = (float) (width - vert * 3.3f) - buttonsExpanding;
+		float ay = (float) (height - vert * 0.5f) + vert * (1.0f - barsShowingRate);
+		float bx = ax + (float) (height * 0.02f);
+		float by = ay + (float) (height * 0.02f);
+		float cx = ax + (float) (height * 0.02f);
+		float cy = ay - (float) (height * 0.02f);
+		canvas.drawLine(ax + vert * 0.05f, ay, bx + vert * 0.05f, by, paint);
+		canvas.drawLine(ax + vert * 0.05f, ay, cx + vert * 0.05f, cy, paint);
+		canvas.drawLine(ax - vert * 0.05f, ay, bx - vert * 0.05f, by, paint);
+		canvas.drawLine(ax - vert * 0.05f, ay, cx - vert * 0.05f, cy, paint);
 
 		// デバッグ用
 		if (debugMode) {
 			paint.setColor(Statics.color(Statics.COLOR_BLACK, 0, darken));
 			canvas.drawText("" + Sound.requiredTime, 4, 20, textPaint);
+			
+			if (darken) {
+				canvas.drawText("" + lightPitch, 4, 50, textPaint);
+			}
 		}
 	}
 
@@ -466,21 +571,25 @@ public class TapChordView extends View {
 		int id = (int)event.getPointerId(index);
 
 		if (situation == Statics.SITUATION_TRANSPOSE || situation == Statics.SITUATION_TRANSPOSE_MOVING) {
-			rect = Statics.rectOfToolbarButton(0, 0, width, height, 1.0f);
-			if (rect.contains(x, y)) {
-				toolbarPressed = 0;
-				taps.put(id, Statics.TOOLBAR_BUTTON);
-				vibrate();
-				invalidate(Statics.RectFToRect(Statics.rectOfToolbar(width, height, 1.0f)));
-				return false;
+			for (int i = 0; i < 2; i++) {
+				rect = Statics.rectOfToolbarButton(i, 0, width, height, 1.0f);
+				if (rect.contains(x, y)) {
+					toolbarPressed = i;
+					taps.put(id, Statics.TOOLBAR_BUTTON);
+					vibrate();
+					invalidate(Statics.RectFToRect(Statics.rectOfToolbar(width, height, 1.0f)));
+					return false;
+				}
 			}
-			rect = Statics.rectOfToolbarTransposingButton(0, 0, width, height, 1.0f);
-			if (rect.contains(x, y)) {
-				toolbarPressed = 1;
-				taps.put(id, Statics.TOOLBAR_BUTTON);
-				vibrate();
-				invalidate(Statics.RectFToRect(Statics.rectOfToolbar(width, height, 1.0f)));
-				return false;
+			for (int i = 0; i < 3; i++) {
+				rect = Statics.rectOfToolbarTransposingButton(i, 0, width, height, 1.0f);
+				if (rect.contains(x, y)) {
+					toolbarPressed = i + 2;
+					taps.put(id, Statics.TOOLBAR_BUTTON);
+					vibrate();
+					invalidate(Statics.RectFToRect(Statics.rectOfToolbar(width, height, 1.0f)));
+					return false;
+				}
 			}
 		} else {
 			for (int i = 0; i < 3; i++) {
@@ -667,21 +776,31 @@ public class TapChordView extends View {
 			toolbarPressed = -1;
 			if (situation == Statics.SITUATION_TRANSPOSE || situation == Statics.SITUATION_TRANSPOSE_MOVING) {
 				rect = Statics.rectOfToolbarButton(0, 0, width, height, 1.0f);
-				if (rect.contains(x, y)) {
-					toolbarPressed = 0;
-					taps.put(id, Statics.TOOLBAR_BUTTON);
-				}
-				rect = Statics.rectOfToolbarTransposingButton(0, 0, width, height, 1.0f);
-				if (rect.contains(x, y)) {
-					toolbarPressed = 1;
-					taps.put(id, Statics.TOOLBAR_BUTTON);
-				}
-			} else {
-				for (int i = 0; i < 3; i++) {
-					rect = Statics.rectOfToolbarButton(i, 0, width, height, barsShowingRate);
+				for (int i = 0; i < 2; i++) {
+					rect = Statics.rectOfToolbarButton(i, 0, width, height, 1.0f);
 					if (rect.contains(x, y)) {
 						toolbarPressed = i;
 						taps.put(id, Statics.TOOLBAR_BUTTON);
+					}
+				}
+				for (int i = 0; i < 3; i++) {
+					rect = Statics.rectOfToolbarTransposingButton(i, 0, width, height, 1.0f);
+					if (rect.contains(x, y)) {
+						toolbarPressed = i + 2;
+						taps.put(id, Statics.TOOLBAR_BUTTON);
+					}
+				}
+			} else {
+				if (x < width - height * 3.0f / 5.0f) {
+					buttonsExpanding = (width - height * 3.0f / 5.0f) - x;
+				} else {
+					buttonsExpanding = 0;
+					for (int i = 0; i < 3; i++) {
+						rect = Statics.rectOfToolbarButton(i, 0, width, height, barsShowingRate);
+						if (rect.contains(x, y)) {
+							toolbarPressed = i;
+							taps.put(id, Statics.TOOLBAR_BUTTON);
+						}
 					}
 				}
 			}
@@ -692,14 +811,16 @@ public class TapChordView extends View {
 				if (situation == Statics.SITUATION_NORMAL) {
 					if (pulling == 2) {
 						scroll = originalScroll + (x - tappedX);
-						if (scroll < -Statics.scrollMax(width, height))
-							scroll = -Statics.scrollMax(width, height);
-						if (scroll > Statics.scrollMax(width, height))
-							scroll = Statics.scrollMax(width, height);
 					} else if (pulling == 1) {
 						destScroll = originalScroll + (x - tappedX);
 						if (y > height * 4 / 5) {
 							destScroll = 0;
+						}
+						if (destScroll < -Statics.scrollMax(width, height)) {
+							destScroll = -Statics.scrollMax(width, height) + (Statics.scrollMax(width, height) + destScroll) / 4;
+						}
+						if (destScroll > Statics.scrollMax(width, height)) {
+							destScroll = Statics.scrollMax(width, height) - (Statics.scrollMax(width, height) - destScroll) / 4;
 						}
 					} else if (Math.abs(x - tappedX) > height / 5) {
 						originalScroll = scroll;
@@ -821,14 +942,22 @@ public class TapChordView extends View {
 					keyboardIndicatorsReleased();
 				}
 			}
-			
+			if (scroll < -Statics.scrollMax(width, height)) {
+				destScroll = -Statics.scrollMax(width, height);
+				startPullingAnimation();
+			} else if (scroll > Statics.scrollMax(width, height)) {
+				destScroll = Statics.scrollMax(width, height);
+				startPullingAnimation();
+			} else {
+				pulling = 0;
+			}
 			toolbarPressed = -1;
 			scalePressed = Statics.FARAWAY;
 			indicatorsTapped = false;
 			isScrolling = false;
 			playingID = -1;
-			pulling = 0;
 			upper = 0;
+			buttonsExpanding = 0;
 			taps = new SparseIntArray();
 			invalidate();
 			break;
@@ -907,19 +1036,23 @@ public class TapChordView extends View {
 				break;
 			}
 			case KeyEvent.KEYCODE_CAMERA: {
-				boolean statusbarFlag = false;
-				if (scroll != 0) {
-					statusbarFlag = true;
-					scroll = 0;
-				}
-				for (int i = 0; i < 4; i++) {
-					if (statusbarFlags[i] >= 2) {
-						statusbarFlags[i] = 0;
+				if (statusbarFlags[1] > 0) {
+					debugMode = !debugMode;
+				} else {
+					boolean statusbarFlag = false;
+					if (scroll != 0) {
 						statusbarFlag = true;
+						scroll = 0;
 					}
-				}
-				if (!statusbarFlag && darken) {
-					flashEffectStep = 1000 / MainActivity.heartBeatInterval;
+					for (int i = 0; i < 4; i++) {
+						if (statusbarFlags[i] >= 2) {
+							statusbarFlags[i] = 0;
+							statusbarFlag = true;
+						}
+					}
+					if (!statusbarFlag && darken) {
+						flashEffectStep = 1000 / MainActivity.heartBeatInterval;
+					}
 				}
 				invalidate();
 				break;
@@ -1125,6 +1258,15 @@ public class TapChordView extends View {
 			case 1:
 				startTransposingAnimation(0);
 				break;
+			case 2:
+				showVolumeSettingAlert();
+				break;
+			case 3:
+				showSoundRangeSettingAlert();
+				break;
+			case 4:
+				showWaveformSettingAlert();
+				break;
 			}
 		} else {
 			switch (which) {
@@ -1163,9 +1305,55 @@ public class TapChordView extends View {
 	}
 
 	public void keyboardIndicatorsReleased() {
-		final ContextThemeWrapper themeWrapper = new ContextThemeWrapper(this.getContext(), darken ? android.R.style.Theme_Holo : android.R.style.Theme_Holo_Light);
-		
-		final TextView rangeView = new TextView(themeWrapper);
+		showSoundRangeSettingAlert();
+	}
+	
+	public void showVolumeSettingAlert() {
+		int vol = Statics.preferenceValue(getContext(), Statics.PREF_VOLUME, 30) + 50;
+		final TextView volumeView = new TextView(getContext());
+		volumeView.setText("" + vol);
+		volumeView.setTextAppearance(getContext(), android.R.style.TextAppearance_Inverse);
+		final SeekBar seekBar = new SeekBar(getContext());
+		seekBar.setProgress(vol);
+		seekBar.setMax(100);
+		seekBar.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
+			@Override
+			public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+				volumeView.setText("" + progress);
+			}
+
+			@Override
+			public void onStartTrackingTouch(SeekBar seekBar) {
+			}
+
+			@Override
+			public void onStopTrackingTouch(SeekBar seekBar) {
+			}
+		});
+		final LinearLayout layout = new LinearLayout(getContext());
+		layout.setOrientation(LinearLayout.VERTICAL);
+		layout.addView(volumeView);
+		layout.addView(seekBar);
+		layout.setPadding(8, 8, 8, 8);
+		new AlertDialog.Builder(getContext()).setTitle(getContext().getString(R.string.settings_volume)).setView(layout)
+				.setPositiveButton(getContext().getString(R.string.ok), new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						int vol = seekBar.getProgress() - 50;
+						Statics.setPreferenceValue(TapChordView.this.getContext(), Statics.PREF_VOLUME,
+								vol);
+					}
+				}).setNegativeButton(getContext().getString(R.string.cancel), new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						
+					}
+				}).show();
+	}
+	
+	public void showSoundRangeSettingAlert() {
+        final ContextThemeWrapper themeWrapper = new ContextThemeWrapper(this.getContext(), darken ? android.R.style.Theme_Holo : android.R.style.Theme_Holo_Light);
+        final TextView rangeView = new TextView(themeWrapper);
 		rangeView.setText("" + Statics.stringOfSoundRange(soundRange));
 		final SeekBar seekBar = new SeekBar(themeWrapper);
 		seekBar.setProgress(soundRange + 24);
@@ -1206,6 +1394,23 @@ public class TapChordView extends View {
 					}
 				}).show();
 		invalidate();
+	}
+	
+	public void showWaveformSettingAlert() {
+		int waveform = Statics.preferenceValue(getContext(), Statics.PREF_WAVEFORM, 0);
+		CharSequence list[] = new String[7];
+		for (int i = 0; i < list.length; i++) {
+			list[i] = Statics.valueOfWaveform(i, getContext());
+		}
+		new AlertDialog.Builder(getContext()).setTitle(getContext().getString(R.string.settings_waveform))
+				.setSingleChoiceItems(list, waveform, new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface arg0, int arg1) {
+						Statics.setPreferenceValue(TapChordView.this.getContext(), Statics.PREF_WAVEFORM,
+								arg1);
+						arg0.dismiss();
+					}
+				}).show();
 	}
 
 	public void play(int x, int y) {
@@ -1293,10 +1498,6 @@ public class TapChordView extends View {
 		if (pulling == 1) {
 			int max = 100 / MainActivity.heartBeatInterval;
 			scroll = (destScroll * (max - step) + scroll * step) / max;
-			if (scroll < -Statics.scrollMax(width, height))
-				scroll = -Statics.scrollMax(width, height);
-			if (scroll > Statics.scrollMax(width, height))
-				scroll = Statics.scrollMax(width, height);
 			handler.post(new Repainter());
 		}
 		if (flashEffectStep > 0) {
@@ -1366,6 +1567,17 @@ public class TapChordView extends View {
 	public void vibrate() {
 		if (vibration)
 			vib.vibrate(Statics.VIBRATION_LENGTH);
+	}
+	
+	public void sensorChanged(SensorEvent event){
+		if (darken) {
+			float x = event.values[0];
+			float y = event.values[1];
+			float z = event.values[2];
+			lightPitch = (float)(Math.abs(Math.atan2(z, Math.sqrt(x * x + y * y)))/Math.PI) / 2 + 0.5f;
+			Log.i("TapChordView","lightPitch : "+lightPitch);
+			invalidate();
+		}
 	}
 
 }

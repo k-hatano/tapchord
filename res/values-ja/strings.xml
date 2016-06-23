@@ -35,6 +35,7 @@
     <string name="settings_animation_quality_high">高</string>
     <string name="settings_midi_device">MIDI デバイス</string>
     <string name="settings_midi_device_not_connected">接続されていません</string>
+    <string name="settings_screen_auto_rotation">画面の自動回転</string>
 
     <string name="settings_sampling_rate_hz"> Hz</string>
     <string name="special_thanks">Special Thanks to\nAkiyoshi Kamide and \nKaoru Shoji</string>
@@ -57,5 +58,10 @@
     <string name="message_midi_device_detached">MIDI デバイスが切断されました。</string>
     <string name="message_midi_device_is_not_connected">MIDI デバイスは接続されていません。</string>
     <string name="message_getting_midi_device_info_failed">MIDI デバイスの情報の取得に失敗しました。</string>
+    <string name="settings_volume_short">音量</string>
+    <string name="settings_sound_range_short">音域</string>
+    <string name="settings_waveform_short">波形</string>
+    
+    <string name="crashed">Crashed!</string>
     
 </resources>

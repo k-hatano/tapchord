@@ -7,7 +7,11 @@ import java.util.Map;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+<<<<<<< HEAD
 import android.hardware.usb.UsbDevice;
+=======
+import android.content.pm.ActivityInfo;
+>>>>>>> features/legacy_chaos
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -48,6 +52,7 @@ public class SettingsActivity extends AbstractSingleMidiActivity implements OnCl
 	int releaseTime;
 	int animationQuality;
 	String midiDeviceName;
+	int autoRotation;
 
 	int position = 0;
 	int selected;
@@ -79,6 +84,7 @@ public class SettingsActivity extends AbstractSingleMidiActivity implements OnCl
 		sustainLevel = Statics.preferenceValue(this, Statics.PREF_SUSTAIN_LEVEL, 0);
 		releaseTime = Statics.preferenceValue(this, Statics.PREF_RELEASE_TIME, 0);
 		animationQuality = Statics.preferenceValue(this, Statics.PREF_ANIMATION_QUALITY, 0);
+		autoRotation = Statics.preferenceValue(this, Statics.PREF_SCREEN_AUTO_ROTATION, 0);
 	}
 	
 	public String getMidiDeviceName() {
@@ -147,6 +153,11 @@ public class SettingsActivity extends AbstractSingleMidiActivity implements OnCl
 			map = new HashMap<String, String>();
 			map.put("key", getString(R.string.settings_midi_device));
 			map.put("value", midiDeviceName == null ? getString(R.string.settings_midi_device_not_connected) : midiDeviceName);
+            list.add(map);
+            
+            map = new HashMap<String, String>();
+			map.put("key", getString(R.string.settings_screen_auto_rotation));
+			map.put("value", Statics.onOrOffString(this, autoRotation));
 			list.add(map);
 		}
 
@@ -593,6 +604,24 @@ public class SettingsActivity extends AbstractSingleMidiActivity implements OnCl
 					}
 				}).show();
 			}
+		case 10: {
+			CharSequence list[] = new String[2];
+			list[0] = getString(R.string.off);
+			list[1] = getString(R.string.on);
+			new AlertDialog.Builder(SettingsActivity.this).setTitle(getString(R.string.settings_screen_auto_rotation))
+					.setSingleChoiceItems(list, autoRotation, new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface arg0, int arg1) {
+							setAutoRotation(arg1);
+							if (autoRotation > 0) {
+								setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
+							} else {
+								setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+							}
+							arg0.dismiss();
+							((ListView) findViewById(R.id.settings_items)).setSelection(position);
+						}
+					}).show();
 			break;
 		}
 		default:
@@ -776,4 +805,12 @@ public class SettingsActivity extends AbstractSingleMidiActivity implements OnCl
 		// TODO Auto-generated method stub
 		
 	}
+
+	public void setAutoRotation(int ar) {
+		autoRotation = ar;
+		Statics.setPreferenceValue(this, Statics.PREF_SCREEN_AUTO_ROTATION, autoRotation);
+		updatePreferenceValues();
+		updateSettingsListView();
+	}
+
 }

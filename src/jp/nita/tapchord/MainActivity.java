@@ -6,15 +6,25 @@ import jp.kshoji.driver.midi.device.MidiOutputDevice;
 import android.hardware.usb.UsbDevice;
 import android.media.AudioManager;
 import android.os.Bundle;
+
+import java.util.List;
+
+import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-public class MainActivity extends AbstractSingleMidiActivity {
+
+public class MainActivity extends AbstractSingleMidiActivity implements SensorEventListener  {
 
 	public static int heartBeatInterval = 5;
 	int volume;
@@ -22,6 +32,11 @@ public class MainActivity extends AbstractSingleMidiActivity {
 	public static MainActivity main = null;
 
 	private Heart heart = null;
+	
+	public static float accelerationX = 0, accelerationY = 0, accelerationZ = 0;
+	public static float light = 0;
+	
+	private SensorManager mSensorManager;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -32,6 +47,13 @@ public class MainActivity extends AbstractSingleMidiActivity {
 		heart = new Heart();
 		heart.start();
 		main = this;
+		
+		mSensorManager = (SensorManager)getSystemService(Context.SENSOR_SERVICE);
+		List<Sensor> sensors = mSensorManager.getSensorList(Sensor.TYPE_ACCELEROMETER);
+		if (sensors.size() > 0)  {
+			Sensor sensor = sensors.get(0);
+			mSensorManager.registerListener(this, sensor, SensorManager.SENSOR_DELAY_UI);
+		}
 	}
 
 	@Override
@@ -273,6 +295,27 @@ public class MainActivity extends AbstractSingleMidiActivity {
 			return super.onKeyLongPress(keyCode, event);
 		}
 	    return super.onKeyLongPress(keyCode, event);
+	}
+
+	@Override
+	public void onAccuracyChanged(Sensor sensor, int accuracy) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onSensorChanged(SensorEvent event) {
+		switch (event.sensor.getType()) {
+		case Sensor.TYPE_ACCELEROMETER:
+			accelerationX = event.values[0];
+			accelerationY = event.values[1];
+			accelerationZ = event.values[2];
+			break;
+		}
+		TapChordView view = ((TapChordView) findViewById(R.id.tapChordView));
+		if (view != null) {
+			view.sensorChanged(event);
+		}
 	}
 
 }

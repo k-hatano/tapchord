@@ -8,9 +8,11 @@
         android:minSdkVersion="13"
         android:targetSdkVersion="17" />
     <uses-permission android:name="android.permission.VIBRATE"/>
+    <uses-permission android:name="android.permission.INTERNET"/>
 
     <application
         android:allowBackup="true"
+        android:name="jp.nita.tapchord.TapchordApplication"
         android:icon="@drawable/tapchord"
         android:label="@string/app_name"
         android:theme="@style/AppTheme">
@@ -24,6 +26,9 @@
             </intent-filter>
         </activity>
         <activity android:name="jp.nita.tapchord.SettingsActivity" android:theme="@android:style/Theme.Light" android:screenOrientation="landscape" android:label="@string/tapchord_settings" android:launchMode="singleTask"></activity>
+        <activity
+                android:name="org.acra.CrashReportDialog">
+        </activity>
     </application>
 
 </manifest>
