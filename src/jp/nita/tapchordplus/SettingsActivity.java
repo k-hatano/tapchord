@@ -601,6 +601,7 @@ public class SettingsActivity extends AbstractSingleMidiActivity implements OnCl
 					}
 				}).show();
 			}
+			break;
 		}
 		case 10: {
 			CharSequence list[] = new String[2];

@@ -12,7 +12,7 @@
 
     <application
         android:allowBackup="true"
-        android:name="jp.nita.tapchord.TapchordApplication"
+        android:name="jp.nita.tapchordplus.TapchordApplication"
         android:icon="@drawable/tapchord"
         android:label="@string/app_name"
         android:theme="@style/AppTheme">
