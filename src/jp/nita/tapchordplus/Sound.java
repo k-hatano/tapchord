@@ -1,4 +1,4 @@
-package jp.nita.tapchord;
+package jp.nita.tapchordplus;
 
 import android.content.Context;
 import android.media.AudioFormat;

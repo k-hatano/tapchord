@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">tapchord</string>
+    <string name="app_name">tapchord+</string>
     <string name="action_settings">設定</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_quit">終了</string>
-    <string name="message_quit">tapchord を終了しますか?</string>
+    <string name="message_quit">tapchord+ を終了しますか?</string>
     <string name="ok">OK</string>
     <string name="cancel">キャンセル</string>
     <string name="settings_sampling_rate">サンプリング周波数</string>
@@ -39,7 +39,7 @@
     <string name="settings_sampling_rate_hz"> Hz</string>
     <string name="special_thanks">Special Thanks to\nAkiyoshi Kamide and \nKaoru Shoji</string>
     <string name="copyright">Version 1.2.1 © Nita</string>
-    <string name="tapchord_settings">tapchord - 設定</string>
+    <string name="tapchord_settings">tapchord+ - 設定</string>
     
     <string name="settings_volume">ボリューム</string>
     

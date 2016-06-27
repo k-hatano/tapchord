@@ -1,4 +1,4 @@
-package jp.nita.tapchord;
+package jp.nita.tapchordplus;
 
 import jp.kshoji.driver.midi.activity.AbstractSingleMidiActivity;
 import jp.kshoji.driver.midi.device.MidiInputDevice;

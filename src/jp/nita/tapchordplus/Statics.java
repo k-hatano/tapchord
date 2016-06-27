@@ -1,4 +1,4 @@
-package jp.nita.tapchord;
+package jp.nita.tapchordplus;
 
 import java.util.ArrayList;
 import java.util.List;
