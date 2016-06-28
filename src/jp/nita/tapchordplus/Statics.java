@@ -698,7 +698,7 @@ public class Statics {
 					UsbConstants.USB_DIR_IN | UsbConstants.USB_TYPE_STANDARD, STD_USB_REQUEST_GET_DESCRIPTOR,
 					(LIBUSB_DT_STRING << 8) | rawDescriptors[indexManufacturer], 0, buffer, 0xFF, 0);
 			try {
-				stringManufacturer = new String(buffer, 2, lengthManufacturer - 2, "UTF-16LE");
+				stringManufacturer = new String(buffer, 2, lengthManufacturer - 2, "US-ASCII");
 			} catch (UnsupportedEncodingException e) {
 				e.printStackTrace();
 				return null;
@@ -708,7 +708,7 @@ public class Statics {
 					UsbConstants.USB_DIR_IN | UsbConstants.USB_TYPE_STANDARD, STD_USB_REQUEST_GET_DESCRIPTOR,
 					(LIBUSB_DT_STRING << 8) | rawDescriptors[indexProduct], 0, buffer, 0xFF, 0);
 			try {
-				stringProduct = new String(buffer, 2, lengthProduct - 2, "UTF-16LE");
+				stringProduct = new String(buffer, 2, lengthProduct - 2, "US-ASCII");
 			} catch (UnsupportedEncodingException e) {
 				e.printStackTrace();
 				return null;
