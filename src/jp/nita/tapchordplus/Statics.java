@@ -698,7 +698,14 @@ public class Statics {
 					UsbConstants.USB_DIR_IN | UsbConstants.USB_TYPE_STANDARD, STD_USB_REQUEST_GET_DESCRIPTOR,
 					(LIBUSB_DT_STRING << 8) | rawDescriptors[indexManufacturer], 0, buffer, 0xFF, 0);
 			try {
-				stringManufacturer = new String(buffer, 2, lengthManufacturer - 2, "US-ASCII");
+				String stringManufacturerAscii = new String(buffer, 2, lengthManufacturer - 2, "US-ASCII");
+				String stringManufacturerIso = new String(buffer, 2, lengthManufacturer - 2, "ISO-8859-1");
+				String stringManufacturerUtf8 = new String(buffer, 2, lengthManufacturer - 2, "UTF-8");
+				String stringManufacturerUtf16be = new String(buffer, 2, lengthManufacturer - 2, "UTF-16BE");
+				String stringManufacturerUtf16le = new String(buffer, 2, lengthManufacturer - 2, "UTF-16LE");
+				
+				stringManufacturer = stringManufacturerAscii + "\n" + stringManufacturerIso + "\n" + stringManufacturerUtf8 + "\n" + 
+						stringManufacturerUtf16be + "\n" + stringManufacturerUtf16le;
 			} catch (UnsupportedEncodingException e) {
 				e.printStackTrace();
 				return null;
@@ -708,7 +715,14 @@ public class Statics {
 					UsbConstants.USB_DIR_IN | UsbConstants.USB_TYPE_STANDARD, STD_USB_REQUEST_GET_DESCRIPTOR,
 					(LIBUSB_DT_STRING << 8) | rawDescriptors[indexProduct], 0, buffer, 0xFF, 0);
 			try {
-				stringProduct = new String(buffer, 2, lengthProduct - 2, "US-ASCII");
+				String stringProductAscii = new String(buffer, 2, lengthProduct - 2, "US-ASCII");
+				String stringProductIso = new String(buffer, 2, lengthProduct - 2, "ISO-8859-1");
+				String stringProductUtf8 = new String(buffer, 2, lengthProduct - 2, "UTF-8");
+				String stringProductUtf16be = new String(buffer, 2, lengthProduct - 2, "UTF-16BE");
+				String stringProductUtf16le = new String(buffer, 2, lengthProduct - 2, "UTF-16LE");
+				
+				stringProduct = stringProductAscii + "\n" + stringProductIso + "\n" + stringProductUtf8 + "\n" + 
+						stringProductUtf16be + "\n" + stringProductUtf16le;
 			} catch (UnsupportedEncodingException e) {
 				e.printStackTrace();
 				return null;
