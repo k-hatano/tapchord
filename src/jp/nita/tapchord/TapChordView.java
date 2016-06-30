@@ -424,7 +424,7 @@ public class TapChordView extends View {
 
 			switch (x) {
 			case 0:
-				str = getContext().getString(R.string.action_settings);
+				str = "";
 				break;
 			case 1:
 				str = getContext().getString(R.string.darken);
@@ -439,6 +439,16 @@ public class TapChordView extends View {
 			canvas.drawText(str, rect.centerX() - w / 2,
 					rect.centerY() - (fontMetrics.ascent + fontMetrics.descent) / 2, textPaint);
 		}
+		
+		d = (toolbarPressed == 0) ? 1 : 0;
+		paint.setColor(Statics.color(Statics.COLOR_PURPLE, d, darken));
+		rect = Statics.rectOfToolbarButton(0, 0, width, height, barsShowingRate);
+		rect.offset(0, 0);
+		canvas.drawOval(rect, paint);
+		str = getContext().getString(R.string.action_settings);
+		w = textPaint.measureText(str);
+		canvas.drawText(str, rect.centerX() - w / 2, rect.centerY() - (fontMetrics.ascent + fontMetrics.descent) / 2,
+				textPaint);
 
 		if (Statics.rectOfStatusBarButton(3, 0, width, height, barsShowingRate).right < Statics
 				.rectOfKeyboardIndicator(0, 0, width, height, barsShowingRate).left) {
@@ -790,6 +800,9 @@ public class TapChordView extends View {
 			} else {
 				if (x < width - height * 3.0f / 5.0f) {
 					buttonsExpanding = (width - height * 3.0f / 5.0f) - x;
+					if (buttonsExpanding > height * 2.0f / 5.0f) {
+						buttonsExpanding = height * 2.0f / 5.0f;
+					}
 				} else {
 					buttonsExpanding = 0;
 					for (int i = 0; i < 3; i++) {
