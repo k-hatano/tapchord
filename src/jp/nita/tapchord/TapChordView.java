@@ -1567,7 +1567,7 @@ public class TapChordView extends View {
 			float x = event.values[0];
 			float y = event.values[1];
 			float z = event.values[2];
-			lightPitch = (float)(Math.abs(Math.atan2(z, Math.sqrt(x * x + y * y)))/Math.PI) / 2 + 0.5f;
+			lightPitch = (float)(Math.abs(Math.atan2(z, Math.sqrt(x * x + y * y)))/Math.PI) * 0.7f + 0.3f;
 			Log.i("TapChordView","lightPitch : "+lightPitch);
 			invalidate();
 		}
