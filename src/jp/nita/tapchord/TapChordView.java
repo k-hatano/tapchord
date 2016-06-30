@@ -230,7 +230,7 @@ public class TapChordView extends View {
 					c = Statics.COLOR_DARKGRAY;
 				}
 				int tmpColor = Statics.color(c, d, darken);
-				if (scale + x < -7 || scale + x > 7) {
+				if (x < -7 || x > 7) {
 					tmpColor = Statics.fadeColor(tmpColor,darken,0.4f);
 				}
 				paint.setColor(tmpColor);
