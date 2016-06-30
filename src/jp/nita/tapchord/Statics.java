@@ -45,6 +45,10 @@ public class Statics {
 	final public static int COLOR_BLUE = 4;
 	final public static int COLOR_ORANGE = 5;
 	final public static int COLOR_PURPLE = 6;
+	
+	final public static int NOT_PULLING = 0;
+	final public static int PULLING = 1;
+	final public static int RELEASING = 2;
 
 	final public static String SUS4 = "sus4";
 	final public static String MINOR = "m";
