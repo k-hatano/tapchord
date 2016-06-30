@@ -65,7 +65,7 @@ public class TapChordView extends View {
 
 	int scale = 0;
 	int soundRange = 0;
-	int pulling = 0;
+	int pulling = Statics.NOT_PULLING;
 	float buttonsExpanding = 0;
 
 	int statusbarFlags[] = { 0, 0, 0, 0 };
@@ -283,7 +283,7 @@ public class TapChordView extends View {
 				}
 				if (situation == Statics.SITUATION_TRANSPOSE || destination == Statics.SITUATION_TRANSPOSE) {
 					c = Statics.COLOR_LIGHTGRAY;
-				} else if (darken && (isScrolling || pulling > 0)) {
+				} else if (darken && (isScrolling || pulling != Statics.NOT_PULLING)) {
 					c = Statics.COLOR_DARKGRAY;
 				}
                 
@@ -426,7 +426,7 @@ public class TapChordView extends View {
 
 			switch (x) {
 			case 0:
-				str = getContext().getString(R.string.action_settings);
+				str = "";
 				break;
 			case 1:
 				str = getContext().getString(R.string.darken);
@@ -441,6 +441,16 @@ public class TapChordView extends View {
 			canvas.drawText(str, rect.centerX() - w / 2,
 					rect.centerY() - (fontMetrics.ascent + fontMetrics.descent) / 2, textPaint);
 		}
+		
+		d = (toolbarPressed == 0) ? 1 : 0;
+		paint.setColor(Statics.color(Statics.COLOR_PURPLE, d, darken));
+		rect = Statics.rectOfToolbarButton(0, 0, width, height, barsShowingRate);
+		rect.offset(0, 0);
+		canvas.drawOval(rect, paint);
+		str = getContext().getString(R.string.action_settings);
+		w = textPaint.measureText(str);
+		canvas.drawText(str, rect.centerX() - w / 2, rect.centerY() - (fontMetrics.ascent + fontMetrics.descent) / 2,
+				textPaint);
 
 		if (Statics.rectOfStatusBarButton(3, 0, width, height, barsShowingRate).right < Statics
 				.rectOfKeyboardIndicator(0, 0, width, height, barsShowingRate).left) {
@@ -715,8 +725,7 @@ public class TapChordView extends View {
 		} else {
 			if (Statics.rectOfButtonArea(width, height).contains(x, y)) {
 				// destinationScroll=originalScroll+(x-tappedX);
-				pulling = 1;
-				startPullingAnimation();
+				startPullingAnimation(Statics.PULLING);
 				invalidate(Statics.RectFToRect(Statics.rectOfButtonArea(width, height)));
 				return true;
 			}
@@ -793,6 +802,9 @@ public class TapChordView extends View {
 			} else {
 				if (x < width - height * 3.0f / 5.0f) {
 					buttonsExpanding = (width - height * 3.0f / 5.0f) - x;
+					if (buttonsExpanding > height * 2.0f / 5.0f) {
+						buttonsExpanding = height * 2.0f / 5.0f;
+					}
 				} else {
 					buttonsExpanding = 0;
 					for (int i = 0; i < 3; i++) {
@@ -809,9 +821,7 @@ public class TapChordView extends View {
 		case Statics.CHORD_BUTTON:
 			if (id == playingID) {
 				if (situation == Statics.SITUATION_NORMAL) {
-					if (pulling == 2) {
-						scroll = originalScroll + (x - tappedX);
-					} else if (pulling == 1) {
+					if (pulling != Statics.NOT_PULLING) {
 						destScroll = originalScroll + (x - tappedX);
 						if (y > height * 4 / 5) {
 							destScroll = 0;
@@ -825,9 +835,9 @@ public class TapChordView extends View {
 					} else if (Math.abs(x - tappedX) > height / 5) {
 						originalScroll = scroll;
 						// destinationScroll=originalScroll+(x-tappedX);
-						pulling = 1;
+						pulling = Statics.PULLING;
 						step = 100 / MainActivity.heartBeatInterval;
-						startPullingAnimation();
+						startPullingAnimation(Statics.PULLING);
 					}
 					if ((y < height / 5) && event.getPointerCount() == 1) {
 						boolean statusbarFlagsModified = false;
@@ -917,7 +927,7 @@ public class TapChordView extends View {
 			if (chordPressed == false) {
 				stop();
 				playingID = -1;
-				pulling = 0;
+				pulling = Statics.NOT_PULLING;
 			}
 			break;
 		case MotionEvent.ACTION_UP:
@@ -944,12 +954,12 @@ public class TapChordView extends View {
 			}
 			if (scroll < -Statics.scrollMax(width, height)) {
 				destScroll = -Statics.scrollMax(width, height);
-				startPullingAnimation();
+				startPullingAnimation(Statics.RELEASING);
 			} else if (scroll > Statics.scrollMax(width, height)) {
 				destScroll = Statics.scrollMax(width, height);
-				startPullingAnimation();
+				startPullingAnimation(Statics.RELEASING);
 			} else {
-				pulling = 0;
+				pulling = Statics.NOT_PULLING;
 			}
 			toolbarPressed = -1;
 			scalePressed = Statics.FARAWAY;
@@ -1495,9 +1505,13 @@ public class TapChordView extends View {
 			}
 			handler.post(new Repainter());
 		}
-		if (pulling == 1) {
+		if (pulling != Statics.NOT_PULLING) {
 			int max = 100 / MainActivity.heartBeatInterval;
 			scroll = (destScroll * (max - step) + scroll * step) / max;
+			if (step == 0 && pulling == Statics.RELEASING) {
+				scroll = destScroll;
+				pulling = Statics.NOT_PULLING;
+			}
 			handler.post(new Repainter());
 		}
 		if (flashEffectStep > 0) {
@@ -1541,8 +1555,8 @@ public class TapChordView extends View {
 		destScale = ds;
 	}
 
-	public void startPullingAnimation() {
-		pulling = 1;
+	public void startPullingAnimation(int p) {
+		pulling = p;
 		step = (int) stepMax;
 	}
 
@@ -1574,7 +1588,7 @@ public class TapChordView extends View {
 			float x = event.values[0];
 			float y = event.values[1];
 			float z = event.values[2];
-			lightPitch = (float)(Math.abs(Math.atan2(z, Math.sqrt(x * x + y * y)))/Math.PI) / 2 + 0.5f;
+			lightPitch = (float)(Math.abs(Math.atan2(z, Math.sqrt(x * x + y * y)))/Math.PI) * 0.7f + 0.3f;
 			Log.i("TapChordView","lightPitch : "+lightPitch);
 			invalidate();
 		}
