@@ -696,10 +696,23 @@ public class TapChordView extends View {
 						if (y > height * 4 / 5) {
 							destScroll = 0;
 						}
-						if (destScroll < -Statics.scrollMax(width, height)) {
+
+						int maxWidth = height * 3 / 2;
+						if (destScroll < -maxWidth) {
+							originalScroll += maxWidth * 8 / 5;
+							scroll += maxWidth * 8 / 5;
+							destScroll += maxWidth * 8 / 5;
+							step = 100 / MainActivity.heartBeatInterval;
+							startPullingAnimation(Statics.PULLING);
+						} else if (destScroll > maxWidth) {
+							originalScroll -= maxWidth * 8 / 5;
+							scroll -= maxWidth * 8 / 5;
+							destScroll -= maxWidth * 8 / 5;
+							step = 100 / MainActivity.heartBeatInterval;
+							startPullingAnimation(Statics.PULLING);
+						} else if (destScroll < -Statics.scrollMax(width, height)) {
 							destScroll = -Statics.scrollMax(width, height) + (Statics.scrollMax(width, height) + destScroll) / 4;
-						}
-						if (destScroll > Statics.scrollMax(width, height)) {
+						} else if (destScroll > Statics.scrollMax(width, height)) {
 							destScroll = Statics.scrollMax(width, height) - (Statics.scrollMax(width, height) - destScroll) / 4;
 						}
 					} else if (Math.abs(x - tappedX) > height / 5) {
