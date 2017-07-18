@@ -46,7 +46,7 @@ public class SettingsActivity extends Activity implements OnClickListener, OnIte
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		updatePreferenceValues();
-		setTheme(android.R.style.Theme_Light);
+		setTheme(android.R.style.Theme_Holo_Light);
 
 		setContentView(R.layout.activity_settings);
 

@@ -36,7 +36,7 @@
 
     <string name="settings_sampling_rate_hz"> Hz</string>
     <string name="special_thanks">Special Thanks to\nAkiyoshi Kamide</string>
-    <string name="copyright">Version 1.2.1 © Nita</string>
+    <string name="copyright">Version 1.3 © Nita</string>
     <string name="tapchord_settings">tapchord - Settings</string>
     
     <string name="settings_volume">Volume</string>
