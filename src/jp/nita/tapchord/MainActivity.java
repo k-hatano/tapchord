@@ -1,14 +1,21 @@
 package jp.nita.tapchord;
 
 import android.media.AudioManager;
+import android.media.midi.MidiDeviceInfo;
+import android.media.midi.MidiDeviceStatus;
+import android.media.midi.MidiManager;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 public class MainActivity extends Activity {
 
@@ -24,6 +31,27 @@ public class MainActivity extends Activity {
 		setVolumeControlStream(AudioManager.STREAM_MUSIC);
 		heart = new Heart();
 		heart.start();
+		
+		MidiManager midiManager = (MidiManager)getSystemService(Context.MIDI_SERVICE);
+		midiManager.registerDeviceCallback(new MidiManager.DeviceCallback() {
+		    @Override
+		    public void onDeviceAdded(MidiDeviceInfo device) {
+		        super.onDeviceAdded(device);
+		        Toast.makeText(MainActivity.this, "MIDI device added : " + device.toString(), Toast.LENGTH_SHORT).show();
+		    }
+
+		    @Override
+		    public void onDeviceRemoved(MidiDeviceInfo device) {
+		        super.onDeviceRemoved(device);
+		        Toast.makeText(MainActivity.this, "MIDI device removed : " + device.toString(), Toast.LENGTH_SHORT).show();
+		    }
+
+		    @Override
+		    public void onDeviceStatusChanged(MidiDeviceStatus status) {
+		        super.onDeviceStatusChanged(status);
+		        
+		    }
+		}, new Handler(Looper.getMainLooper()));
 	}
 
 	@Override
