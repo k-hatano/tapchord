@@ -293,7 +293,13 @@ public class Sound {
 
 	public void finish(int modeParam) {
 		if (track != null && track.getState() == AudioTrack.STATE_INITIALIZED && !enableEnvelope) {
-			track.pause();
+			try {
+				// できるだけ早く音を止めるためだけのpauseなので、例外が発生しても無視する
+				// TODO: 何とかした方がいいと思う
+				track.pause();
+			} catch(IllegalStateException ignore) {
+				
+			}
 		}
 		modeTerm = 0;
 		mode = modeParam;
