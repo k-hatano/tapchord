@@ -732,7 +732,7 @@ public class TapChordView extends View {
 			invalidate(Statics.RectFToRect(Statics.rectOfToolbar(width, height, 1.0f)));
 			break;
 		case Statics.TOOL_BAR:
-			if (flashEffectStep > 0) {
+			if (darken) {
 				flashEffectStep = 300 / MainActivity.heartBeatInterval;
 			}
 			break;
