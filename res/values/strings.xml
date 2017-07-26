@@ -50,5 +50,9 @@
     <string name="enable">Enable</string>
     <string name="disable">Disable</string>
     <string name="disabled">Disabled</string>
+    
+    <string name="settings_volume_short">Volume</string>
+    <string name="settings_sound_range_short">Range</string>
+    <string name="settings_waveform_short">Form</string>
 
 </resources>
