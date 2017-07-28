@@ -26,6 +26,8 @@ import android.util.SparseIntArray;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.SeekBar;
@@ -1306,7 +1308,7 @@ public class TapChordView extends View {
 		for (int i = 0; i < list.length; i++) {
 			list[i] = Statics.valueOfWaveform(i, getContext());
 		}
-		new AlertDialog.Builder(getContext()).setTitle(getContext().getString(R.string.settings_waveform))
+		AlertDialog dialog = new AlertDialog.Builder(getContext()).setTitle(getContext().getString(R.string.settings_waveform))
 				.setSingleChoiceItems(list, waveform, new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface arg0, int arg1) {
@@ -1314,7 +1316,9 @@ public class TapChordView extends View {
 								arg1);
 						arg0.dismiss();
 					}
-				}).show();
+				}).create();
+		dialog.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+		dialog.show();
 	}
 
 	public void play(int x, int y) {
