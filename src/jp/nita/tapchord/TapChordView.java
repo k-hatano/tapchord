@@ -1330,6 +1330,9 @@ public class TapChordView extends View {
 		playingX = x;
 		playingY = y;
 		sound.play();
+		for (int i = 0; i < notesOfChord.length; i++) {
+			MainActivity.main.sendMidiEventToDevice(1, notesOfChord[i]);
+		}
 		invalidate(Statics.RectFToRect(Statics.rectOfButton(x, y, width, height, scroll)));
 		invalidate(Statics.RectFToRect(Statics.rectOfStatusBar(width, height, 1.0f)));
 	}
@@ -1337,6 +1340,9 @@ public class TapChordView extends View {
 	public void stop() {
 		if (sound != null) {
 			sound.stop();
+		}
+		for (int i = 0; i < notesOfChord.length; i++) {
+			MainActivity.main.sendMidiEventToDevice(0, notesOfChord[i]);
 		}
 		playing = 0;
 		notesOfChord = new Integer[0];

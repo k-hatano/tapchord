@@ -1,12 +1,18 @@
 package jp.nita.tapchord;
 
 import android.media.AudioManager;
+import android.media.midi.MidiDevice;
 import android.media.midi.MidiDeviceInfo;
 import android.media.midi.MidiDeviceStatus;
+import android.media.midi.MidiInputPort;
 import android.media.midi.MidiManager;
+import android.media.midi.MidiManager.OnDeviceOpenedListener;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+
+import java.io.IOException;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -22,6 +28,11 @@ public class MainActivity extends Activity {
 	public static int heartBeatInterval = 5;
 
 	private Heart heart = null;
+	
+	public static MainActivity main = null;
+	
+	MidiDevice midiDevice = null;
+	int volume;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -31,18 +42,33 @@ public class MainActivity extends Activity {
 		setVolumeControlStream(AudioManager.STREAM_MUSIC);
 		heart = new Heart();
 		heart.start();
+		main = this;
 		
-		MidiManager midiManager = (MidiManager)getSystemService(Context.MIDI_SERVICE);
-		midiManager.registerDeviceCallback(new MidiManager.DeviceCallback() {
+		final OnDeviceOpenedListener onDeviceOpenedListener = new MidiManager.OnDeviceOpenedListener() {
+		    @Override
+		    public void onDeviceOpened(MidiDevice device) {
+		        if (device == null) {
+		        	Toast.makeText(MainActivity.this, "Opening device failed", Toast.LENGTH_SHORT).show();
+		        } else {
+		        	Toast.makeText(MainActivity.this, "Opened device : " + device.toString(), Toast.LENGTH_SHORT).show();
+		        	midiDevice = device;
+		        }
+		    }
+		};
+		
+		MidiManager.DeviceCallback deviceCallBack = new MidiManager.DeviceCallback() {
 		    @Override
 		    public void onDeviceAdded(MidiDeviceInfo device) {
 		        super.onDeviceAdded(device);
 		        Toast.makeText(MainActivity.this, "MIDI device added : " + device.toString(), Toast.LENGTH_SHORT).show();
+		        MidiManager midiManager = (MidiManager)getSystemService(Context.MIDI_SERVICE);
+		        midiManager.openDevice(device, onDeviceOpenedListener, new Handler(Looper.getMainLooper()));
 		    }
 
 		    @Override
 		    public void onDeviceRemoved(MidiDeviceInfo device) {
 		        super.onDeviceRemoved(device);
+		        midiDevice = null;
 		        Toast.makeText(MainActivity.this, "MIDI device removed : " + device.toString(), Toast.LENGTH_SHORT).show();
 		    }
 
@@ -51,7 +77,10 @@ public class MainActivity extends Activity {
 		        super.onDeviceStatusChanged(status);
 		        
 		    }
-		}, new Handler(Looper.getMainLooper()));
+		};
+		
+		MidiManager midiManager = (MidiManager)getSystemService(Context.MIDI_SERVICE);
+		midiManager.registerDeviceCallback(deviceCallBack, new Handler(Looper.getMainLooper()));
 	}
 
 	@Override
@@ -145,10 +174,34 @@ public class MainActivity extends Activity {
 			alive = false;
 		}
 	}
+	
+	public void sendMidiEventToDevice(int on, int note) {
+		if (midiDevice == null) {
+			return;
+		}
+		MidiInputPort inputPort = midiDevice.openInputPort(0);
+		if (inputPort == null) {
+			Toast.makeText(MainActivity.this, "Opening input port failed", Toast.LENGTH_SHORT).show();
+			return;
+		}
+		byte[] buffer = new byte[32];
+		int numBytes = 0;
+		int channel = 1;
+		buffer[numBytes++] = (byte)(on > 0 ? 0x90 : 0x80 + (channel - 1));
+		buffer[numBytes++] = (byte)(note);
+		buffer[numBytes++] = (byte)(volume * 127 / 100);
+		int offset = 0;
+		try {
+		    inputPort.send(buffer, offset, numBytes);
+		} catch (IOException e) {
+		    e.printStackTrace();
+		}
+	}
 
 	public void updatePreferences() {
 		int animationQuality = Statics.preferenceValue(this, Statics.PREF_ANIMATION_QUALITY, 0);
 		setAnimationQuality(animationQuality);
+		volume = Statics.valueOfVolume(Statics.preferenceValue(this, Statics.PREF_VOLUME, 0));
 	}
 
 	@Override
