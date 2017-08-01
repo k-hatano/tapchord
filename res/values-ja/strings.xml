@@ -51,4 +51,8 @@
     <string name="disable">有効</string>
     <string name="disabled">無効</string>
     
+    <string name="settings_volume_short">音量</string>
+    <string name="settings_sound_range_short">音域</string>
+    <string name="settings_waveform_short">波形</string>
+    
 </resources>
