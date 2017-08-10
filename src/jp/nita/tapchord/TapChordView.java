@@ -81,6 +81,7 @@ public class TapChordView extends View {
 	Handler handler = new Handler();
 
 	Integer notesOfChord[] = new Integer[0];
+	Integer notesOfChordForMidi[] = new Integer[0];
 	Sound sound = null;
 
 	SparseIntArray taps = new SparseIntArray();
@@ -1324,6 +1325,7 @@ public class TapChordView extends View {
 	public void play(int x, int y) {
 		release();
 		notesOfChord = Statics.notesOfChord(x + scale, y, statusbarFlags);
+		notesOfChordForMidi = Statics.getMidiNotesOfChord(x + scale, y, statusbarFlags, soundRange);
 		Integer f[] = (Statics.convertNotesToFrequencies(notesOfChord, soundRange));
 		sound = new Sound(f, this.getContext());
 		playing = 1;
@@ -1331,7 +1333,7 @@ public class TapChordView extends View {
 		playingY = y;
 		sound.play();
 		for (int i = 0; i < notesOfChord.length; i++) {
-			MainActivity.main.sendMidiEventToDevice(1, notesOfChord[i]);
+			MainActivity.main.sendMidiEventToDevice(1, notesOfChordForMidi[i]);
 		}
 		invalidate(Statics.RectFToRect(Statics.rectOfButton(x, y, width, height, scroll)));
 		invalidate(Statics.RectFToRect(Statics.rectOfStatusBar(width, height, 1.0f)));
@@ -1342,7 +1344,7 @@ public class TapChordView extends View {
 			sound.stop();
 		}
 		for (int i = 0; i < notesOfChord.length; i++) {
-			MainActivity.main.sendMidiEventToDevice(0, notesOfChord[i]);
+			MainActivity.main.sendMidiEventToDevice(0, notesOfChordForMidi[i]);
 		}
 		playing = 0;
 		notesOfChord = new Integer[0];

@@ -467,6 +467,22 @@ public class Statics {
 		return ns;
 	}
 
+	public static Integer[] getMidiNotesOfChord(int x, int y, int[] tensions, int soundRange) {
+		Integer notesOfChord[] = notesOfChord(x, y, tensions);
+		soundRange += 72;
+		for (int i = 0; i < notesOfChord.length; i++) {
+			int n = notesOfChord[i];
+			while (n < soundRange || n >= soundRange + 12) {
+				if (n < soundRange)
+					n += 12;
+				if (n >= soundRange + 12)
+					n -= 12;
+			}
+			notesOfChord[i] = n;
+		}
+		return notesOfChord;
+	}
+
 	public static Integer[] convertNotesToFrequencies(Integer[] notes, int soundRange) {
 		List<Integer> freqs = new ArrayList<Integer>();
 		for (int i = 0; i < notes.length; i++) {

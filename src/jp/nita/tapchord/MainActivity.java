@@ -3,6 +3,7 @@ package jp.nita.tapchord;
 import android.media.AudioManager;
 import android.media.midi.MidiDevice;
 import android.media.midi.MidiDeviceInfo;
+import android.media.midi.MidiDeviceInfo.PortInfo;
 import android.media.midi.MidiDeviceStatus;
 import android.media.midi.MidiInputPort;
 import android.media.midi.MidiManager;
@@ -32,6 +33,8 @@ public class MainActivity extends Activity {
 	public static MainActivity main = null;
 	
 	MidiDevice midiDevice = null;
+	MidiInputPort inputPort = null;
+	
 	int volume;
 
 	@Override
@@ -51,6 +54,22 @@ public class MainActivity extends Activity {
 		        	Toast.makeText(MainActivity.this, "Opening device failed", Toast.LENGTH_SHORT).show();
 		        } else {
 		        	Toast.makeText(MainActivity.this, "Opened device : " + device.toString(), Toast.LENGTH_SHORT).show();
+		        	if (device.getInfo().getInputPortCount() == 0) {
+		        		Toast.makeText(MainActivity.this, "but no input ports available", Toast.LENGTH_SHORT).show();
+		        	} else {
+		        		for (MidiDeviceInfo.PortInfo portInfo : device.getInfo().getPorts()) {
+		        			if (portInfo.getType() == PortInfo.TYPE_INPUT) {
+		        				inputPort = device.openInputPort(portInfo.getPortNumber());
+		        				if (inputPort != null) {
+		        					Toast.makeText(MainActivity.this, "Opened input port : " + portInfo.getName(), Toast.LENGTH_SHORT).show();
+		        					break;
+		        				}
+		        			}
+		        		}
+		        		if (inputPort == null) {
+		        			Toast.makeText(MainActivity.this, "but no input ports available", Toast.LENGTH_SHORT).show();
+		        		}
+		        	}
 		        	midiDevice = device;
 		        }
 		    }
@@ -69,6 +88,7 @@ public class MainActivity extends Activity {
 		    public void onDeviceRemoved(MidiDeviceInfo device) {
 		        super.onDeviceRemoved(device);
 		        midiDevice = null;
+		        inputPort = null;
 		        Toast.makeText(MainActivity.this, "MIDI device removed : " + device.toString(), Toast.LENGTH_SHORT).show();
 		    }
 
@@ -179,21 +199,20 @@ public class MainActivity extends Activity {
 		if (midiDevice == null) {
 			return;
 		}
-		MidiInputPort inputPort = midiDevice.openInputPort(0);
 		if (inputPort == null) {
-			Toast.makeText(MainActivity.this, "Opening input port failed", Toast.LENGTH_SHORT).show();
 			return;
 		}
 		byte[] buffer = new byte[32];
 		int numBytes = 0;
 		int channel = 1;
-		buffer[numBytes++] = (byte)(on > 0 ? 0x90 : 0x80 + (channel - 1));
+		buffer[numBytes++] = (byte)((on > 0 ? 0x90 : 0x80) + (channel - 1));
 		buffer[numBytes++] = (byte)(note);
 		buffer[numBytes++] = (byte)(volume * 127 / 100);
 		int offset = 0;
 		try {
 		    inputPort.send(buffer, offset, numBytes);
 		} catch (IOException e) {
+			Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
 		    e.printStackTrace();
 		}
 	}
