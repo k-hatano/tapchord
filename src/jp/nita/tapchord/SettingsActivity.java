@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import android.R.color;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -46,9 +47,19 @@ public class SettingsActivity extends Activity implements OnClickListener, OnIte
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		updatePreferenceValues();
-		setTheme(android.R.style.Theme_Holo_Light);
-
+		
+		if (darken > 0) {
+			setTheme(android.R.style.Theme_Holo);
+		} else {
+			setTheme(android.R.style.Theme_Holo_Light);
+		}
 		setContentView(R.layout.activity_settings);
+		ListView listView = (ListView)findViewById(R.id.settings_items);
+		if (darken > 0) {
+			listView.setBackgroundColor(color.black);
+		} else {
+			listView.setBackgroundColor(color.white);
+		}
 
 		Button button;
 		button = (Button) findViewById(R.id.settings_ok);
@@ -221,8 +232,8 @@ public class SettingsActivity extends Activity implements OnClickListener, OnIte
 		case 3: {
 			int vol = volume + 50;
 			final TextView volumeView = new TextView(this);
-			volumeView.setText("" + vol);
 			volumeView.setTextAppearance(this, android.R.style.TextAppearance_Inverse);
+			volumeView.setText("" + vol);
 			final SeekBar seekBar = new SeekBar(this);
 			seekBar.setProgress(vol);
 			seekBar.setMax(100);
@@ -262,8 +273,8 @@ public class SettingsActivity extends Activity implements OnClickListener, OnIte
 		}
 		case 4: {
 			final TextView rangeView = new TextView(this);
-			rangeView.setText("" + Statics.stringOfSoundRange(soundRange));
 			rangeView.setTextAppearance(this, android.R.style.TextAppearance_Inverse);
+			rangeView.setText("" + Statics.stringOfSoundRange(soundRange));
 			final SeekBar seekBar = new SeekBar(this);
 			seekBar.setProgress(soundRange + 24);
 			seekBar.setMax(48);
