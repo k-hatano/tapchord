@@ -469,7 +469,7 @@ public class Statics {
 
 	public static Integer[] getMidiNotesOfChord(int x, int y, int[] tensions, int soundRange) {
 		Integer notesOfChord[] = notesOfChord(x, y, tensions);
-		soundRange += 72;
+		soundRange += 60;
 		for (int i = 0; i < notesOfChord.length; i++) {
 			int n = notesOfChord[i];
 			while (n < soundRange || n >= soundRange + 12) {
