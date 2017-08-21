@@ -23,6 +23,7 @@ import android.os.Vibrator;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.util.SparseIntArray;
+import android.view.ContextThemeWrapper;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -1214,11 +1215,12 @@ public class TapChordView extends View {
 	}
 	
 	public void showVolumeSettingAlert() {
+		final ContextThemeWrapper themeWrapper = new ContextThemeWrapper(this.getContext(), darken ? android.R.style.Theme_Holo : android.R.style.Theme_Holo_Light);
+		
 		int vol = Statics.preferenceValue(getContext(), Statics.PREF_VOLUME, 30) + 50;
-		final TextView volumeView = new TextView(getContext());
+		final TextView volumeView = new TextView(themeWrapper);
 		volumeView.setText("" + vol);
-		volumeView.setTextAppearance(getContext(), android.R.style.TextAppearance_Inverse);
-		final SeekBar seekBar = new SeekBar(getContext());
+		final SeekBar seekBar = new SeekBar(themeWrapper);
 		seekBar.setProgress(vol);
 		seekBar.setMax(100);
 		seekBar.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
@@ -1235,12 +1237,12 @@ public class TapChordView extends View {
 			public void onStopTrackingTouch(SeekBar seekBar) {
 			}
 		});
-		final LinearLayout layout = new LinearLayout(getContext());
+		final LinearLayout layout = new LinearLayout(themeWrapper);
 		layout.setOrientation(LinearLayout.VERTICAL);
 		layout.addView(volumeView);
 		layout.addView(seekBar);
 		layout.setPadding(8, 8, 8, 8);
-		new AlertDialog.Builder(getContext()).setTitle(getContext().getString(R.string.settings_volume)).setView(layout)
+		new AlertDialog.Builder(themeWrapper).setTitle(getContext().getString(R.string.settings_volume)).setView(layout)
 				.setPositiveButton(getContext().getString(R.string.ok), new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
@@ -1257,10 +1259,11 @@ public class TapChordView extends View {
 	}
 	
 	public void showSoundRangeSettingAlert() {
-		final TextView rangeView = new TextView(this.getContext());
+		final ContextThemeWrapper themeWrapper = new ContextThemeWrapper(this.getContext(), darken ? android.R.style.Theme_Holo : android.R.style.Theme_Holo_Light);
+		
+		final TextView rangeView = new TextView(themeWrapper);
 		rangeView.setText("" + Statics.stringOfSoundRange(soundRange));
-		rangeView.setTextAppearance(this.getContext(), android.R.style.TextAppearance_Inverse);
-		final SeekBar seekBar = new SeekBar(this.getContext());
+		final SeekBar seekBar = new SeekBar(themeWrapper);
 		seekBar.setProgress(soundRange + 24);
 		seekBar.setMax(48);
 		seekBar.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
@@ -1277,12 +1280,12 @@ public class TapChordView extends View {
 			public void onStopTrackingTouch(SeekBar seekBar) {
 			}
 		});
-		final LinearLayout layout = new LinearLayout(this.getContext());
+		final LinearLayout layout = new LinearLayout(themeWrapper);
 		layout.setOrientation(LinearLayout.VERTICAL);
 		layout.addView(rangeView);
 		layout.addView(seekBar);
 		layout.setPadding(8, 8, 8, 8);
-		new AlertDialog.Builder(this.getContext()).setTitle(this.getContext().getString(R.string.settings_sound_range))
+		new AlertDialog.Builder(themeWrapper).setTitle(this.getContext().getString(R.string.settings_sound_range))
 				.setView(layout)
 				.setPositiveButton(this.getContext().getString(R.string.ok), new DialogInterface.OnClickListener() {
 					@Override
@@ -1304,12 +1307,14 @@ public class TapChordView extends View {
 	}
 	
 	public void showWaveformSettingAlert() {
+		final ContextThemeWrapper themeWrapper = new ContextThemeWrapper(this.getContext(), darken ? android.R.style.Theme_Holo : android.R.style.Theme_Holo_Light);
+		
 		int waveform = Statics.preferenceValue(getContext(), Statics.PREF_WAVEFORM, 0);
 		CharSequence list[] = new String[7];
 		for (int i = 0; i < list.length; i++) {
 			list[i] = Statics.valueOfWaveform(i, getContext());
 		}
-		AlertDialog dialog = new AlertDialog.Builder(getContext()).setTitle(getContext().getString(R.string.settings_waveform))
+		AlertDialog dialog = new AlertDialog.Builder(themeWrapper).setTitle(getContext().getString(R.string.settings_waveform))
 				.setSingleChoiceItems(list, waveform, new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface arg0, int arg1) {

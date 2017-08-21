@@ -4,8 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".SettingsActivity"
-	android:background="@android:color/white" >
+    tools:context=".SettingsActivity" >
 
     <TableLayout
         android:layout_width="wrap_content"
@@ -83,8 +82,7 @@
                     <ListView
                         android:id="@+id/settings_items"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content" 
-	                   	android:background="@android:color/white">
+                        android:layout_height="wrap_content" >
                     </ListView>
             </LinearLayout>
         </TableRow>
