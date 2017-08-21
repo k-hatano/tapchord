@@ -1217,10 +1217,9 @@ public class TapChordView extends View {
 		final ContextThemeWrapper themeWrapper = new ContextThemeWrapper(this.getContext(), darken ? android.R.style.Theme_Holo : android.R.style.Theme_Holo_Light);
 		
 		int vol = Statics.preferenceValue(getContext(), Statics.PREF_VOLUME, 30) + 50;
-		final TextView volumeView = new TextView(getContext());
+		final TextView volumeView = new TextView(themeWrapper);
 		volumeView.setText("" + vol);
-		volumeView.setTextAppearance(getContext(), android.R.style.TextAppearance_Inverse);
-		final SeekBar seekBar = new SeekBar(getContext());
+		final SeekBar seekBar = new SeekBar(themeWrapper);
 		seekBar.setProgress(vol);
 		seekBar.setMax(100);
 		seekBar.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
@@ -1237,7 +1236,7 @@ public class TapChordView extends View {
 			public void onStopTrackingTouch(SeekBar seekBar) {
 			}
 		});
-		final LinearLayout layout = new LinearLayout(getContext());
+		final LinearLayout layout = new LinearLayout(themeWrapper);
 		layout.setOrientation(LinearLayout.VERTICAL);
 		layout.addView(volumeView);
 		layout.addView(seekBar);
@@ -1261,10 +1260,9 @@ public class TapChordView extends View {
 	public void showSoundRangeSettingAlert() {
 		final ContextThemeWrapper themeWrapper = new ContextThemeWrapper(this.getContext(), darken ? android.R.style.Theme_Holo : android.R.style.Theme_Holo_Light);
 		
-		final TextView rangeView = new TextView(this.getContext());
+		final TextView rangeView = new TextView(themeWrapper);
 		rangeView.setText("" + Statics.stringOfSoundRange(soundRange));
-		rangeView.setTextAppearance(this.getContext(), android.R.style.TextAppearance_Inverse);
-		final SeekBar seekBar = new SeekBar(this.getContext());
+		final SeekBar seekBar = new SeekBar(themeWrapper);
 		seekBar.setProgress(soundRange + 24);
 		seekBar.setMax(48);
 		seekBar.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
@@ -1281,7 +1279,7 @@ public class TapChordView extends View {
 			public void onStopTrackingTouch(SeekBar seekBar) {
 			}
 		});
-		final LinearLayout layout = new LinearLayout(this.getContext());
+		final LinearLayout layout = new LinearLayout(themeWrapper);
 		layout.setOrientation(LinearLayout.VERTICAL);
 		layout.addView(rangeView);
 		layout.addView(seekBar);

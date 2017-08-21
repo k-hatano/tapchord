@@ -232,7 +232,6 @@ public class SettingsActivity extends Activity implements OnClickListener, OnIte
 		case 3: {
 			int vol = volume + 50;
 			final TextView volumeView = new TextView(this);
-			volumeView.setTextAppearance(this, android.R.style.TextAppearance_Inverse);
 			volumeView.setText("" + vol);
 			final SeekBar seekBar = new SeekBar(this);
 			seekBar.setProgress(vol);
@@ -273,7 +272,6 @@ public class SettingsActivity extends Activity implements OnClickListener, OnIte
 		}
 		case 4: {
 			final TextView rangeView = new TextView(this);
-			rangeView.setTextAppearance(this, android.R.style.TextAppearance_Inverse);
 			rangeView.setText("" + Statics.stringOfSoundRange(soundRange));
 			final SeekBar seekBar = new SeekBar(this);
 			seekBar.setProgress(soundRange + 24);
