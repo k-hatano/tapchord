@@ -16,6 +16,7 @@ import java.io.IOException;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -35,6 +36,8 @@ public class MainActivity extends Activity {
 	MidiDevice midiDevice = null;
 	MidiInputPort inputPort = null;
 	
+	static Object midiProcess = new Object();
+	
 	int volume;
 
 	@Override
@@ -50,68 +53,94 @@ public class MainActivity extends Activity {
 		final OnDeviceOpenedListener onDeviceOpenedListener = new MidiManager.OnDeviceOpenedListener() {
 		    @Override
 		    public void onDeviceOpened(MidiDevice device) {
-		        if (device != null) {
-		        	if (device.getInfo().getInputPortCount() > 0) {
-		        		for (MidiDeviceInfo.PortInfo portInfo : device.getInfo().getPorts()) {
-		        			if (portInfo.getType() == PortInfo.TYPE_INPUT) {
-		        				MidiInputPort openingPort = device.openInputPort(portInfo.getPortNumber());
-		        				if (openingPort != null) {
-		        					inputPort = openingPort;
-		        		        	midiDevice = device;
-		        					Toast.makeText(MainActivity.this, "MIDI device connected : " + device.getInfo().getProperties().getString(MidiDeviceInfo.PROPERTY_NAME), Toast.LENGTH_SHORT).show();
-		        					break;
-		        				}
-		        			}
-		        		}
-		        		if (inputPort == null) {
-		        			try {
-								device.close();
-							} catch (IOException e) {
-								e.printStackTrace();
+				synchronized (midiProcess) {
+					if (device != null) {
+						if (device.getInfo().getInputPortCount() > 0) {
+
+							ProgressDialog progressDialog;
+							progressDialog = new ProgressDialog(MainActivity.this);
+							progressDialog.setTitle("Connected MIDI device : "
+									+ device.getInfo().getProperties().getString(MidiDeviceInfo.PROPERTY_NAME));
+							progressDialog.setMessage("Opening input port...");
+							progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+							progressDialog.show();
+
+							int devicesMax = device.getInfo().getPorts().length;
+							int deviceIndex = 0;
+							for (MidiDeviceInfo.PortInfo portInfo : device.getInfo().getPorts()) {
+								progressDialog.setMessage(
+										"Opening input port (" + (deviceIndex + 1) + "/" + devicesMax + ")");
+								if (portInfo.getType() == PortInfo.TYPE_INPUT) {
+									MidiInputPort openingPort = device.openInputPort(portInfo.getPortNumber());
+									if (openingPort != null) {
+										inputPort = openingPort;
+										midiDevice = device;
+										Toast.makeText(MainActivity.this,
+												"MIDI device connected : " + device.getInfo().getProperties()
+														.getString(MidiDeviceInfo.PROPERTY_NAME),
+												Toast.LENGTH_SHORT).show();
+										break;
+									}
+								}
+								deviceIndex++;
 							}
-		        		}
-		        	}
-		        }
+							progressDialog.dismiss();
+							if (inputPort == null) {
+								try {
+									Toast.makeText(MainActivity.this, "No input port available", Toast.LENGTH_SHORT)
+											.show();
+									device.close();
+								} catch (IOException e) {
+									e.printStackTrace();
+								}
+							}
+						}
+					}
+				}
 		    }
 		};
-		
-		MidiManager.DeviceCallback deviceCallBack = new MidiManager.DeviceCallback() {
-		    @Override
-		    public void onDeviceAdded(MidiDeviceInfo device) {
-		        super.onDeviceAdded(device);
-		        MidiManager midiManager = (MidiManager)getSystemService(Context.MIDI_SERVICE);
-		        midiManager.openDevice(device, onDeviceOpenedListener, new Handler(Looper.getMainLooper()));
-		    }
 
-		    @Override
-		    public void onDeviceRemoved(MidiDeviceInfo device) {
-		        super.onDeviceRemoved(device);
-				if (inputPort != null) {
-					try {
-						inputPort.close();
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-					inputPort = null;
+		MidiManager.DeviceCallback deviceCallBack = new MidiManager.DeviceCallback() {
+			@Override
+			public void onDeviceAdded(MidiDeviceInfo device) {
+				super.onDeviceAdded(device);
+				synchronized (midiProcess) {
+					MidiManager midiManager = (MidiManager) getSystemService(Context.MIDI_SERVICE);
+					midiManager.openDevice(device, onDeviceOpenedListener, new Handler(Looper.getMainLooper()));
 				}
-		        if (midiDevice != null) {
-		        	try {
-						midiDevice.close();
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-					midiDevice = null;
-				}
+			}
+
+			@Override
+			public void onDeviceRemoved(MidiDeviceInfo device) {
+				super.onDeviceRemoved(device);
 				Toast.makeText(MainActivity.this,
 						"MIDI device disconnected : " + device.getProperties().getString(MidiDeviceInfo.PROPERTY_NAME),
 						Toast.LENGTH_SHORT).show();
+				synchronized (midiProcess) {
+					if (inputPort != null) {
+						try {
+							inputPort.close();
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+						inputPort = null;
+					}
+					if (midiDevice != null) {
+						try {
+							midiDevice.close();
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+						midiDevice = null;
+					}
+				}
 			}
 
-		    @Override
-		    public void onDeviceStatusChanged(MidiDeviceStatus status) {
-		        super.onDeviceStatusChanged(status);
-		        
-		    }
+			@Override
+			public void onDeviceStatusChanged(MidiDeviceStatus status) {
+				super.onDeviceStatusChanged(status);
+
+			}
 		};
 		
 		MidiManager midiManager = (MidiManager)getSystemService(Context.MIDI_SERVICE);
