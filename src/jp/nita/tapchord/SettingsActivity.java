@@ -10,6 +10,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.media.midi.MidiDevice;
+import android.media.midi.MidiDeviceInfo;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -537,6 +538,32 @@ public class SettingsActivity extends Activity implements OnClickListener, OnIte
 						}
 					}).show();
 			break;
+		}
+		case 8: {
+			if (MainActivity.midiDevice == null) {
+				new AlertDialog.Builder(this).setTitle(getString(R.string.settings_midi_device))
+				.setMessage(getString(R.string.midi_device_is_not_connected))
+				.setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						
+					}
+				}).show();
+			} else {
+				String message = MainActivity.midiDevice.getInfo().getProperties().getString(MidiDeviceInfo.PROPERTY_NAME);
+				message += "\n";
+				message += getString(R.string.manufacturer) + " ";
+				message += MainActivity.midiDevice.getInfo().getProperties().getString(MidiDeviceInfo.PROPERTY_MANUFACTURER);
+				
+				new AlertDialog.Builder(this).setTitle(getString(R.string.settings_midi_device))
+				.setMessage(message)
+				.setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						
+					}
+				}).show();
+			}
 		}
 		default:
 			return;

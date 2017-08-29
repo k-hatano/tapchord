@@ -58,5 +58,10 @@
     
     <string name="midi_device">MIDI Device</string>
     <string name="not_connected">Not Connected</string>
+    
+    <string name="midi_device_connected">MIDI device connected : </string>
+    <string name="midi_device_disconnected">MIDI device disconnected : </string>
+    <string name="midi_device_is_not_connected">MIDI device is not connected.</string>
+    <string name="manufacturer">Manufacturer : </string>
 
 </resources>

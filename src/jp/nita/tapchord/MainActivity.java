@@ -78,7 +78,7 @@ public class MainActivity extends Activity {
 										inputPort = openingPort;
 										midiDevice = device;
 										Toast.makeText(MainActivity.this,
-												"MIDI device connected : " + device.getInfo().getProperties()
+												getString(R.string.midi_device_connected) + " " + device.getInfo().getProperties()
 														.getString(MidiDeviceInfo.PROPERTY_NAME),
 												Toast.LENGTH_SHORT).show();
 										if (MainActivity.settingsActivity != null) {
@@ -108,7 +108,10 @@ public class MainActivity extends Activity {
 		MidiManager.DeviceCallback deviceCallBack = new MidiManager.DeviceCallback() {
 			@Override
 			public void onDeviceAdded(MidiDeviceInfo device) {
-				super.onDeviceAdded(device);
+				super.onDeviceAdded(device);Toast.makeText(MainActivity.this,
+						"added device : " + device.getProperties()
+						.getString(MidiDeviceInfo.PROPERTY_NAME),
+				Toast.LENGTH_SHORT).show();
 				synchronized (midiProcess) {
 					MidiManager midiManager = (MidiManager) getSystemService(Context.MIDI_SERVICE);
 					midiManager.openDevice(device, onDeviceOpenedListener, new Handler(Looper.getMainLooper()));
@@ -119,7 +122,7 @@ public class MainActivity extends Activity {
 			public void onDeviceRemoved(MidiDeviceInfo device) {
 				super.onDeviceRemoved(device);
 				Toast.makeText(MainActivity.this,
-						"MIDI device disconnected : " + device.getProperties().getString(MidiDeviceInfo.PROPERTY_NAME),
+						getString(R.string.midi_device_disconnected) + " " + device.getProperties().getString(MidiDeviceInfo.PROPERTY_NAME),
 						Toast.LENGTH_SHORT).show();
 				synchronized (midiProcess) {
 					if (inputPort != null) {
