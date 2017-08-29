@@ -9,6 +9,7 @@ import android.R.color;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.media.midi.MidiDevice;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -64,6 +65,8 @@ public class SettingsActivity extends Activity implements OnClickListener, OnIte
 		Button button;
 		button = (Button) findViewById(R.id.settings_ok);
 		button.setOnClickListener(this);
+		
+		MainActivity.settingsActivity = this;
 	}
 
 	public void updatePreferenceValues() {
@@ -135,6 +138,11 @@ public class SettingsActivity extends Activity implements OnClickListener, OnIte
 			map.put("key", getString(R.string.settings_animation_quality));
 			map.put("value", Statics.stringOfAnimationQuality(animationQuality, this));
 			list.add(map);
+			
+			map = new HashMap<String, String>();
+			map.put("key", getString(R.string.settings_midi_device));
+			map.put("value", Statics.nameOfMidiDevice(MainActivity.midiDevice, this));
+			list.add(map);
 		}
 
 		SimpleAdapter adapter = new SimpleAdapter(this, list, android.R.layout.simple_expandable_list_item_2,
@@ -142,6 +150,12 @@ public class SettingsActivity extends Activity implements OnClickListener, OnIte
 		items.setAdapter(adapter);
 
 		items.setOnItemClickListener(this);
+	}
+	
+	@Override
+	public void onDestroy(){
+		super.onDestroy();
+		MainActivity.settingsActivity = null;
 	}
 
 	@Override
@@ -620,5 +634,11 @@ public class SettingsActivity extends Activity implements OnClickListener, OnIte
 		MainActivity.setAnimationQuality(aq);
 		updatePreferenceValues();
 		updateSettingsListView();
+	}
+	
+	public void midiDeviceStateChanged(MidiDevice device) {
+		position = ((ListView) findViewById(R.id.settings_items)).getFirstVisiblePosition();
+		updateSettingsListView();
+		((ListView) findViewById(R.id.settings_items)).setSelection(position);
 	}
 }

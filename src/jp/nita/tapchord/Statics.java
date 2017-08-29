@@ -11,6 +11,8 @@ import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.RectF;
+import android.media.midi.MidiDevice;
+import android.media.midi.MidiDeviceInfo;
 
 public class Statics {
 
@@ -651,5 +653,13 @@ public class Statics {
 
 	public static Rect RectFToRect(RectF rectf) {
 		return new Rect((int) rectf.left, (int) rectf.top, (int) rectf.right, (int) rectf.bottom);
+	}
+	
+	public static String nameOfMidiDevice(MidiDevice device, Context context) {
+		if (device == null) {
+			return context.getString(R.string.not_connected);
+		} else {
+			return device.getInfo().getProperties().getString(MidiDeviceInfo.PROPERTY_NAME);
+		}
 	}
 }

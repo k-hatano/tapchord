@@ -33,10 +33,12 @@ public class MainActivity extends Activity {
 	
 	public static MainActivity main = null;
 	
-	MidiDevice midiDevice = null;
-	MidiInputPort inputPort = null;
+	public static MidiDevice midiDevice = null;
+	public static MidiInputPort inputPort = null;
 	
 	static Object midiProcess = new Object();
+	
+	public static SettingsActivity settingsActivity = null;
 	
 	int volume;
 
@@ -79,6 +81,9 @@ public class MainActivity extends Activity {
 												"MIDI device connected : " + device.getInfo().getProperties()
 														.getString(MidiDeviceInfo.PROPERTY_NAME),
 												Toast.LENGTH_SHORT).show();
+										if (MainActivity.settingsActivity != null) {
+											MainActivity.settingsActivity.midiDeviceStateChanged(device);
+										}
 										break;
 									}
 								}
@@ -133,6 +138,9 @@ public class MainActivity extends Activity {
 						}
 						midiDevice = null;
 					}
+				}
+				if (MainActivity.settingsActivity != null) {
+					MainActivity.settingsActivity.midiDeviceStateChanged(null);
 				}
 			}
 
