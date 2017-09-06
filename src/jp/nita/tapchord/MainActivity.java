@@ -61,8 +61,7 @@ public class MainActivity extends Activity {
 
 							ProgressDialog progressDialog;
 							progressDialog = new ProgressDialog(MainActivity.this);
-							progressDialog.setTitle("Connected MIDI device : "
-									+ device.getInfo().getProperties().getString(MidiDeviceInfo.PROPERTY_NAME));
+							progressDialog.setTitle("Connected MIDI device");
 							progressDialog.setMessage("Opening input port...");
 							progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 							progressDialog.show();
@@ -78,8 +77,7 @@ public class MainActivity extends Activity {
 										inputPort = openingPort;
 										midiDevice = device;
 										Toast.makeText(MainActivity.this,
-												getString(R.string.midi_device_connected) + " " + device.getInfo().getProperties()
-														.getString(MidiDeviceInfo.PROPERTY_NAME),
+												getString(R.string.midi_device_connected),
 												Toast.LENGTH_SHORT).show();
 										if (MainActivity.settingsActivity != null) {
 											MainActivity.settingsActivity.midiDeviceStateChanged(device);
@@ -109,8 +107,7 @@ public class MainActivity extends Activity {
 			@Override
 			public void onDeviceAdded(MidiDeviceInfo device) {
 				super.onDeviceAdded(device);Toast.makeText(MainActivity.this,
-						"added device : " + device.getProperties()
-						.getString(MidiDeviceInfo.PROPERTY_NAME),
+						"MIDI device added.",
 				Toast.LENGTH_SHORT).show();
 				synchronized (midiProcess) {
 					MidiManager midiManager = (MidiManager) getSystemService(Context.MIDI_SERVICE);
@@ -121,9 +118,12 @@ public class MainActivity extends Activity {
 			@Override
 			public void onDeviceRemoved(MidiDeviceInfo device) {
 				super.onDeviceRemoved(device);
-				Toast.makeText(MainActivity.this,
-						getString(R.string.midi_device_disconnected) + " " + device.getProperties().getString(MidiDeviceInfo.PROPERTY_NAME),
-						Toast.LENGTH_SHORT).show();
+
+				if (inputPort != null || midiDevice != null) {
+					Toast.makeText(MainActivity.this, getString(R.string.midi_device_disconnected), Toast.LENGTH_SHORT)
+							.show();
+				}
+
 				synchronized (midiProcess) {
 					if (inputPort != null) {
 						try {
