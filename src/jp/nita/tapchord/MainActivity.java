@@ -1,5 +1,13 @@
 package jp.nita.tapchord;
 
+import java.io.IOException;
+
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.media.AudioManager;
 import android.media.midi.MidiDevice;
 import android.media.midi.MidiDeviceInfo;
@@ -11,18 +19,11 @@ import android.media.midi.MidiManager.OnDeviceOpenedListener;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-
-import java.io.IOException;
-
-import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.ProgressDialog;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class MainActivity extends Activity {
@@ -30,16 +31,16 @@ public class MainActivity extends Activity {
 	public static int heartBeatInterval = 5;
 
 	private Heart heart = null;
-	
+
 	public static MainActivity main = null;
-	
+
 	public static MidiDevice midiDevice = null;
 	public static MidiInputPort inputPort = null;
-	
+
 	static Object midiProcess = new Object();
-	
+
 	public static SettingsActivity settingsActivity = null;
-	
+
 	int volume;
 
 	@Override
@@ -51,14 +52,20 @@ public class MainActivity extends Activity {
 		heart = new Heart();
 		heart.start();
 		main = this;
-		
+
 		MidiManager midiManager = (MidiManager)getSystemService(Context.MIDI_SERVICE);
 		midiManager.registerDeviceCallback(deviceCallBack, new Handler(Looper.getMainLooper()));
 	}
-	
+
 	final OnDeviceOpenedListener onDeviceOpenedListener = new MidiManager.OnDeviceOpenedListener() {
 	    @Override
 	    public void onDeviceOpened(MidiDevice device) {
+
+	    	MainActivity.this.appendDebugString("onDeviceOpened : " + device.getInfo().toString());
+
+	    	if (midiDevice != null) {
+	    		return;
+	    	}
 			synchronized (midiProcess) {
 				if (device != null) {
 					if (device.getInfo().getInputPortCount() > 0) {
@@ -106,11 +113,15 @@ public class MainActivity extends Activity {
 			}
 	    }
 	};
-	
+
 	final MidiManager.DeviceCallback deviceCallBack = new MidiManager.DeviceCallback() {
 		@Override
 		public void onDeviceAdded(MidiDeviceInfo device) {
-			super.onDeviceAdded(device);Toast.makeText(MainActivity.this,
+			super.onDeviceAdded(device);
+
+			MainActivity.this.appendDebugString("onDeviceAdded : " + device.toString());
+
+			Toast.makeText(MainActivity.this,
 					"MIDI device added.",
 			Toast.LENGTH_SHORT).show();
 			synchronized (midiProcess) {
@@ -122,6 +133,8 @@ public class MainActivity extends Activity {
 		@Override
 		public void onDeviceRemoved(MidiDeviceInfo device) {
 			super.onDeviceRemoved(device);
+
+			MainActivity.this.appendDebugString("onDeviceRemoved : " + device.toString());
 
 			if (inputPort != null || midiDevice != null) {
 				Toast.makeText(MainActivity.this, getString(R.string.midi_device_disconnected), Toast.LENGTH_SHORT)
@@ -154,14 +167,14 @@ public class MainActivity extends Activity {
 		@Override
 		public void onDeviceStatusChanged(MidiDeviceStatus status) {
 			super.onDeviceStatusChanged(status);
-
+			MainActivity.this.appendDebugString("onDeviceStatusChanged : " + status);
 		}
 	};
 
 	@Override
 	protected void onPause() {
 		super.onPause();
-		
+
 		MidiManager midiManager = (MidiManager)getSystemService(Context.MIDI_SERVICE);
 		if (midiDevice != null) {
 			if (inputPort != null || midiDevice != null) {
@@ -192,7 +205,7 @@ public class MainActivity extends Activity {
 			}
 		}
 		midiManager.unregisterDeviceCallback(deviceCallBack);
-		
+
 		((TapChordView) findViewById(R.id.tapChordView)).activityPaused();
 		heart.sleep();
 	}
@@ -202,15 +215,15 @@ public class MainActivity extends Activity {
 		super.onResume();
 		((TapChordView) findViewById(R.id.tapChordView)).activityResumed();
 		heart.wake();
-		
+
 		MidiManager midiManager = (MidiManager)getSystemService(Context.MIDI_SERVICE);
 		midiManager.registerDeviceCallback(deviceCallBack, new Handler(Looper.getMainLooper()));
 	}
-	
+
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-		
+
 		MidiManager midiManager = (MidiManager)getSystemService(Context.MIDI_SERVICE);
 		if (inputPort != null || midiDevice != null) {
 			Toast.makeText(MainActivity.this, getString(R.string.midi_device_disconnected), Toast.LENGTH_SHORT)
@@ -239,7 +252,7 @@ public class MainActivity extends Activity {
 			MainActivity.settingsActivity.midiDeviceStateChanged(null);
 		}
 		midiManager.unregisterDeviceCallback(deviceCallBack);
-		
+
 		((TapChordView) findViewById(R.id.tapChordView)).activityPaused();
 		heart.die();
 	}
@@ -321,7 +334,7 @@ public class MainActivity extends Activity {
 			alive = false;
 		}
 	}
-	
+
 	public void sendMidiEventToDevice(int on, int note) {
 		if (midiDevice == null) {
 			return;
@@ -366,9 +379,18 @@ public class MainActivity extends Activity {
 
 						}
 					}).show();
-//		} else if (keyCode == KeyEvent.KEYCODE_CAMERA || keyCode == KeyEvent.KEYCODE_BACKSLASH) {
-//			TapChordView.debugMode = !TapChordView.debugMode;
-//			((TapChordView) findViewById(R.id.tapChordView)).invalidate();
+		} else if (keyCode == KeyEvent.KEYCODE_CAMERA || keyCode == KeyEvent.KEYCODE_BACKSLASH) {
+			View scrollView = findViewById(R.id.scrollview_debug);
+
+			if (scrollView == null) {
+				return super.onKeyDown(keyCode, event);
+			}
+
+			if (scrollView.getVisibility() == View.VISIBLE) {
+				scrollView.setVisibility(View.GONE);
+			} else {
+				scrollView.setVisibility(View.VISIBLE);
+			}
 		} else {
 			boolean result = false;
 			result = ((TapChordView) findViewById(R.id.tapChordView)).keyPressed(keyCode, event);
@@ -388,7 +410,7 @@ public class MainActivity extends Activity {
 		}
 		return super.onKeyUp(keyCode, event);
 	}
-	
+
 	@Override
 	public boolean onKeyLongPress(int keyCode, KeyEvent event){
 		boolean result = false;
@@ -397,6 +419,15 @@ public class MainActivity extends Activity {
 			return super.onKeyLongPress(keyCode, event);
 		}
 	    return super.onKeyLongPress(keyCode, event);
+	}
+
+	public void appendDebugString(String string) {
+		TextView textView = (TextView)findViewById(R.id.textview_debug);
+		if (textView == null) {
+			return;
+		}
+
+		textView.setText("- " + string + "\n" + textView.getText());
 	}
 
 }
