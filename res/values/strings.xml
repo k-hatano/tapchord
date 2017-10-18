@@ -39,9 +39,9 @@
     <string name="special_thanks">Special Thanks to\nAkiyoshi Kamide</string>
     <string name="copyright">Version 1.3 © Nita</string>
     <string name="tapchord_settings">tapchord - Settings</string>
-    
+
     <string name="settings_volume">Volume</string>
-    
+
     <string name="darken">Darken</string>
     <string name="on">On</string>
     <string name="off">Off</string>
@@ -51,15 +51,15 @@
     <string name="enable">Enable</string>
     <string name="disable">Disable</string>
     <string name="disabled">Disabled</string>
-    
+
     <string name="settings_volume_short">Volume</string>
     <string name="settings_sound_range_short">Range</string>
     <string name="settings_waveform_short">Form</string>
-    
+
     <string name="midi_device">MIDI Device</string>
     <string name="not_connected">Not Connected</string>
-    
-    <string name="midi_device_connected">MIDI device connected.\nCheck information of MIDI device on "Settings" view.</string>
+
+    <string name="midi_device_connected">MIDI device connected : </string>
     <string name="midi_device_disconnected">MIDI device disconnected.</string>
     <string name="midi_device_is_not_connected">MIDI device is not connected.</string>
     <string name="manufacturer">Manufacturer : </string>

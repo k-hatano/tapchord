@@ -87,8 +87,9 @@ public class MainActivity extends Activity {
 								if (openingPort != null) {
 									inputPort = openingPort;
 									midiDevice = device;
+									String deviceName = device.getInfo().getProperties().getString(MidiDeviceInfo.PROPERTY_NAME);
 									Toast.makeText(MainActivity.this,
-											getString(R.string.midi_device_connected),
+											getString(R.string.midi_device_connected) + " " + deviceName,
 											Toast.LENGTH_SHORT).show();
 									if (MainActivity.settingsActivity != null) {
 										MainActivity.settingsActivity.midiDeviceStateChanged(device);
@@ -176,35 +177,38 @@ public class MainActivity extends Activity {
 		super.onPause();
 
 		MidiManager midiManager = (MidiManager)getSystemService(Context.MIDI_SERVICE);
-		if (midiDevice != null) {
-			if (inputPort != null || midiDevice != null) {
-				Toast.makeText(MainActivity.this, getString(R.string.midi_device_disconnected), Toast.LENGTH_SHORT)
-						.show();
+		if (!TapChordApplication.get(this).ifForeground()) {
+			if (midiDevice != null) {
+				if (inputPort != null || midiDevice != null) {
+					Toast.makeText(MainActivity.this, getString(R.string.midi_device_disconnected), Toast.LENGTH_SHORT)
+							.show();
+				}
+
+				synchronized (midiProcess) {
+					if (inputPort != null) {
+						try {
+							inputPort.close();
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+						inputPort = null;
+					}
+					if (midiDevice != null) {
+						try {
+							midiDevice.close();
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+						midiDevice = null;
+					}
+				}
+				if (MainActivity.settingsActivity != null) {
+					MainActivity.settingsActivity.midiDeviceStateChanged(null);
+				}
 			}
 
-			synchronized (midiProcess) {
-				if (inputPort != null) {
-					try {
-						inputPort.close();
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-					inputPort = null;
-				}
-				if (midiDevice != null) {
-					try {
-						midiDevice.close();
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-					midiDevice = null;
-				}
-			}
-			if (MainActivity.settingsActivity != null) {
-				MainActivity.settingsActivity.midiDeviceStateChanged(null);
-			}
+			midiManager.unregisterDeviceCallback(deviceCallBack);
 		}
-		midiManager.unregisterDeviceCallback(deviceCallBack);
 
 		((TapChordView) findViewById(R.id.tapChordView)).activityPaused();
 		heart.sleep();
@@ -229,24 +233,36 @@ public class MainActivity extends Activity {
 			Toast.makeText(MainActivity.this, getString(R.string.midi_device_disconnected), Toast.LENGTH_SHORT)
 					.show();
 		}
-
-		synchronized (midiProcess) {
-			if (inputPort != null) {
-				try {
-					inputPort.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-				inputPort = null;
-			}
+		if (!TapChordApplication.get(this).ifForeground()) {
 			if (midiDevice != null) {
-				try {
-					midiDevice.close();
-				} catch (IOException e) {
-					e.printStackTrace();
+				if (inputPort != null || midiDevice != null) {
+					Toast.makeText(MainActivity.this, getString(R.string.midi_device_disconnected), Toast.LENGTH_SHORT)
+							.show();
 				}
-				midiDevice = null;
+
+				synchronized (midiProcess) {
+					if (inputPort != null) {
+						try {
+							inputPort.close();
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+						inputPort = null;
+					}
+					if (midiDevice != null) {
+						try {
+							midiDevice.close();
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+						midiDevice = null;
+					}
+				}
+				if (MainActivity.settingsActivity != null) {
+					MainActivity.settingsActivity.midiDeviceStateChanged(null);
+				}
 			}
+			midiManager.unregisterDeviceCallback(deviceCallBack);
 		}
 		if (MainActivity.settingsActivity != null) {
 			MainActivity.settingsActivity.midiDeviceStateChanged(null);
