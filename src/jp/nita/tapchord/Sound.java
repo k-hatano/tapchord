@@ -4,13 +4,13 @@ import android.content.Context;
 import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioTrack;
-import android.util.Log;
 
 public class Sound {
 	static long tappedTime = 0;
 	static long startedPlayingTime = 0;
 	static long requiredTime = 0;
 
+	Integer[] notes = new Integer[0];
 	Integer[] frequencies = new Integer[0];
 	WaveGenerator generator = null;
 	static AudioTrack track = null;
@@ -41,10 +41,12 @@ public class Sound {
 
 	static Object modeProcess = new Object();
 
-	public Sound(Integer[] freqs, Context cont) {
-		frequencies = freqs;
+	public Sound(Integer[] ns, int sr, Context cont) {
+		notes = ns;
+		soundRange = sr;
+		frequencies = (Statics.convertNotesToFrequencies(notes, soundRange));
 		context = cont;
-		
+
 		for (int i = 0; i < gaussianTable.length; i++) {
 			gaussianTable[i] = gaussian(i - gaussianTable.length / 2);
 		}
@@ -92,31 +94,31 @@ public class Sound {
 			return Math.sin(2.0 * Math.PI * t);
 		}
 	}
-	
+
 	final static double LOG_2 = Math.log(2.0);
 
-	public static double shepardTone(long term, int frequency, int sampleRate, int soundRange, int which) {
+	public static double shepardTone(long term, int frequency, int noteInt, int sampleRate, int soundRange, int which) {
 		switch (which) {
 		case 6: {
 			double r = 0, g = 0;
-			double t = (double)term * frequency / sampleRate;
-			double note = (Math.log(frequency / 440.0) / LOG_2) * 12 - 6;
+			double t = Math.PI * (double)term * frequency / sampleRate;
+			double note = noteInt - 6;
 			int n = (int)Math.round(note - soundRange);
 
 			g = gaussianTable[n - 24 + gaussianTable.length / 2];
-			r += Math.sin(0.5 * Math.PI * t) * g;
+			r += Math.sin(0.5 * t) * g;
 
 			g = gaussianTable[n - 12 + gaussianTable.length / 2];
-			r += Math.sin(1.0 * Math.PI * t) * g;
+			r += Math.sin(1.0 * t) * g;
 
 			g = gaussianTable[n + gaussianTable.length / 2];
-			r += Math.sin(2.0 * Math.PI * t) * g;
+			r += Math.sin(2.0 * t) * g;
 
 			g = gaussianTable[n + 12 + gaussianTable.length / 2];
-			r += Math.sin(4.0 * Math.PI * t) * g;
+			r += Math.sin(4.0 * t) * g;
 
 			g = gaussianTable[n + 24 + gaussianTable.length / 2];
-			r += Math.sin(8.0 * Math.PI * t) * g;
+			r += Math.sin(8.0 * t) * g;
 
 			return r;
 		}
@@ -124,7 +126,7 @@ public class Sound {
 			return Math.sin(2.0 * Math.PI * term * frequency / sampleRate);
 		}
 	}
-	
+
 	final static double SIGMA = 0.45;
 	final static double SIGMA_SQRT_PI = SIGMA * Math.sqrt(2 * Math.PI);
 	final static double SIGMA_SQUARED_2 = 2 * SIGMA * SIGMA;
@@ -133,64 +135,70 @@ public class Sound {
 		double tOn12 = t / 12.0;
 		return (1.0 / SIGMA_SQRT_PI) * Math.exp(- tOn12 * tOn12 / SIGMA_SQUARED_2);
 	}
-	
+
 	public short[] getWave(int length) {
 		short[] w = new short[length];
 		for (int i = 0; i < length; i++) {
 			double s = 0;
-			switch (waveform) {
-			case 0:
-			case 1:
-			case 2:
-			case 3:
-			case 4:
-			case 5:
-				for (int j = 0; j < frequencies.length; j++) {
-					s += wave((double) term * frequencies[j] / sampleRate, waveform);
+
+			if (!enableEnvelope && i > sampleRate) {
+				w[i] = w[i - sampleRate];
+			} else {
+
+				switch (waveform) {
+				case 0:
+				case 1:
+				case 2:
+				case 3:
+				case 4:
+				case 5:
+					for (int j = 0; j < frequencies.length; j++) {
+						s += wave((double) term * frequencies[j] / sampleRate, waveform);
+					}
+					break;
+				case 6:
+					for (int j = 0; j < frequencies.length; j++) {
+						s += shepardTone(term, frequencies[j], notes[j], sampleRate, soundRange, waveform);
+					}
+					break;
 				}
-				break;
-			case 6:
-				for (int j = 0; j < frequencies.length; j++) {
-					s += shepardTone(term, frequencies[j], sampleRate, soundRange, waveform);
+
+				s *= volume / 400.0 * (Short.MAX_VALUE);
+
+				if (enableEnvelope) {
+					if (mode == MODE_ATTACK && modeTerm >= attackLength) {
+						modeTerm = 0;
+						mode = MODE_DECAY;
+					}
+					if (mode == MODE_DECAY && modeTerm >= decayLength) {
+						modeTerm = 0;
+						mode = MODE_SUSTAIN;
+					}
+					if (mode == MODE_RELEASE && modeTerm > releaseLength) {
+						modeTerm = 0;
+						mode = MODE_FINISHED;
+					}
+
+					if (mode == MODE_ATTACK) {
+						s = s * ((double) modeTerm / (double) attackLength);
+					} else if (mode == MODE_DECAY) {
+						s = (s * (double) (decayLength - modeTerm) / (double) decayLength
+								+ s * sustainLevel * (double) modeTerm / (double) decayLength);
+					} else if (mode == MODE_SUSTAIN) {
+						s = s * sustainLevel;
+					} else if (mode == MODE_RELEASE) {
+						s = s * ((double) (releaseLength - modeTerm) / (double) releaseLength) * sustainLevel;
+					} else {
+						s = 0;
+					}
 				}
-				break;
+
+				if (s >= Short.MAX_VALUE)
+					s = (double) Short.MAX_VALUE;
+				if (s <= -Short.MAX_VALUE)
+					s = (double) (-Short.MAX_VALUE);
+				w[i] = (short) s;
 			}
-
-			s *= volume / 400.0 * (Short.MAX_VALUE);
-
-			if (enableEnvelope) {
-				if (mode == MODE_ATTACK && modeTerm >= attackLength) {
-					modeTerm = 0;
-					mode = MODE_DECAY;
-				}
-				if (mode == MODE_DECAY && modeTerm >= decayLength) {
-					modeTerm = 0;
-					mode = MODE_SUSTAIN;
-				}
-				if (mode == MODE_RELEASE && modeTerm > releaseLength) {
-					modeTerm = 0;
-					mode = MODE_FINISHED;
-				}
-
-				if (mode == MODE_ATTACK) {
-					s = s * ((double) modeTerm / (double) attackLength);
-				} else if (mode == MODE_DECAY) {
-					s = (s * (double) (decayLength - modeTerm) / (double) decayLength
-							+ s * sustainLevel * (double) modeTerm / (double) decayLength);
-				} else if (mode == MODE_SUSTAIN) {
-					s = s * sustainLevel;
-				} else if (mode == MODE_RELEASE) {
-					s = s * ((double) (releaseLength - modeTerm) / (double) releaseLength) * sustainLevel;
-				} else {
-					s = 0;
-				}
-			}
-
-			if (s >= Short.MAX_VALUE)
-				s = (double) Short.MAX_VALUE;
-			if (s <= -Short.MAX_VALUE)
-				s = (double) (-Short.MAX_VALUE);
-			w[i] = (short) s;
 
 			term++;
 			if (mode != MODE_SUSTAIN)
@@ -236,7 +244,7 @@ public class Sound {
 					track = new AudioTrack(AudioManager.STREAM_MUSIC, sampleRate,
 							AudioFormat.CHANNEL_CONFIGURATION_MONO, AudioFormat.ENCODING_PCM_16BIT, length,
 							AudioTrack.MODE_STREAM);
-					
+
 					mode = MODE_ATTACK;
 					term = 0;
 					modeTerm = 0;
@@ -268,7 +276,7 @@ public class Sound {
 					track = new AudioTrack(AudioManager.STREAM_MUSIC, sampleRate,
 							AudioFormat.CHANNEL_CONFIGURATION_MONO, AudioFormat.ENCODING_PCM_16BIT, length,
 							AudioTrack.MODE_STREAM);
-					
+
 					mode = MODE_SUSTAIN;
 					term = 0;
 					modeTerm = 0;
@@ -297,7 +305,7 @@ public class Sound {
 				// TODO: 何とかした方がいいと思う
 				track.pause();
 			} catch(IllegalStateException ignore) {
-				
+
 			}
 		}
 		modeTerm = 0;
