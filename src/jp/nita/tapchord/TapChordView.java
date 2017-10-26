@@ -28,6 +28,7 @@ import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.CheckBox;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
@@ -40,7 +41,7 @@ public class TapChordView extends View {
 	int situation, destination, step, scroll, upper, destScale;
 	int playing, playingX, playingY, tappedX, destScroll;
 	int playingID;
-	boolean darken, vibration, indicatorsTapped, isScrolling, scalePullingDown;
+	boolean darken, vibration, indicatorsTapped, isScrolling, scalePullingDown, playBaseNote;
 	int keyState[][] = new int[15][3];
 	int lastKeyState[][] = new int[15][3];
 	int statusbarKeycodes[] = {KeyEvent.KEYCODE_1, KeyEvent.KEYCODE_2, KeyEvent.KEYCODE_3, KeyEvent.KEYCODE_4};
@@ -950,6 +951,7 @@ public class TapChordView extends View {
 					keyboardIndicatorsReleased();
 				}
 			}
+
 			if (scroll < -Statics.scrollMax(width, height)) {
 				destScroll = -Statics.scrollMax(width, height);
 				startPullingAnimation(Statics.RELEASING);
@@ -1381,10 +1383,15 @@ public class TapChordView extends View {
 			public void onStopTrackingTouch(SeekBar seekBar) {
 			}
 		});
+		final CheckBox checkBoxPlayBaseNote = new CheckBox(this.getContext());
+		checkBoxPlayBaseNote.setText(this.getContext().getString(R.string.settings_play_base_note));
+		checkBoxPlayBaseNote.setTextAppearance(this.getContext(), android.R.style.TextAppearance_Inverse);
+		checkBoxPlayBaseNote.setChecked(playBaseNote);
 		final LinearLayout layout = new LinearLayout(this.getContext());
 		layout.setOrientation(LinearLayout.VERTICAL);
 		layout.addView(rangeView);
 		layout.addView(seekBar);
+		layout.addView(checkBoxPlayBaseNote);
 		layout.setPadding(8, 8, 8, 8);
 		new AlertDialog.Builder(this.getContext()).setTitle(this.getContext().getString(R.string.settings_sound_range))
 				.setView(layout)
@@ -1394,6 +1401,8 @@ public class TapChordView extends View {
 						soundRange = seekBar.getProgress() - 24;
 						Statics.setPreferenceValue(TapChordView.this.getContext(), Statics.PREF_SOUND_RANGE,
 								soundRange);
+						Statics.setPreferenceValue(TapChordView.this.getContext(), Statics.PREF_PLAY_BASE_NOTE,
+								checkBoxPlayBaseNote.isChecked() ? 1 : 0);
 						getPreferenceValues();
 					}
 				})
@@ -1429,7 +1438,7 @@ public class TapChordView extends View {
 	public void play(int x, int y) {
 		release();
 		notesOfChord = Statics.notesOfChord(x + scale, y, statusbarFlags);
-		sound = new Sound(notesOfChord, soundRange, this.getContext());
+		sound = new Sound(notesOfChord, soundRange, playBaseNote, this.getContext());
 		playing = 1;
 		playingX = x;
 		playingY = y;
@@ -1569,6 +1578,7 @@ public class TapChordView extends View {
 		darken = Statics.preferenceValue(this.getContext(), Statics.PREF_DARKEN, 0) > 0;
 		soundRange = Statics.preferenceValue(this.getContext(), Statics.PREF_SOUND_RANGE, 0);
 		vibration = Statics.preferenceValue(this.getContext(), Statics.PREF_VIBRATION, 1) > 0;
+		playBaseNote = Statics.preferenceValue(this.getContext(), Statics.PREF_PLAY_BASE_NOTE, 0) > 0;
 		stepMax = 100.0f / MainActivity.heartBeatInterval;
 	}
 

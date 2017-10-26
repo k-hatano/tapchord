@@ -34,14 +34,16 @@
     <string name="settings_animation_quality_medium">Medium</string>
     <string name="settings_animation_quality_high">High</string>
     <string name="settings_screen_auto_rotation">Screen Auto-Rotation</string>
+    <string name="settings_play_base_note">Play Base Note</string>
+    <string name="settings_play_base_note_paren">(Play Base Note)</string>
 
     <string name="settings_sampling_rate_hz"> Hz</string>
     <string name="special_thanks">Special Thanks to\nAkiyoshi Kamide</string>
     <string name="copyright">Version 1.2.2 © Nita</string>
     <string name="tapchord_settings">tapchord - Settings</string>
-    
+
     <string name="settings_volume">Volume</string>
-    
+
     <string name="darken">Darken</string>
     <string name="on">On</string>
     <string name="off">Off</string>
@@ -51,11 +53,11 @@
     <string name="enable">Enable</string>
     <string name="disable">Disable</string>
     <string name="disabled">Disabled</string>
-    
+
     <string name="settings_volume_short">Volume</string>
     <string name="settings_sound_range_short">Range</string>
     <string name="settings_waveform_short">Form</string>
-    
+
     <string name="crashed">Crashed!</string>
 
 </resources>

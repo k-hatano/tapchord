@@ -3,10 +3,10 @@ package jp.nita.tapchord;
 import java.util.ArrayList;
 import java.util.List;
 
-import android.content.SharedPreferences.Editor;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.Rect;
@@ -45,7 +45,7 @@ public class Statics {
 	final public static int COLOR_BLUE = 4;
 	final public static int COLOR_ORANGE = 5;
 	final public static int COLOR_PURPLE = 6;
-	
+
 	final public static int NOT_PULLING = 0;
 	final public static int PULLING = 1;
 	final public static int RELEASING = 2;
@@ -68,6 +68,7 @@ public class Statics {
 	public static final String PREF_ENABLE_ENVELOPE = "enable_envelope";
 	public static final String PREF_ANIMATION_QUALITY = "animation_quality";
 	public static final String PREF_SCREEN_AUTO_ROTATION = "screen_auto_rotation";
+	public static final String PREF_PLAY_BASE_NOTE = "play_base_note";
 
 	public static final int VIBRATION_LENGTH = 40;
 
@@ -250,17 +251,17 @@ public class Statics {
 
 		return Color.argb(255, r, g, b);
 	}
-	
+
 	public static int fadeColor(int color, boolean dark, float rate) {
 		if (dark) {
-			return Color.argb(255, 
-					(int)(Color.red(color) * rate), 
-					(int)(Color.green(color) * rate), 
+			return Color.argb(255,
+					(int)(Color.red(color) * rate),
+					(int)(Color.green(color) * rate),
 					(int)(Color.blue(color) * rate));
 		} else {
-			return Color.argb(255, 
-					(int)(255 - (255 - Color.red(color)) * rate), 
-					(int)(255 - (255 - Color.green(color)) * rate), 
+			return Color.argb(255,
+					(int)(255 - (255 - Color.red(color)) * rate),
+					(int)(255 - (255 - Color.green(color)) * rate),
 					(int)(255 - (255 - Color.blue(color)) * rate));
 		}
 	}
@@ -482,14 +483,18 @@ public class Statics {
 		} else if (tensions[3] > 0) {
 			notes.add((x * 7 + 11 + 360) % 12);
 		}
+
 		Integer ns[] = notes.toArray(new Integer[0]);
 		return ns;
 	}
 
-	public static Integer[] convertNotesToFrequencies(Integer[] notes, int soundRange) {
+	public static Integer[] convertNotesToFrequencies(Integer[] notes, int soundRange, boolean playBaseNote) {
 		List<Integer> freqs = new ArrayList<Integer>();
 		for (int i = 0; i < notes.length; i++) {
 			freqs.add(frequencyOfNote(notes[i], soundRange));
+		}
+		if (playBaseNote) {
+			freqs.add(frequencyOfNote(notes[0], soundRange - 12));
 		}
 		Integer fs[] = freqs.toArray(new Integer[0]);
 		return fs;
@@ -616,6 +621,14 @@ public class Statics {
 
 	public static String stringOfSoundRange(int soundRange) {
 		return shortStringOfSoundRange(soundRange) + " - " + shortStringOfSoundRange(soundRange + 11);
+	}
+
+	public static String stringOfSoundRange(int soundRange, boolean playBaseNote, Context context) {
+		String result = shortStringOfSoundRange(soundRange) + " - " + shortStringOfSoundRange(soundRange + 11);
+		if (playBaseNote) {
+			result += " " + context.getString(R.string.settings_play_base_note_paren);
+		}
+		return result;
 	}
 
 	public static String stringOfSingleTime(int t, Context context) {

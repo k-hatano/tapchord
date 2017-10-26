@@ -34,6 +34,7 @@ public class Sound {
 	int length;
 	int attackLength, decayLength, sustainLength, releaseLength;
 	boolean enableEnvelope;
+	boolean playBaseNote;
 
 	double sustainLevel;
 
@@ -41,10 +42,10 @@ public class Sound {
 
 	static Object modeProcess = new Object();
 
-	public Sound(Integer[] ns, int sr, Context cont) {
+	public Sound(Integer[] ns, int sr, boolean pbn, Context cont) {
 		notes = ns;
 		soundRange = sr;
-		frequencies = (Statics.convertNotesToFrequencies(notes, soundRange));
+		frequencies = (Statics.convertNotesToFrequencies(notes, soundRange, playBaseNote));
 		context = cont;
 
 		for (int i = 0; i < gaussianTable.length; i++) {
@@ -158,7 +159,7 @@ public class Sound {
 					break;
 				case 6:
 					for (int j = 0; j < frequencies.length; j++) {
-						s += shepardTone(term, frequencies[j], notes[j], sampleRate, soundRange, waveform);
+						s += shepardTone(term, frequencies[j], notes[j % frequencies.length], sampleRate, soundRange, waveform);
 					}
 					break;
 				}
