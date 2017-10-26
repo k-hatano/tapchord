@@ -102,7 +102,7 @@ public class Sound {
 		case 6: {
 			double r = 0, g = 0;
 			double t = Math.PI * (double)term * frequency / sampleRate;
-			double note = noteInt - 6;
+			double note = noteInt;
 			int n = (int)Math.round(note - soundRange);
 
 			g = gaussianTable[n - 24 + gaussianTable.length / 2];
