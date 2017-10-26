@@ -26,13 +26,12 @@ import android.util.SparseIntArray;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.Window;
 import android.view.WindowManager;
+import android.widget.CheckBox;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.SeekBar;
-import android.widget.TextView;
 import android.widget.SeekBar.OnSeekBarChangeListener;
+import android.widget.TextView;
 
 public class TapChordView extends View {
 	static boolean debugMode = false;
@@ -41,7 +40,7 @@ public class TapChordView extends View {
 	int situation, destination, step, scroll, upper, destScale;
 	int playing, playingX, playingY, tappedX, destScroll;
 	int playingID;
-	boolean darken, vibration, indicatorsTapped, isScrolling, scalePullingDown;
+	boolean darken, vibration, indicatorsTapped, isScrolling, scalePullingDown, playBaseNote;
 	int keyState[][] = new int[15][3];
 	int lastKeyState[][] = new int[15][3];
 	int statusbarKeycodes[] = {KeyEvent.KEYCODE_1, KeyEvent.KEYCODE_2, KeyEvent.KEYCODE_3, KeyEvent.KEYCODE_4};
@@ -85,7 +84,7 @@ public class TapChordView extends View {
 
 	SparseIntArray taps = new SparseIntArray();
 	List<Shape> shapes = new ArrayList<Shape>();
-	
+
 	Object keyWatcher = new Object();
 	Timer stopTimer = null;
 	Timer cancelSwitchingStatusBarTimer = null;
@@ -148,7 +147,7 @@ public class TapChordView extends View {
 			w = textPaint.measureText(str);
 			canvas.drawText(str, rect.centerX() - w / 2,
 					rect.centerY() - (fontMetrics.ascent + fontMetrics.descent) / 2, textPaint);
-			
+
 			d = (toolbarPressed == 1) ? 1 : 0;
 			paint.setColor(Statics.color(Statics.COLOR_PURPLE, d, darken));
 			rect = Statics.rectOfToolbarButton(1, 0, width, height, 1.0f);
@@ -166,7 +165,7 @@ public class TapChordView extends View {
 			w = textPaint.measureText(str);
 			canvas.drawText(str, rect.centerX() - w / 2,
 					rect.centerY() - (fontMetrics.ascent + fontMetrics.descent) / 2, textPaint);
-			
+
 			d = (toolbarPressed == 3) ? 1 : 0;
 			paint.setColor(Statics.color(Statics.COLOR_PURPLE, d, darken));
 			rect = Statics.rectOfToolbarTransposingButton(1, 0, width, height, 1.0f);
@@ -175,7 +174,7 @@ public class TapChordView extends View {
 			w = textPaint.measureText(str);
 			canvas.drawText(str, rect.centerX() - w / 2,
 					rect.centerY() - (fontMetrics.ascent + fontMetrics.descent) / 2, textPaint);
-			
+
 			d = (toolbarPressed == 4) ? 1 : 0;
 			paint.setColor(Statics.color(Statics.COLOR_PURPLE, d, darken));
 			rect = Statics.rectOfToolbarTransposingButton(2, 0, width, height, 1.0f);
@@ -488,7 +487,7 @@ public class TapChordView extends View {
 
 	public boolean actionDown(MotionEvent event, int index) {
 		RectF rect;
-		
+
 		int x = (int)event.getX(index);
 		int y = (int)event.getY(index);
 		int id = (int)event.getPointerId(index);
@@ -650,12 +649,12 @@ public class TapChordView extends View {
 	public boolean actionMove(MotionEvent event, int index) {
 		boolean chordPressed = false;
 		RectF rect;
-		
+
 		int x = (int)event.getX(index);
 		int y = (int)event.getY(index);
 		int id = (int)event.getPointerId(index);
 		int kind = id >= 0 ? taps.get(id) : 0;
-		
+
 		switch (kind) {
 		case Statics.SCROLL_NOB:
 			if (-y + originalY > height / 5) {
@@ -858,7 +857,7 @@ public class TapChordView extends View {
 					keyboardIndicatorsReleased();
 				}
 			}
-			
+
 			toolbarPressed = -1;
 			scalePressed = Statics.FARAWAY;
 			indicatorsTapped = false;
@@ -874,7 +873,7 @@ public class TapChordView extends View {
 		}
 		return true;
 	}
-	
+
 	public boolean keyPressed(int keyCode, KeyEvent event) {
 		Log.i("TapChordView", "pressed " + keyCode);
 		if (event.getRepeatCount() > 0 || event.isLongPress()) {
@@ -1002,10 +1001,10 @@ public class TapChordView extends View {
 				}
 			}
 		}
-		
+
 		return false;
 	}
-	
+
 	public boolean playWithKey(final int x,final int y) {
 		if (stopTimer != null) {
 			stopTimer.cancel();
@@ -1013,10 +1012,10 @@ public class TapChordView extends View {
 			return false;
 		}
 		play(x - 7, y - 1);
-		
+
 		return true;
 	}
-	
+
 	public boolean stopWithKey(final int x,final int y) {
 		stopTimer = new Timer();
 		stopTimer.schedule(new TimerTask(){
@@ -1031,7 +1030,7 @@ public class TapChordView extends View {
 				});
 			}
 		}, 100);
-		
+
 		return true;
 	}
 
@@ -1048,7 +1047,7 @@ public class TapChordView extends View {
 			statusbarFlags[index] = 1;
 		}
 		invalidate(Statics.RectFToRect(Statics.rectOfStatusBar(width, height, 1.0f)));
-		
+
 		lastTapped = index;
 		lastTappedTime = System.currentTimeMillis();
 
@@ -1072,17 +1071,17 @@ public class TapChordView extends View {
 				});
 			}
 		}, 100);
-		
+
 		return true;
 	}
-	
+
 	public boolean performSpecialKey(final int index) {
 		if (cancelSpecialKeyTimer != null) {
 			cancelSpecialKeyTimer.cancel();
 			cancelSpecialKeyTimer = null;
 			return false;
 		}
-		
+
 		switch (specialKeycodes[index]) {
 		case KeyEvent.KEYCODE_0:
 		case KeyEvent.KEYCODE_DEL:
@@ -1123,10 +1122,10 @@ public class TapChordView extends View {
 		default:
 			break;
 		}
-		
+
 		return true;
 	}
-	
+
 	public boolean cancelSpecialKey(final int index) {
 		cancelSpecialKeyTimer = new Timer();
 		cancelSpecialKeyTimer.schedule(new TimerTask() {
@@ -1148,7 +1147,7 @@ public class TapChordView extends View {
 				});
 			}
 		}, 100);
-		
+
 		return true;
 	}
 
@@ -1211,7 +1210,7 @@ public class TapChordView extends View {
 	public void keyboardIndicatorsReleased() {
 		showSoundRangeSettingAlert();
 	}
-	
+
 	public void showVolumeSettingAlert() {
 		int vol = Statics.preferenceValue(getContext(), Statics.PREF_VOLUME, 30) + 50;
 		final TextView volumeView = new TextView(getContext());
@@ -1250,11 +1249,11 @@ public class TapChordView extends View {
 				}).setNegativeButton(getContext().getString(R.string.cancel), new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
-						
+
 					}
 				}).show();
 	}
-	
+
 	public void showSoundRangeSettingAlert() {
 		final TextView rangeView = new TextView(this.getContext());
 		rangeView.setText("" + Statics.stringOfSoundRange(soundRange));
@@ -1276,10 +1275,15 @@ public class TapChordView extends View {
 			public void onStopTrackingTouch(SeekBar seekBar) {
 			}
 		});
+		final CheckBox checkBoxPlayBaseNote = new CheckBox(this.getContext());
+		checkBoxPlayBaseNote.setText(this.getContext().getString(R.string.settings_play_base_note));
+		checkBoxPlayBaseNote.setTextAppearance(this.getContext(), android.R.style.TextAppearance_Inverse);
+		checkBoxPlayBaseNote.setChecked(playBaseNote);
 		final LinearLayout layout = new LinearLayout(this.getContext());
 		layout.setOrientation(LinearLayout.VERTICAL);
 		layout.addView(rangeView);
 		layout.addView(seekBar);
+		layout.addView(checkBoxPlayBaseNote);
 		layout.setPadding(8, 8, 8, 8);
 		new AlertDialog.Builder(this.getContext()).setTitle(this.getContext().getString(R.string.settings_sound_range))
 				.setView(layout)
@@ -1289,6 +1293,8 @@ public class TapChordView extends View {
 						soundRange = seekBar.getProgress() - 24;
 						Statics.setPreferenceValue(TapChordView.this.getContext(), Statics.PREF_SOUND_RANGE,
 								soundRange);
+						Statics.setPreferenceValue(TapChordView.this.getContext(), Statics.PREF_PLAY_BASE_NOTE,
+								checkBoxPlayBaseNote.isChecked() ? 1 : 0);
 						getPreferenceValues();
 					}
 				})
@@ -1301,7 +1307,7 @@ public class TapChordView extends View {
 
 		invalidate();
 	}
-	
+
 	public void showWaveformSettingAlert() {
 		int waveform = Statics.preferenceValue(getContext(), Statics.PREF_WAVEFORM, 0);
 		CharSequence list[] = new String[7];
@@ -1324,7 +1330,7 @@ public class TapChordView extends View {
 	public void play(int x, int y) {
 		release();
 		notesOfChord = Statics.notesOfChord(x + scale, y, statusbarFlags);
-		Integer f[] = (Statics.convertNotesToFrequencies(notesOfChord, soundRange));
+		Integer f[] = (Statics.convertNotesToFrequencies(notesOfChord, soundRange, playBaseNote));
 		sound = new Sound(f, this.getContext());
 		playing = 1;
 		playingX = x;
@@ -1465,6 +1471,7 @@ public class TapChordView extends View {
 		darken = Statics.preferenceValue(this.getContext(), Statics.PREF_DARKEN, 0) > 0;
 		soundRange = Statics.preferenceValue(this.getContext(), Statics.PREF_SOUND_RANGE, 0);
 		vibration = Statics.preferenceValue(this.getContext(), Statics.PREF_VIBRATION, 1) > 0;
+		playBaseNote = Statics.preferenceValue(this.getContext(), Statics.PREF_PLAY_BASE_NOTE, 0) > 0;
 		stepMax = 100.0f / MainActivity.heartBeatInterval;
 	}
 

@@ -16,6 +16,7 @@ import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.SeekBar;
@@ -38,6 +39,7 @@ public class SettingsActivity extends Activity implements OnClickListener, OnIte
 	int sustainLevel;
 	int releaseTime;
 	int animationQuality;
+	int playBaseNote;
 
 	int position = 0;
 	int selected;
@@ -69,6 +71,7 @@ public class SettingsActivity extends Activity implements OnClickListener, OnIte
 		sustainLevel = Statics.preferenceValue(this, Statics.PREF_SUSTAIN_LEVEL, 0);
 		releaseTime = Statics.preferenceValue(this, Statics.PREF_RELEASE_TIME, 0);
 		animationQuality = Statics.preferenceValue(this, Statics.PREF_ANIMATION_QUALITY, 0);
+		playBaseNote = Statics.preferenceValue(this, Statics.PREF_PLAY_BASE_NOTE, 0);
 	}
 
 	public void updateSettingsListView() {
@@ -99,7 +102,7 @@ public class SettingsActivity extends Activity implements OnClickListener, OnIte
 
 			map = new HashMap<String, String>();
 			map.put("key", getString(R.string.settings_sound_range));
-			map.put("value", "" + Statics.stringOfSoundRange(soundRange));
+			map.put("value", "" + Statics.stringOfSoundRange(soundRange, playBaseNote > 0, this));
 			list.add(map);
 
 			map = new HashMap<String, String>();
@@ -281,16 +284,22 @@ public class SettingsActivity extends Activity implements OnClickListener, OnIte
 				public void onStopTrackingTouch(SeekBar seekBar) {
 				}
 			});
+			final CheckBox checkBoxPlayBaseNote = new CheckBox(this);
+			checkBoxPlayBaseNote.setText(this.getString(R.string.settings_play_base_note));
+			checkBoxPlayBaseNote.setTextAppearance(this, android.R.style.TextAppearance_Inverse);
+			checkBoxPlayBaseNote.setChecked(playBaseNote > 0);
 			final LinearLayout layout = new LinearLayout(this);
 			layout.setOrientation(LinearLayout.VERTICAL);
 			layout.addView(rangeView);
 			layout.addView(seekBar);
+			layout.addView(checkBoxPlayBaseNote);
 			layout.setPadding(8, 8, 8, 8);
 			new AlertDialog.Builder(SettingsActivity.this).setTitle(getString(R.string.settings_sound_range))
 					.setView(layout).setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
 						@Override
 						public void onClick(DialogInterface dialog, int which) {
 							setSoundRange(seekBar.getProgress() - 24);
+							setPlayBaseNote(checkBoxPlayBaseNote.isChecked() ? 1 : 0);
 							((ListView) findViewById(R.id.settings_items)).setSelection(position);
 						}
 					}).setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
@@ -329,7 +338,7 @@ public class SettingsActivity extends Activity implements OnClickListener, OnIte
 			 * enableCheckBox.setText(getString(R.string.enable));
 			 * enableCheckBox.setChecked(enableEnvelope>0);
 			 * enableCheckBox.setOnClickListener(new OnClickListener(){
-			 * 
+			 *
 			 * @Override public void onClick(View v) {
 			 * if(enableCheckBox.isChecked()){ attackSeekBar.setEnabled(true);
 			 * decaySeekBar.setEnabled(true); sustainSeekBar.setEnabled(true);
@@ -348,60 +357,60 @@ public class SettingsActivity extends Activity implements OnClickListener, OnIte
 			 * attackSeekBar.setEnabled(enableEnvelope>0);
 			 * attackSeekBar.setOnSeekBarChangeListener(new
 			 * OnSeekBarChangeListener(){
-			 * 
+			 *
 			 * @Override public void onProgressChanged(SeekBar seekBar, int
 			 * progress, boolean fromUser) {
 			 * attackLabel.setText(getString(R.string.settings_attack)+" : "
 			 * +Statics.getStringOfSingleTime(progress,SettingsActivity.this));
 			 * }
-			 * 
+			 *
 			 * @Override public void onStartTrackingTouch(SeekBar seekBar) {}
-			 * 
+			 *
 			 * @Override public void onStopTrackingTouch(SeekBar seekBar) {} });
 			 * decaySeekBar.setProgress(decayTime); decaySeekBar.setMax(100);
 			 * decaySeekBar.setPadding(0,0,0,8);
 			 * decaySeekBar.setEnabled(enableEnvelope>0);
 			 * decaySeekBar.setOnSeekBarChangeListener(new
 			 * OnSeekBarChangeListener(){
-			 * 
+			 *
 			 * @Override public void onProgressChanged(SeekBar seekBar, int
 			 * progress, boolean fromUser) {
 			 * decayLabel.setText(getString(R.string.settings_decay)+" : "
 			 * +Statics.getStringOfSingleTime(progress,SettingsActivity.this));
 			 * }
-			 * 
+			 *
 			 * @Override public void onStartTrackingTouch(SeekBar seekBar) {}
-			 * 
+			 *
 			 * @Override public void onStopTrackingTouch(SeekBar seekBar) {} });
 			 * sustainSeekBar.setProgress(sustainLevel+100);
 			 * sustainSeekBar.setMax(100); sustainSeekBar.setPadding(0,0,0,8);
 			 * sustainSeekBar.setEnabled(enableEnvelope>0);
 			 * sustainSeekBar.setOnSeekBarChangeListener(new
 			 * OnSeekBarChangeListener(){
-			 * 
+			 *
 			 * @Override public void onProgressChanged(SeekBar seekBar, int
 			 * progress, boolean fromUser) {
 			 * sustainLabel.setText(getString(R.string.settings_sustain)+" : "
 			 * +Statics.getStringOfSustainLevel(progress-100,SettingsActivity.
 			 * this)); }
-			 * 
+			 *
 			 * @Override public void onStartTrackingTouch(SeekBar seekBar) {}
-			 * 
+			 *
 			 * @Override public void onStopTrackingTouch(SeekBar seekBar) {} });
 			 * releaseSeekBar.setProgress(releaseTime);
 			 * releaseSeekBar.setMax(100); releaseSeekBar.setPadding(0,0,0,8);
 			 * releaseSeekBar.setEnabled(enableEnvelope>0);
 			 * releaseSeekBar.setOnSeekBarChangeListener(new
 			 * OnSeekBarChangeListener(){
-			 * 
+			 *
 			 * @Override public void onProgressChanged(SeekBar seekBar, int
 			 * progress, boolean fromUser) {
 			 * releaseLabel.setText(getString(R.string.settings_release)+" : "
 			 * +Statics.getStringOfSingleTime(progress,SettingsActivity.this));
 			 * }
-			 * 
+			 *
 			 * @Override public void onStartTrackingTouch(SeekBar seekBar) {}
-			 * 
+			 *
 			 * @Override public void onStopTrackingTouch(SeekBar seekBar) {} });
 			 * final TableLayout tableLayout = new TableLayout(this); TableRow
 			 * row1=new TableRow(SettingsActivity.this);
@@ -432,7 +441,7 @@ public class SettingsActivity extends Activity implements OnClickListener, OnIte
 			 * ); releaseLabel.setTextAppearance(this,android.R.style.
 			 * TextAppearance_Inverse); row5.addView(releaseLabel);
 			 * row5.addView(releaseSeekBar); tableLayout.addView(row5);
-			 * 
+			 *
 			 * tableRowParams =
 			 * (TableRow.LayoutParams)enableCheckBox.getLayoutParams();
 			 * tableRowParams.span = 4;
@@ -449,7 +458,7 @@ public class SettingsActivity extends Activity implements OnClickListener, OnIte
 			 * (TableRow.LayoutParams)releaseSeekBar.getLayoutParams();
 			 * tableRowParams.span = 3;
 			 * releaseSeekBar.setLayoutParams(tableRowParams);
-			 * 
+			 *
 			 * FrameLayout.LayoutParams
 			 * layoutParams=(FrameLayout.LayoutParams)tableLayout.
 			 * getLayoutParams(); layoutParams = new
@@ -458,16 +467,16 @@ public class SettingsActivity extends Activity implements OnClickListener, OnIte
 			 * tableLayout.setLayoutParams(layoutParams);
 			 * tableLayout.setPadding(8,8,8,8);
 			 * tableLayout.setStretchAllColumns(true);
-			 * 
+			 *
 			 * ScrollView scrollView = new ScrollView(SettingsActivity.this);
 			 * scrollView.addView(tableLayout);
-			 * 
+			 *
 			 * new AlertDialog.Builder(SettingsActivity.this)
 			 * .setTitle(getString(R.string.settings_envelope))
 			 * .setView(scrollView)
 			 * .setPositiveButton(getString(R.string.ok),new
 			 * DialogInterface.OnClickListener(){
-			 * 
+			 *
 			 * @Override public void onClick(DialogInterface dialog, int which)
 			 * { setEnableEnvelope(enableCheckBox.isChecked()?1:0);
 			 * setAttackTime(attackSeekBar.getProgress());
@@ -477,7 +486,7 @@ public class SettingsActivity extends Activity implements OnClickListener, OnIte
 			 * ((ListView)findViewById(R.id.settings_items)).setSelection(
 			 * position); } }) .setNegativeButton(getString(R.string.cancel),new
 			 * DialogInterface.OnClickListener(){
-			 * 
+			 *
 			 * @Override public void onClick(DialogInterface dialog, int which)
 			 * { ((ListView)findViewById(R.id.settings_items)).setSelection(
 			 * position); } }) .show(); break; }
@@ -611,5 +620,13 @@ public class SettingsActivity extends Activity implements OnClickListener, OnIte
 		MainActivity.setAnimationQuality(aq);
 		updatePreferenceValues();
 		updateSettingsListView();
+	}
+
+	public void setPlayBaseNote(int pbn) {
+		playBaseNote = pbn;
+		Statics.setPreferenceValue(this, Statics.PREF_PLAY_BASE_NOTE, playBaseNote);
+		updatePreferenceValues();
+		updateSettingsListView();
+
 	}
 }
