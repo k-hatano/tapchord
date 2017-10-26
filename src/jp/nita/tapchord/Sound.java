@@ -45,6 +45,7 @@ public class Sound {
 	public Sound(Integer[] ns, int sr, boolean pbn, Context cont) {
 		notes = ns;
 		soundRange = sr;
+		playBaseNote = pbn;
 		frequencies = (Statics.convertNotesToFrequencies(notes, soundRange, playBaseNote));
 		context = cont;
 
@@ -159,7 +160,7 @@ public class Sound {
 					break;
 				case 6:
 					for (int j = 0; j < frequencies.length; j++) {
-						s += shepardTone(term, frequencies[j], notes[j % frequencies.length], sampleRate, soundRange, waveform);
+						s += shepardTone(term, frequencies[j], notes[j % notes.length], sampleRate, soundRange, waveform);
 					}
 					break;
 				}
