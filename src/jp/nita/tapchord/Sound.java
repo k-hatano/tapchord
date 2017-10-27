@@ -109,8 +109,7 @@ public class Sound {
 		case 6: {
 			double r = 0, g = 0;
 			double t = Math.PI * (double)term * frequency / sampleRate;
-			int note = noteInt + 12;
-			int n = (int)Math.round(note - soundRange);
+			int n = noteInt - soundRange - 6;
 
 			g = gaussianTable[n - 24 + gaussianTable.length / 2];
 			r += Math.sin(0.5 * t) * g;
@@ -149,7 +148,7 @@ public class Sound {
 			double s = 0;
 
 			if (!enableEnvelope && i > sampleRate) {
-				w[i] = w[i - sampleRate];
+				w[i] = w[i % sampleRate];
 			} else {
 
 				switch (waveform) {
