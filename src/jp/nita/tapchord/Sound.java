@@ -43,10 +43,15 @@ public class Sound {
 	static Object modeProcess = new Object();
 
 	public Sound(Integer[] ns, int sr, boolean pbn, Context cont) {
-		notes = ns;
+		Integer[] newNotes = new Integer[ns.length + 1];
+		for (int i = 0; i < ns.length; i++) {
+			newNotes[i] = ns[i];
+		}
+		newNotes[ns.length] = newNotes[0] - 12;
+		notes = newNotes;
 		soundRange = sr;
 		playBaseNote = pbn;
-		frequencies = (Statics.convertNotesToFrequencies(notes, soundRange, playBaseNote));
+		frequencies = (Statics.convertNotesToFrequencies(ns, soundRange, playBaseNote));
 		context = cont;
 
 		for (int i = 0; i < gaussianTable.length; i++) {
@@ -104,7 +109,7 @@ public class Sound {
 		case 6: {
 			double r = 0, g = 0;
 			double t = Math.PI * (double)term * frequency / sampleRate;
-			double note = noteInt;
+			double note = noteInt + 12;
 			int n = (int)Math.round(note - soundRange);
 
 			g = gaussianTable[n - 24 + gaussianTable.length / 2];
