@@ -109,7 +109,7 @@ public class Sound {
 		case 6: {
 			double r = 0, g = 0;
 			double t = Math.PI * (double)term * frequency / sampleRate;
-			double note = noteInt + 12;
+			int note = noteInt + 12;
 			int n = (int)Math.round(note - soundRange);
 
 			g = gaussianTable[n - 24 + gaussianTable.length / 2];
@@ -165,7 +165,7 @@ public class Sound {
 					break;
 				case 6:
 					for (int j = 0; j < frequencies.length; j++) {
-						s += shepardTone(term, frequencies[j], notes[j % notes.length], sampleRate, soundRange, waveform);
+						s += shepardTone(term, frequencies[j], notes[j], sampleRate, soundRange, waveform);
 					}
 					break;
 				}
