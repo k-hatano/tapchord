@@ -58,10 +58,12 @@
 
     <string name="midi_device">MIDI デバイス</string>
     <string name="not_connected">接続されていません</string>
+    <string name="disconnect">切断</string>
 
     <string name="midi_device_connected">MIDI デバイスが接続されました : </string>
     <string name="midi_device_disconnected">MIDI デバイスが切断されました。</string>
     <string name="midi_device_is_not_connected">MIDI デバイスは接続されていません。</string>
     <string name="manufacturer">製造元 : </string>
+    <string name="version">バージョン : </string>
 
 </resources>

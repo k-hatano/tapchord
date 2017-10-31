@@ -12,7 +12,7 @@ public class TapChordApplication extends Application {
 	public void onCreate() {
 		super.onCreate();
 
-		registerActivityLifecycleCallbacks(new TapChordActivityLifecycleCallbacks());
+		registerActivityLifecycleCallbacks(new TapChordLifecycleHandler());
 	}
 
 	public static TapChordApplication get(Context context) {
@@ -31,7 +31,7 @@ public class TapChordApplication extends Application {
 		BACKGROUND, RETURNED_TO_FOREGROUND, FOREGROUND
 	}
 
-	public class TapChordActivityLifecycleCallbacks implements ActivityLifecycleCallbacks {
+	public class TapChordLifecycleHandler implements ActivityLifecycleCallbacks {
 
 		private int running = 0;
 
@@ -65,6 +65,7 @@ public class TapChordApplication extends Application {
 			running++;
 			if (running == 1) {
 				mAppStatus = AppStatus.RETURNED_TO_FOREGROUND;
+				MainActivity.onAppResumed(activity);
 			} else if (running > 1) {
 				mAppStatus = AppStatus.FOREGROUND;
 			}
@@ -74,6 +75,7 @@ public class TapChordApplication extends Application {
 		public void onActivityStopped(Activity activity) {
 			running--;
 			if (running <= 0) {
+				MainActivity.onAppPaused(activity);
 				mAppStatus = AppStatus.BACKGROUND;
 			}
 		}

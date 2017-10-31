@@ -102,8 +102,6 @@ public class MainActivity extends Activity {
 						progressDialog.dismiss();
 						if (inputPort == null) {
 							try {
-								Toast.makeText(MainActivity.this, "No input port available", Toast.LENGTH_SHORT)
-										.show();
 								device.close();
 							} catch (IOException e) {
 								e.printStackTrace();
@@ -176,40 +174,6 @@ public class MainActivity extends Activity {
 	protected void onPause() {
 		super.onPause();
 
-		MidiManager midiManager = (MidiManager)getSystemService(Context.MIDI_SERVICE);
-		if (!TapChordApplication.get(this).ifForeground()) {
-			if (midiDevice != null) {
-				if (inputPort != null || midiDevice != null) {
-					Toast.makeText(MainActivity.this, getString(R.string.midi_device_disconnected), Toast.LENGTH_SHORT)
-							.show();
-				}
-
-				synchronized (midiProcess) {
-					if (inputPort != null) {
-						try {
-							inputPort.close();
-						} catch (IOException e) {
-							e.printStackTrace();
-						}
-						inputPort = null;
-					}
-					if (midiDevice != null) {
-						try {
-							midiDevice.close();
-						} catch (IOException e) {
-							e.printStackTrace();
-						}
-						midiDevice = null;
-					}
-				}
-				if (MainActivity.settingsActivity != null) {
-					MainActivity.settingsActivity.midiDeviceStateChanged(null);
-				}
-			}
-
-			midiManager.unregisterDeviceCallback(deviceCallBack);
-		}
-
 		((TapChordView) findViewById(R.id.tapChordView)).activityPaused();
 		heart.sleep();
 	}
@@ -217,57 +181,15 @@ public class MainActivity extends Activity {
 	@Override
 	protected void onResume() {
 		super.onResume();
-		((TapChordView) findViewById(R.id.tapChordView)).activityResumed();
-		heart.wake();
 
-		MidiManager midiManager = (MidiManager)getSystemService(Context.MIDI_SERVICE);
-		midiManager.registerDeviceCallback(deviceCallBack, new Handler(Looper.getMainLooper()));
+		((TapChordView) findViewById(R.id.tapChordView)).activityResumed();
+		updatePreferences();
+		heart.wake();
 	}
 
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-
-		MidiManager midiManager = (MidiManager)getSystemService(Context.MIDI_SERVICE);
-		if (inputPort != null || midiDevice != null) {
-			Toast.makeText(MainActivity.this, getString(R.string.midi_device_disconnected), Toast.LENGTH_SHORT)
-					.show();
-		}
-		if (!TapChordApplication.get(this).ifForeground()) {
-			if (midiDevice != null) {
-				if (inputPort != null || midiDevice != null) {
-					Toast.makeText(MainActivity.this, getString(R.string.midi_device_disconnected), Toast.LENGTH_SHORT)
-							.show();
-				}
-
-				synchronized (midiProcess) {
-					if (inputPort != null) {
-						try {
-							inputPort.close();
-						} catch (IOException e) {
-							e.printStackTrace();
-						}
-						inputPort = null;
-					}
-					if (midiDevice != null) {
-						try {
-							midiDevice.close();
-						} catch (IOException e) {
-							e.printStackTrace();
-						}
-						midiDevice = null;
-					}
-				}
-				if (MainActivity.settingsActivity != null) {
-					MainActivity.settingsActivity.midiDeviceStateChanged(null);
-				}
-			}
-			midiManager.unregisterDeviceCallback(deviceCallBack);
-		}
-		if (MainActivity.settingsActivity != null) {
-			MainActivity.settingsActivity.midiDeviceStateChanged(null);
-		}
-		midiManager.unregisterDeviceCallback(deviceCallBack);
 
 		((TapChordView) findViewById(R.id.tapChordView)).activityPaused();
 		heart.die();
@@ -358,6 +280,7 @@ public class MainActivity extends Activity {
 		if (inputPort == null) {
 			return;
 		}
+		updatePreferences();
 		byte[] buffer = new byte[32];
 		int numBytes = 0;
 		int channel = 1;
@@ -444,6 +367,77 @@ public class MainActivity extends Activity {
 		}
 
 		textView.setText("- " + string + "\n" + textView.getText());
+	}
+
+	public static void onAppResumed(Activity activity) {
+		MidiManager midiManager = (MidiManager) main.getSystemService(Context.MIDI_SERVICE);
+		midiManager.registerDeviceCallback(main.deviceCallBack, new Handler(Looper.getMainLooper()));
+	}
+
+	public static void onAppPaused(Activity activity) {
+		MidiManager midiManager = (MidiManager) main.getSystemService(Context.MIDI_SERVICE);
+		if (midiDevice != null) {
+			if (inputPort != null || midiDevice != null) {
+				Toast.makeText(main, main.getString(R.string.midi_device_disconnected), Toast.LENGTH_SHORT).show();
+			}
+
+			synchronized (midiProcess) {
+				if (inputPort != null) {
+					try {
+						inputPort.close();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+					inputPort = null;
+				}
+				if (midiDevice != null) {
+					try {
+						midiDevice.close();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+					midiDevice = null;
+				}
+			}
+			if (MainActivity.settingsActivity != null) {
+				MainActivity.settingsActivity.midiDeviceStateChanged(null);
+			}
+		}
+
+		midiManager.unregisterDeviceCallback(main.deviceCallBack);
+	}
+
+	public static void disconnectMidiDevice(Activity activity) {
+		MidiManager midiManager = (MidiManager) main.getSystemService(Context.MIDI_SERVICE);
+		if (midiDevice != null) {
+			if (inputPort != null || midiDevice != null) {
+				Toast.makeText(main, main.getString(R.string.midi_device_disconnected), Toast.LENGTH_SHORT).show();
+			}
+
+			synchronized (midiProcess) {
+				if (inputPort != null) {
+					try {
+						inputPort.close();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+					inputPort = null;
+				}
+				if (midiDevice != null) {
+					try {
+						midiDevice.close();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+					midiDevice = null;
+				}
+			}
+			if (MainActivity.settingsActivity != null) {
+				MainActivity.settingsActivity.midiDeviceStateChanged(null);
+			}
+		}
+
+		midiManager.unregisterDeviceCallback(main.deviceCallBack);
 	}
 
 }
