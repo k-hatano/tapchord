@@ -4,7 +4,6 @@ import android.content.Context;
 import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioTrack;
-import android.util.Log;
 
 public class Sound {
 	static long tappedTime = 0;
@@ -44,7 +43,7 @@ public class Sound {
 	public Sound(Integer[] freqs, Context cont) {
 		frequencies = freqs;
 		context = cont;
-		
+
 		for (int i = 0; i < gaussianTable.length; i++) {
 			gaussianTable[i] = gaussian(i - gaussianTable.length / 2);
 		}
@@ -92,7 +91,7 @@ public class Sound {
 			return Math.sin(2.0 * Math.PI * t);
 		}
 	}
-	
+
 	final static double LOG_2 = Math.log(2.0);
 
 	public static double shepardTone(long term, int frequency, int sampleRate, int soundRange, int which) {
@@ -124,7 +123,7 @@ public class Sound {
 			return Math.sin(2.0 * Math.PI * term * frequency / sampleRate);
 		}
 	}
-	
+
 	final static double SIGMA = 0.45;
 	final static double SIGMA_SQRT_PI = SIGMA * Math.sqrt(2 * Math.PI);
 	final static double SIGMA_SQUARED_2 = 2 * SIGMA * SIGMA;
@@ -133,7 +132,7 @@ public class Sound {
 		double tOn12 = t / 12.0;
 		return (1.0 / SIGMA_SQRT_PI) * Math.exp(- tOn12 * tOn12 / SIGMA_SQUARED_2);
 	}
-	
+
 	public short[] getWave(int length) {
 		short[] w = new short[length];
 		for (int i = 0; i < length; i++) {
@@ -236,7 +235,7 @@ public class Sound {
 					track = new AudioTrack(AudioManager.STREAM_MUSIC, sampleRate,
 							AudioFormat.CHANNEL_CONFIGURATION_MONO, AudioFormat.ENCODING_PCM_16BIT, length,
 							AudioTrack.MODE_STREAM);
-					
+
 					mode = MODE_ATTACK;
 					term = 0;
 					modeTerm = 0;
@@ -268,7 +267,7 @@ public class Sound {
 					track = new AudioTrack(AudioManager.STREAM_MUSIC, sampleRate,
 							AudioFormat.CHANNEL_CONFIGURATION_MONO, AudioFormat.ENCODING_PCM_16BIT, length,
 							AudioTrack.MODE_STREAM);
-					
+
 					mode = MODE_SUSTAIN;
 					term = 0;
 					modeTerm = 0;
@@ -297,7 +296,7 @@ public class Sound {
 				// TODO: 何とかした方がいいと思う
 				track.pause();
 			} catch(IllegalStateException ignore) {
-				
+
 			}
 		}
 		modeTerm = 0;
