@@ -1,11 +1,11 @@
 package jp.nita.tapchord;
 
-import android.media.AudioManager;
-import android.os.Bundle;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.media.AudioManager;
+import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -161,7 +161,7 @@ public class MainActivity extends Activity {
 		}
 		return super.onKeyUp(keyCode, event);
 	}
-	
+
 	@Override
 	public boolean onKeyLongPress(int keyCode, KeyEvent event){
 		boolean result = false;

@@ -3,10 +3,10 @@ package jp.nita.tapchord;
 import java.util.ArrayList;
 import java.util.List;
 
-import android.content.SharedPreferences.Editor;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.Rect;
@@ -20,7 +20,8 @@ public class Statics {
 	final public static int SITUATION_NORMAL = 0;
 	final public static int SITUATION_TRANSPOSE = 1;
 	final public static int SITUATION_TRANSPOSE_MOVING = 2;
-	// final public static int SITUATION_PULLING=3;
+	final public static int SITUATION_FADING_IN = 3;
+	final public static int SITUATION_FADING_OUT = 4;
 
 	final public static int CHORD_BUTTON = 1;
 	final public static int STATUSBAR_BUTTON = 2;
@@ -406,6 +407,14 @@ public class Statics {
 		float vert = height / 35f;
 		float hidingDelta = vert * 7 * (1.0f - showingRate);
 		return new RectF(width - vert * 23 + shrink, 0, width, vert * 7 - shrink - hidingDelta);
+	}
+
+	public static RectF convertRectWithZPosition(RectF rect, int width, int height, float zPosition) {
+		rect.left = (float)(rect.left + (rect.left - width/2.0) * (zPosition * zPosition));
+		rect.right = (float)(rect.right + (rect.right - width/2.0) * (zPosition * zPosition));;
+		rect.top = (float)(rect.top + (rect.top - height/2.0) * (zPosition * zPosition));;
+		rect.bottom = (float)(rect.bottom + (rect.bottom - height/2.0) * (zPosition * zPosition));;
+		return rect;
 	}
 
 	public static int frequencyOfNote(int note, int soundRange) {
