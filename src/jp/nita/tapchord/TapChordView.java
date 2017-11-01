@@ -97,8 +97,7 @@ public class TapChordView extends View {
 		super(context, attrs);
 		situation = Statics.SITUATION_FADING_IN;
 		destination = Statics.SITUATION_NORMAL;
-		step = 100;
-		stepMax = 100;
+		step = (int)stepMax;
 
 		for (int j = 0; j < 15; j++) {
 			for (int i = 0; i < 3; i++) {
@@ -221,76 +220,6 @@ public class TapChordView extends View {
 		}
 
 		textPaint.setColor(Statics.color(Statics.COLOR_BLACK, 0, darken));
-
-		delta = scroll / (height / 5);
-		for (int x = -7 - delta; x <= 7 - delta; x++) {
-			int maj = x + 15 + scale;
-			if (maj < 0)
-				maj += 12;
-			if (maj >= 36)
-				maj -= 12;
-			int min = x + 18 + scale;
-			if (min < 0)
-				min += 12;
-			if (min >= 36)
-				min -= 12;
-			int xx = (x + 360) % 12;
-			for (int y = -1; y <= 1; y++) {
-				c = 0;
-				d = 0;
-				if (playing > 0 && playingX == x && playingY == y)
-					d = 1;
-				switch (xx) {
-				case 11:
-				case 0:
-				case 1:
-					c = Statics.COLOR_RED;
-					break;
-				case 2:
-				case 3:
-				case 4:
-					c = Statics.COLOR_YELLOW;
-					break;
-				case 5:
-				case 6:
-				case 7:
-					c = Statics.COLOR_GREEN;
-					break;
-				case 8:
-				case 9:
-				case 10:
-					c = Statics.COLOR_BLUE;
-					break;
-				}
-				if (situation == Statics.SITUATION_TRANSPOSE || destination == Statics.SITUATION_TRANSPOSE) {
-					c = Statics.COLOR_LIGHTGRAY;
-				} else if (darken && (isScrolling || pulling > 0)) {
-					c = Statics.COLOR_DARKGRAY;
-				}
-				paint.setColor(Statics.color(c, d, darken));
-
-				rect = Statics.rectOfButton(x, y, width, height, scroll);
-				if (situation == Statics.SITUATION_FADING_IN) {
-					rect = Statics.convertRectWithZPosition(rect, width, height, (float)zSpeed[x + 7][y + 1]*step/stepMax);
-				}
-				canvas.drawOval(rect, paint);
-
-				switch (y) {
-				case -1:
-					str = Statics.NOTES_5TH[maj] + Statics.SUS4;
-					break;
-				case 0:
-					str = Statics.NOTES_5TH[maj];
-					break;
-				case 1:
-					str = Statics.NOTES_5TH[min] + Statics.MINOR;
-					break;
-				}
-				w = textPaint.measureText(str);
-				canvas.drawText(str, rect.centerX() - w / 2,
-						rect.centerY() - (fontMetrics.ascent + fontMetrics.descent) / 2, textPaint);
-			}
-		}
 
 		if (situation == Statics.SITUATION_TRANSPOSE || destination == Statics.SITUATION_TRANSPOSE) {
 			paint.setStyle(Style.STROKE);
@@ -487,6 +416,76 @@ public class TapChordView extends View {
 					canvas.drawLine(cx, cy, dx, dy, paint);
 					canvas.drawLine(dx, dy, ax, ay, paint);
 				}
+			}
+		}
+
+		delta = scroll / (height / 5);
+		for (int x = -7 - delta; x <= 7 - delta; x++) {
+			int maj = x + 15 + scale;
+			if (maj < 0)
+				maj += 12;
+			if (maj >= 36)
+				maj -= 12;
+			int min = x + 18 + scale;
+			if (min < 0)
+				min += 12;
+			if (min >= 36)
+				min -= 12;
+			int xx = (x + 360) % 12;
+			for (int y = -1; y <= 1; y++) {
+				c = 0;
+				d = 0;
+				if (playing > 0 && playingX == x && playingY == y)
+					d = 1;
+				switch (xx) {
+				case 11:
+				case 0:
+				case 1:
+					c = Statics.COLOR_RED;
+					break;
+				case 2:
+				case 3:
+				case 4:
+					c = Statics.COLOR_YELLOW;
+					break;
+				case 5:
+				case 6:
+				case 7:
+					c = Statics.COLOR_GREEN;
+					break;
+				case 8:
+				case 9:
+				case 10:
+					c = Statics.COLOR_BLUE;
+					break;
+				}
+				if (situation == Statics.SITUATION_TRANSPOSE || destination == Statics.SITUATION_TRANSPOSE) {
+					c = Statics.COLOR_LIGHTGRAY;
+				} else if (darken && (isScrolling || pulling > 0)) {
+					c = Statics.COLOR_DARKGRAY;
+				}
+				paint.setColor(Statics.color(c, d, darken));
+
+				rect = Statics.rectOfButton(x, y, width, height, scroll);
+				if (situation == Statics.SITUATION_FADING_IN) {
+					rect = Statics.convertRectWithZPosition(rect, width, height, (float)zSpeed[x + 7][y + 1]*step/stepMax);
+				}
+				canvas.drawOval(rect, paint);
+
+				switch (y) {
+				case -1:
+					str = Statics.NOTES_5TH[maj] + Statics.SUS4;
+					break;
+				case 0:
+					str = Statics.NOTES_5TH[maj];
+					break;
+				case 1:
+					str = Statics.NOTES_5TH[min] + Statics.MINOR;
+					break;
+				}
+				w = textPaint.measureText(str);
+				canvas.drawText(str, rect.centerX() - w / 2,
+						rect.centerY() - (fontMetrics.ascent + fontMetrics.descent) / 2, textPaint);
 			}
 		}
 
@@ -1376,10 +1375,15 @@ public class TapChordView extends View {
 	public void activityResumed() {
 		getPreferenceValues();
 
+		for (int j = 0; j < 15; j++) {
+			for (int i = 0; i < 3; i++) {
+				zSpeed[j][i] = (float)Math.random() * 2;
+			}
+		}
+
 		situation = Statics.SITUATION_FADING_IN;
 		destination = Statics.SITUATION_NORMAL;
-		step = 100;
-		stepMax = 100;
+		step = (int) stepMax * 2;
 
 		invalidate();
 	}
