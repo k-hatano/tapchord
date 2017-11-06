@@ -49,14 +49,15 @@ public final class R {
         public static final int darken=0x7f050026;
         public static final int disable=0x7f05002d;
         public static final int disabled=0x7f05002e;
+        public static final int disconnect=0x7f050034;
         public static final int enable=0x7f05002c;
         public static final int hello_world=0x7f050002;
-        public static final int manufacturer=0x7f050037;
+        public static final int manufacturer=0x7f050038;
         public static final int message_quit=0x7f050004;
         public static final int midi_device=0x7f050032;
-        public static final int midi_device_connected=0x7f050034;
-        public static final int midi_device_disconnected=0x7f050035;
-        public static final int midi_device_is_not_connected=0x7f050036;
+        public static final int midi_device_connected=0x7f050035;
+        public static final int midi_device_disconnected=0x7f050036;
+        public static final int midi_device_is_not_connected=0x7f050037;
         public static final int not_connected=0x7f050033;
         public static final int off=0x7f050028;
         public static final int ok=0x7f050005;
@@ -97,6 +98,7 @@ public final class R {
         public static final int settings_waveform_triangle_wave=0x7f05000c;
         public static final int special_thanks=0x7f050022;
         public static final int tapchord_settings=0x7f050024;
+        public static final int version=0x7f050039;
     }
     public static final class style {
         /** 
