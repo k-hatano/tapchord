@@ -3,10 +3,10 @@ package jp.nita.tapchord;
 import java.util.ArrayList;
 import java.util.List;
 
-import android.content.SharedPreferences.Editor;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.Rect;
@@ -408,6 +408,17 @@ public class Statics {
 		return new RectF(width - vert * 23 + shrink, 0, width, vert * 7 - shrink - hidingDelta);
 	}
 
+	public static int noteInSoundRange(int note, int soundRange) {
+		int n = note;
+		while (n < soundRange || n >= soundRange + 12) {
+			if (n < soundRange)
+				n += 12;
+			if (n >= soundRange + 12)
+				n -= 12;
+		}
+		return n;
+	}
+
 	public static int frequencyOfNote(int note, int soundRange) {
 		double f = 440.0;
 		int n = note;
@@ -418,6 +429,11 @@ public class Statics {
 				n -= 12;
 		}
 		return (int) Math.round(f * Math.pow(2, (n - 9) / 12.0));
+	}
+
+	public static int frequencyOfRawNote(int note) {
+		double f = 440.0;
+		return (int) Math.round(f * Math.pow(2, (note - 9) / 12.0));
 	}
 
 	public static Integer[] notesOfChord(int x, int y, int[] tensions) {
@@ -465,6 +481,24 @@ public class Statics {
 		}
 		Integer ns[] = notes.toArray(new Integer[0]);
 		return ns;
+	}
+
+	public static Integer[] convertNotesToNotesInRange(Integer[] notes, int soundRange) {
+		List<Integer> notesInRange = new ArrayList<Integer>();
+		for (int i = 0; i < notes.length; i++) {
+			notesInRange.add(noteInSoundRange(notes[i], soundRange));
+		}
+		Integer nir[] = notesInRange.toArray(new Integer[0]);
+		return nir;
+	}
+
+	public static Integer[] convertRawNotesToFrequencies(Integer[] notes) {
+		List<Integer> freqs = new ArrayList<Integer>();
+		for (int i = 0; i < notes.length; i++) {
+			freqs.add(frequencyOfRawNote(notes[i]));
+		}
+		Integer fs[] = freqs.toArray(new Integer[0]);
+		return fs;
 	}
 
 	public static Integer[] convertNotesToFrequencies(Integer[] notes, int soundRange) {
