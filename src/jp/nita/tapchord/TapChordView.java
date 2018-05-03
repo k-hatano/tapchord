@@ -1354,6 +1354,7 @@ public class TapChordView extends View {
 	}
 
 	public void activityPaused() {
+		vib.cancel();
 		release();
 	}
 
