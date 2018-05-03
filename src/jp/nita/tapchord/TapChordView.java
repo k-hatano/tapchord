@@ -941,6 +941,7 @@ public class TapChordView extends View {
 				invalidate();
 				break;
 			}
+			case KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE:
 			case KeyEvent.KEYCODE_CAMERA: {
 				boolean statusbarFlag = false;
 				if (scroll != 0) {
