@@ -102,8 +102,7 @@ public class Sound {
 		case 6: {
 			double r = 0, g = 0;
 			double t = (double)term * frequency / sampleRate;
-			double note = noteInRange;
-			int n = (int)(note - soundRange);
+			int n = (int)(noteInRange - soundRange - 6);
 
 			g = gaussianTable[n - 24 + gaussianTable.length / 2];
 			r += Math.sin(0.5 * Math.PI * t) * g;
