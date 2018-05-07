@@ -1353,12 +1353,13 @@ public class TapChordView extends View {
 		invalidate();
 	}
 
-	public void activityPaused() {
+	public void activityPaused(MainActivity activity) {
 		vib.cancel();
 		release();
 	}
 
-	public void activityResumed() {
+	public void activityResumed(MainActivity activity) {
+		vib = (Vibrator) activity.getSystemService(Context.VIBRATOR_SERVICE);
 		getPreferenceValues();
 		invalidate();
 	}
