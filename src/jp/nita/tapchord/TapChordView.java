@@ -91,6 +91,8 @@ public class TapChordView extends View {
 	long lastKeyWatchedTime;
 	boolean shiftKeyPressed = false;
 
+	static Object vibrateProcess = new Object();
+
 	public TapChordView(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		situation = Statics.SITUATION_NORMAL;
@@ -1470,8 +1472,11 @@ public class TapChordView extends View {
 	}
 
 	public void vibrate() {
-		if (vibration)
-			vib.vibrate(Statics.VIBRATION_LENGTH);
+		if (vibration) {
+			synchronized (vibrateProcess) {
+				vib.vibrate(Statics.VIBRATION_LENGTH);
+			}
+		}
 	}
 
 }
