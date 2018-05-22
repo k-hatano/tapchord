@@ -1048,7 +1048,7 @@ public class TapChordView extends View {
 				invalidate();
 				break;
 			}
-			case KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE:
+			case KeyEvent.KEYCODE_HEADSETHOOK:
 			case KeyEvent.KEYCODE_CAMERA: {
 				if (statusbarFlags[1] > 0) {
 					debugMode = !debugMode;
