@@ -13,7 +13,7 @@ dependencies {
 }
 
 android {
-    compileSdkVersion 10
+    compileSdkVersion 17
     buildToolsVersion "19.1.0"
 
     sourceSets {

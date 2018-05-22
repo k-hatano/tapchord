@@ -1,7 +1,5 @@
 package jp.nita.tapchord;
 
-import android.media.AudioManager;
-import android.os.Bundle;
 
 import java.util.List;
 
@@ -14,6 +12,8 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.media.AudioManager;
+import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -22,10 +22,10 @@ public class MainActivity extends Activity implements SensorEventListener {
 
 	public static int heartBeatInterval = 5;
 	private Heart heart = null;
-	
+
 	public static float accelerationX = 0, accelerationY = 0, accelerationZ = 0;
 	public static float light = 0;
-	
+
 	private SensorManager mSensorManager;
 
 	@Override
@@ -36,7 +36,7 @@ public class MainActivity extends Activity implements SensorEventListener {
 		setVolumeControlStream(AudioManager.STREAM_MUSIC);
 		heart = new Heart();
 		heart.start();
-		
+
 		mSensorManager = (SensorManager)getSystemService(Context.SENSOR_SERVICE);
 		List<Sensor> sensors = mSensorManager.getSensorList(Sensor.TYPE_ACCELEROMETER);
 		if (sensors.size() > 0)  {
@@ -48,14 +48,14 @@ public class MainActivity extends Activity implements SensorEventListener {
 	@Override
 	protected void onPause() {
 		super.onPause();
-		((TapChordView) findViewById(R.id.tapChordView)).activityPaused();
+		((TapChordView) findViewById(R.id.tapChordView)).activityPaused(this);
 		heart.sleep();
 	}
 
 	@Override
 	protected void onResume() {
 		super.onResume();
-		((TapChordView) findViewById(R.id.tapChordView)).activityResumed();
+		((TapChordView) findViewById(R.id.tapChordView)).activityResumed(this);
 		heart.wake();
 	}
 
@@ -180,7 +180,7 @@ public class MainActivity extends Activity implements SensorEventListener {
 		}
 		return super.onKeyUp(keyCode, event);
 	}
-	
+
 	@Override
 	public boolean onKeyLongPress(int keyCode, KeyEvent event){
 		boolean result = false;
@@ -194,7 +194,7 @@ public class MainActivity extends Activity implements SensorEventListener {
 	@Override
 	public void onAccuracyChanged(Sensor sensor, int accuracy) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override

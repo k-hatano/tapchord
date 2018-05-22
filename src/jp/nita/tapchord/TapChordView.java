@@ -95,6 +95,8 @@ public class TapChordView extends View {
 	long lastKeyWatchedTime;
 	boolean shiftKeyPressed = false;
 
+	static Object vibrateProcess = new Object();
+
 	public TapChordView(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		situation = Statics.SITUATION_NORMAL;
@@ -1046,6 +1048,7 @@ public class TapChordView extends View {
 				invalidate();
 				break;
 			}
+			case KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE:
 			case KeyEvent.KEYCODE_CAMERA: {
 				if (statusbarFlags[1] > 0) {
 					debugMode = !debugMode;
@@ -1438,7 +1441,8 @@ public class TapChordView extends View {
 	public void play(int x, int y) {
 		release();
 		notesOfChord = Statics.notesOfChord(x + scale, y, statusbarFlags);
-		sound = new Sound(notesOfChord, soundRange, playBaseNote, this.getContext());
+		Integer notesInRange[] = (Statics.convertNotesToNotesInRange(notesOfChord, soundRange));
+		sound = new Sound(notesInRange, soundRange, playBaseNote, this.getContext());
 		playing = 1;
 		playingX = x;
 		playingY = y;
@@ -1467,11 +1471,13 @@ public class TapChordView extends View {
 		invalidate();
 	}
 
-	public void activityPaused() {
+	public void activityPaused(MainActivity activity) {
+		vib.cancel();
 		release();
 	}
 
-	public void activityResumed() {
+	public void activityResumed(MainActivity activity) {
+		vib = (Vibrator) activity.getSystemService(Context.VIBRATOR_SERVICE);
 		getPreferenceValues();
 		invalidate();
 	}
@@ -1583,8 +1589,11 @@ public class TapChordView extends View {
 	}
 
 	public void vibrate() {
-		if (vibration)
-			vib.vibrate(Statics.VIBRATION_LENGTH);
+		if (vibration) {
+			synchronized (vibrateProcess) {
+				vib.vibrate(Statics.VIBRATION_LENGTH);
+			}
+		}
 	}
 
 	public void sensorChanged(SensorEvent event){
