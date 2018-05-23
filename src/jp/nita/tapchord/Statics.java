@@ -525,9 +525,10 @@ public class Statics {
 	public static Integer[] convertNotesToFrequencies(Integer[] notes, int soundRange, boolean playBaseNote) {
 		List<Integer> freqs = new ArrayList<Integer>();
 		for (int i = 0; i < notes.length; i++) {
-			freqs.add(frequencyOfNote(notes[i], soundRange));
 			if (playBaseNote && i == notes.length - 1) {
 				freqs.add(frequencyOfNote(notes[i], soundRange - 12));
+			} else {
+				freqs.add(frequencyOfNote(notes[i], soundRange));
 			}
 		}
 		Integer fs[] = freqs.toArray(new Integer[0]);

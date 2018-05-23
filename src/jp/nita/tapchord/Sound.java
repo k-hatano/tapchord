@@ -43,11 +43,13 @@ public class Sound {
 	static Object modeProcess = new Object();
 
 	public Sound(Integer[] ns, int sr, boolean pbn, Context cont) {
-		Integer[] newNotes = new Integer[ns.length + 1];
+		Integer[] newNotes = new Integer[ns.length + (pbn ? 1 : 0)];
 		for (int i = 0; i < ns.length; i++) {
 			newNotes[i] = ns[i];
 		}
-		newNotes[ns.length] = newNotes[0] - 12;
+		if (pbn) {
+			newNotes[ns.length] = newNotes[0] - 12;
+		}
 		notesInRange = newNotes;
 		soundRange = sr;
 		playBaseNote = pbn;
