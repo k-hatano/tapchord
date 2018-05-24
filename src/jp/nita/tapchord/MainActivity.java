@@ -1,5 +1,7 @@
 package jp.nita.tapchord;
 
+import java.util.Locale;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -10,6 +12,13 @@ import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.WindowManager;
+import android.widget.CheckBox;
+import android.widget.ImageView;
+import android.widget.ImageView.ScaleType;
+import android.widget.LinearLayout;
+import android.widget.ScrollView;
+import android.widget.TextView;
 
 public class MainActivity extends Activity {
 
@@ -26,9 +35,56 @@ public class MainActivity extends Activity {
 		heart = new Heart();
 		heart.start();
 
-		new AlertDialog.Builder(this).setTitle(getString(R.string.version_201_alpha_released_title))
-				.setIcon(android.R.drawable.ic_dialog_info)
-				.setMessage(getString(R.string.version_201_alpha_released_message))
+		showAlphaVersionInformationDialog();
+	}
+
+	public void showAlphaVersionInformationDialog() {
+		TextView messageTextView = new TextView(this);
+		messageTextView.setTextAppearance(this, android.R.style.TextAppearance_Inverse);
+		messageTextView.setText(getString(R.string.version_201_alpha_released_message));
+
+		TextView cautionTextView = new TextView(this);
+		cautionTextView.setTextAppearance(this, android.R.style.TextAppearance_Inverse);
+		cautionTextView.setText(getString(R.string.version_201_alpha_released_caution));
+
+		String locale = Locale.getDefault().getLanguage();
+		ImageView betaImage = new ImageView(this);
+		if (locale.equals("ja")) {
+			betaImage.setImageDrawable(getResources().getDrawable(R.drawable.beta_ja));
+		} else {
+			betaImage.setImageDrawable(getResources().getDrawable(R.drawable.beta_en));
+		}
+		betaImage.setPadding(getResources().getDimensionPixelSize(R.dimen.beta_image_padding),
+				getResources().getDimensionPixelSize(R.dimen.beta_image_padding),
+				getResources().getDimensionPixelSize(R.dimen.beta_image_padding),
+				getResources().getDimensionPixelSize(R.dimen.beta_image_padding));
+		betaImage.setScaleType(ScaleType.FIT_XY);
+		betaImage.setAdjustViewBounds(true);
+		betaImage.setMaxWidth(getResources().getDimensionPixelSize(R.dimen.beta_image_width_max));
+		betaImage.setMaxHeight(getResources().getDimensionPixelSize(R.dimen.beta_image_width_max));
+
+		CheckBox neverShowAgainCheckBox = new CheckBox(this);
+		neverShowAgainCheckBox.setTextAppearance(this, android.R.style.TextAppearance_Inverse);
+		neverShowAgainCheckBox.setTextColor(neverShowAgainCheckBox.getTextColors().getDefaultColor());
+		neverShowAgainCheckBox.setText(getString(R.string.never_show_again));
+
+		LinearLayout linearLayout = new LinearLayout(this);
+		linearLayout.setPadding(getResources().getDimensionPixelSize(R.dimen.beta_dialog_padding),
+				getResources().getDimensionPixelSize(R.dimen.beta_dialog_padding),
+				getResources().getDimensionPixelSize(R.dimen.beta_dialog_padding),
+				getResources().getDimensionPixelSize(R.dimen.beta_dialog_padding));
+		linearLayout.setOrientation(LinearLayout.VERTICAL);
+		linearLayout.addView(messageTextView);
+		linearLayout.addView(betaImage);
+		linearLayout.addView(cautionTextView);
+		linearLayout.addView(neverShowAgainCheckBox);
+
+		ScrollView scrollView = new ScrollView(this);
+		scrollView.addView(linearLayout);
+
+		AlertDialog dialog = new AlertDialog.Builder(this)
+				.setTitle(getString(R.string.version_201_alpha_released_title))
+				.setIcon(android.R.drawable.ic_dialog_info).setView(scrollView)
 				.setPositiveButton(getString(R.string.remind_me_later), new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
@@ -41,7 +97,10 @@ public class MainActivity extends Activity {
 						Intent i = new Intent(Intent.ACTION_VIEW, uri);
 						startActivity(i);
 					}
-				}).show();
+				}).create();
+		dialog.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+				WindowManager.LayoutParams.FLAG_FULLSCREEN);
+		dialog.show();
 	}
 
 	@Override
@@ -157,9 +216,10 @@ public class MainActivity extends Activity {
 
 						}
 					}).show();
-//		} else if (keyCode == KeyEvent.KEYCODE_CAMERA || keyCode == KeyEvent.KEYCODE_BACKSLASH) {
-//			TapChordView.debugMode = !TapChordView.debugMode;
-//			((TapChordView) findViewById(R.id.tapChordView)).invalidate();
+			// } else if (keyCode == KeyEvent.KEYCODE_CAMERA || keyCode ==
+			// KeyEvent.KEYCODE_BACKSLASH) {
+			// TapChordView.debugMode = !TapChordView.debugMode;
+			// ((TapChordView) findViewById(R.id.tapChordView)).invalidate();
 		} else {
 			boolean result = false;
 			result = ((TapChordView) findViewById(R.id.tapChordView)).keyPressed(keyCode, event);
@@ -181,13 +241,13 @@ public class MainActivity extends Activity {
 	}
 
 	@Override
-	public boolean onKeyLongPress(int keyCode, KeyEvent event){
+	public boolean onKeyLongPress(int keyCode, KeyEvent event) {
 		boolean result = false;
 		result = ((TapChordView) findViewById(R.id.tapChordView)).keyLongPressed(keyCode, event);
 		if (!result) {
 			return super.onKeyLongPress(keyCode, event);
 		}
-	    return super.onKeyLongPress(keyCode, event);
+		return super.onKeyLongPress(keyCode, event);
 	}
 
 }
