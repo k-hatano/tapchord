@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.media.AudioManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -24,6 +25,23 @@ public class MainActivity extends Activity {
 		setVolumeControlStream(AudioManager.STREAM_MUSIC);
 		heart = new Heart();
 		heart.start();
+
+		new AlertDialog.Builder(this).setTitle(getString(R.string.version_201_alpha_released_title))
+				.setIcon(android.R.drawable.ic_dialog_info)
+				.setMessage(getString(R.string.version_201_alpha_released_message))
+				.setPositiveButton(getString(R.string.remind_me_later), new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+
+					}
+				}).setNeutralButton(getString(R.string.go_to_google_play), new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						Uri uri = Uri.parse("https://play.google.com/store/apps/details?id=jp.nita.tapchord");
+						Intent i = new Intent(Intent.ACTION_VIEW, uri);
+						startActivity(i);
+					}
+				}).show();
 	}
 
 	@Override
