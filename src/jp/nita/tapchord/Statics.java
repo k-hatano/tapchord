@@ -63,6 +63,7 @@ public class Statics {
 	public static final String PREF_RELEASE_TIME = "release_time";
 	public static final String PREF_ENABLE_ENVELOPE = "enable_envelope";
 	public static final String PREF_ANIMATION_QUALITY = "animation_quality";
+	public static final String PREF_NEVER_SHOW_ALPHA_RELEASED = "never_show_alpha_released";
 
 	public static final int VIBRATION_LENGTH = 40;
 

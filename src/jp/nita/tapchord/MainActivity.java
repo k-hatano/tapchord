@@ -23,6 +23,7 @@ import android.widget.TextView;
 public class MainActivity extends Activity {
 
 	public static int heartBeatInterval = 5;
+	public int neverShowAlphaReleased = 0;
 
 	private Heart heart = null;
 
@@ -35,7 +36,9 @@ public class MainActivity extends Activity {
 		heart = new Heart();
 		heart.start();
 
-		showAlphaVersionInformationDialog();
+		if (neverShowAlphaReleased <= 0) {
+			showAlphaVersionInformationDialog();
+		}
 	}
 
 	public void showAlphaVersionInformationDialog() {
@@ -63,7 +66,7 @@ public class MainActivity extends Activity {
 		betaImage.setMaxWidth(getResources().getDimensionPixelSize(R.dimen.beta_image_width_max));
 		betaImage.setMaxHeight(getResources().getDimensionPixelSize(R.dimen.beta_image_width_max));
 
-		CheckBox neverShowAgainCheckBox = new CheckBox(this);
+		final CheckBox neverShowAgainCheckBox = new CheckBox(this);
 		neverShowAgainCheckBox.setTextAppearance(this, android.R.style.TextAppearance_Inverse);
 		neverShowAgainCheckBox.setTextColor(neverShowAgainCheckBox.getTextColors().getDefaultColor());
 		neverShowAgainCheckBox.setText(getString(R.string.never_show_again));
@@ -82,17 +85,24 @@ public class MainActivity extends Activity {
 		ScrollView scrollView = new ScrollView(this);
 		scrollView.addView(linearLayout);
 
+		final MainActivity finalActivity = this;
+
 		AlertDialog dialog = new AlertDialog.Builder(this)
 				.setTitle(getString(R.string.version_201_alpha_released_title))
 				.setIcon(android.R.drawable.ic_dialog_info).setView(scrollView)
 				.setPositiveButton(getString(R.string.remind_me_later), new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
-
+						if (neverShowAgainCheckBox.isChecked()) {
+							Statics.setPreferenceValue(finalActivity, Statics.PREF_NEVER_SHOW_ALPHA_RELEASED, 1);
+						}
 					}
 				}).setNeutralButton(getString(R.string.go_to_google_play), new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
+						if (neverShowAgainCheckBox.isChecked()) {
+							Statics.setPreferenceValue(finalActivity, Statics.PREF_NEVER_SHOW_ALPHA_RELEASED, 1);
+						}
 						Uri uri = Uri.parse("https://play.google.com/store/apps/details?id=jp.nita.tapchord");
 						Intent i = new Intent(Intent.ACTION_VIEW, uri);
 						startActivity(i);
@@ -198,6 +208,7 @@ public class MainActivity extends Activity {
 	public void updatePreferences() {
 		int animationQuality = Statics.preferenceValue(this, Statics.PREF_ANIMATION_QUALITY, 0);
 		setAnimationQuality(animationQuality);
+		neverShowAlphaReleased = Statics.preferenceValue(this, Statics.PREF_NEVER_SHOW_ALPHA_RELEASED, 0);
 	}
 
 	@Override

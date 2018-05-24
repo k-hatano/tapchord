@@ -8,6 +8,8 @@ import java.util.Map;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -22,6 +24,7 @@ import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class SettingsActivity extends Activity implements OnClickListener, OnItemClickListener {
 
@@ -38,6 +41,7 @@ public class SettingsActivity extends Activity implements OnClickListener, OnIte
 	int sustainLevel;
 	int releaseTime;
 	int animationQuality;
+	int neverShowAlphaReleased;
 
 	int position = 0;
 	int selected;
@@ -69,6 +73,7 @@ public class SettingsActivity extends Activity implements OnClickListener, OnIte
 		sustainLevel = Statics.preferenceValue(this, Statics.PREF_SUSTAIN_LEVEL, 0);
 		releaseTime = Statics.preferenceValue(this, Statics.PREF_RELEASE_TIME, 0);
 		animationQuality = Statics.preferenceValue(this, Statics.PREF_ANIMATION_QUALITY, 0);
+		neverShowAlphaReleased = Statics.preferenceValue(this, Statics.PREF_NEVER_SHOW_ALPHA_RELEASED, 0);
 	}
 
 	public void updateSettingsListView() {
@@ -123,6 +128,11 @@ public class SettingsActivity extends Activity implements OnClickListener, OnIte
 			map = new HashMap<String, String>();
 			map.put("key", getString(R.string.settings_animation_quality));
 			map.put("value", Statics.stringOfAnimationQuality(animationQuality, this));
+			list.add(map);
+
+			map = new HashMap<String, String>();
+			map.put("key", getString(R.string.settings_reset_message_dialogs));
+			map.put("value", getString(R.string.settings_reset_message_dialogs_description));
 			list.add(map);
 		}
 
@@ -515,6 +525,24 @@ public class SettingsActivity extends Activity implements OnClickListener, OnIte
 					}).show();
 			break;
 		}
+		case 8: {
+			new AlertDialog.Builder(SettingsActivity.this).setTitle(getString(R.string.settings_reset_message_dialogs))
+					.setMessage(R.string.settings_reset_message_dialogs_confirm)
+					.setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							setNeverShowAlphaReleased(0);
+							Toast.makeText(SettingsActivity.this, getString(R.string.settings_reset_message_dialogs_finished), Toast.LENGTH_LONG).show();
+							((ListView) findViewById(R.id.settings_items)).setSelection(position);
+						}
+					}).setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							((ListView) findViewById(R.id.settings_items)).setSelection(position);
+						}
+					}).show();
+			break;
+		}
 		default:
 			return;
 		}
@@ -609,6 +637,13 @@ public class SettingsActivity extends Activity implements OnClickListener, OnIte
 		animationQuality = aq;
 		Statics.setPreferenceValue(this, Statics.PREF_ANIMATION_QUALITY, animationQuality);
 		MainActivity.setAnimationQuality(aq);
+		updatePreferenceValues();
+		updateSettingsListView();
+	}
+
+	public void setNeverShowAlphaReleased(int nsar) {
+		neverShowAlphaReleased = nsar;
+		Statics.setPreferenceValue(this, Statics.PREF_NEVER_SHOW_ALPHA_RELEASED, neverShowAlphaReleased);
 		updatePreferenceValues();
 		updateSettingsListView();
 	}
