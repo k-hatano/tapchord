@@ -25,6 +25,7 @@ import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class SettingsActivity extends Activity implements OnClickListener, OnItemClickListener {
 
@@ -43,6 +44,7 @@ public class SettingsActivity extends Activity implements OnClickListener, OnIte
 	int animationQuality;
 	int autoRotation;
 	int playBaseNote;
+	int neverShowAlphaReleased;
 
 	int position = 0;
 	int selected;
@@ -76,6 +78,7 @@ public class SettingsActivity extends Activity implements OnClickListener, OnIte
 		animationQuality = Statics.preferenceValue(this, Statics.PREF_ANIMATION_QUALITY, 0);
 		autoRotation = Statics.preferenceValue(this, Statics.PREF_SCREEN_AUTO_ROTATION, 0);
 		playBaseNote = Statics.preferenceValue(this, Statics.PREF_PLAY_BASE_NOTE, 0);
+		neverShowAlphaReleased = Statics.preferenceValue(this, Statics.PREF_NEVER_SHOW_ALPHA_RELEASED, 0);
 	}
 
 	public void updateSettingsListView() {
@@ -135,6 +138,11 @@ public class SettingsActivity extends Activity implements OnClickListener, OnIte
 			map = new HashMap<String, String>();
 			map.put("key", getString(R.string.settings_screen_auto_rotation));
 			map.put("value", Statics.onOrOffString(this, autoRotation));
+			list.add(map);
+
+			map = new HashMap<String, String>();
+			map.put("key", getString(R.string.settings_reset_message_dialogs));
+			map.put("value", getString(R.string.settings_reset_message_dialogs_description));
 			list.add(map);
 		}
 
@@ -548,6 +556,23 @@ public class SettingsActivity extends Activity implements OnClickListener, OnIte
 								setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
 							}
 							arg0.dismiss();
+						}
+					}).show();
+			break;
+		}
+		case 9: {
+			new AlertDialog.Builder(SettingsActivity.this).setTitle(getString(R.string.settings_reset_message_dialogs))
+					.setMessage(R.string.settings_reset_message_dialogs_confirm)
+					.setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							setNeverShowAlphaReleased(0);
+							Toast.makeText(SettingsActivity.this, getString(R.string.settings_reset_message_dialogs_finished), Toast.LENGTH_LONG).show();
+							((ListView) findViewById(R.id.settings_items)).setSelection(position);
+						}
+					}).setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
 							((ListView) findViewById(R.id.settings_items)).setSelection(position);
 						}
 					}).show();
@@ -661,6 +686,13 @@ public class SettingsActivity extends Activity implements OnClickListener, OnIte
 	public void setPlayBaseNote(int pbn) {
 		playBaseNote = pbn;
 		Statics.setPreferenceValue(this, Statics.PREF_PLAY_BASE_NOTE, playBaseNote);
+		updatePreferenceValues();
+		updateSettingsListView();
+	}
+
+	public void setNeverShowAlphaReleased(int nsar) {
+		neverShowAlphaReleased = nsar;
+		Statics.setPreferenceValue(this, Statics.PREF_NEVER_SHOW_ALPHA_RELEASED, neverShowAlphaReleased);
 		updatePreferenceValues();
 		updateSettingsListView();
 	}

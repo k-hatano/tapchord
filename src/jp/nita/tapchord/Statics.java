@@ -69,6 +69,7 @@ public class Statics {
 	public static final String PREF_ANIMATION_QUALITY = "animation_quality";
 	public static final String PREF_SCREEN_AUTO_ROTATION = "screen_auto_rotation";
 	public static final String PREF_PLAY_BASE_NOTE = "play_base_note";
+	public static final String PREF_NEVER_SHOW_ALPHA_RELEASED = "never_show_alpha_released";
 
 	public static final int VIBRATION_LENGTH = 40;
 
