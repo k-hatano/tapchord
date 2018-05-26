@@ -80,7 +80,7 @@ public class Sound {
 		case 0:
 			return Math.sin(2.0 * Math.PI * t);
 		case 1:
-			return (t - Math.floor(t + 1 / 2.0));
+			return (t - Math.floor(t + 1.0 / 2.0));
 		case 2: {
 			double tt = t - Math.floor(t);
 			if (tt < 0.25) {
@@ -114,19 +114,19 @@ public class Sound {
 			int n = (int)(noteInRange - soundRange - 6);
 
 			g = gaussianTable[n - 24 + gaussianTable.length / 2];
-			r += Math.sin(0.5 * t) * g;
+			r += Math.sin(0.5 * Math.PI * t) * g;
 
 			g = gaussianTable[n - 12 + gaussianTable.length / 2];
-			r += Math.sin(1.0 * t) * g;
+			r += Math.sin(1.0 * Math.PI * t) * g;
 
 			g = gaussianTable[n + gaussianTable.length / 2];
-			r += Math.sin(2.0 * t) * g;
+			r += Math.sin(2.0 * Math.PI * t) * g;
 
 			g = gaussianTable[n + 12 + gaussianTable.length / 2];
-			r += Math.sin(4.0 * t) * g;
+			r += Math.sin(4.0 * Math.PI * t) * g;
 
 			g = gaussianTable[n + 24 + gaussianTable.length / 2];
-			r += Math.sin(8.0 * t) * g;
+			r += Math.sin(8.0 * Math.PI * t) * g;
 
 			return r;
 		}
