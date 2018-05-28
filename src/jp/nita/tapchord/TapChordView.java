@@ -944,6 +944,22 @@ public class TapChordView extends View {
 				break;
 			}
 			case KeyEvent.KEYCODE_HEADSETHOOK:
+				if (scroll == 0) {
+					boolean statusbarFlag = false;
+					for (int i = 0; i < 4; i++) {
+						if (statusbarFlags[i] >= 2) {
+							statusbarFlags[i] = 0;
+							statusbarFlag = true;
+						}
+					}
+					if (!statusbarFlag && darken) {
+						flashEffectStep = 1000 / MainActivity.heartBeatInterval;
+					}
+				} else {
+					scroll = 0;
+				}
+				invalidate();
+				break;
 			case KeyEvent.KEYCODE_CAMERA: {
 				boolean statusbarFlag = false;
 				if (scroll != 0) {
