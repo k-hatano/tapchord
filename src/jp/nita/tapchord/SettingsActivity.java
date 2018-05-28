@@ -526,21 +526,34 @@ public class SettingsActivity extends Activity implements OnClickListener, OnIte
 			break;
 		}
 		case 8: {
-			new AlertDialog.Builder(SettingsActivity.this).setTitle(getString(R.string.settings_reset_message_dialogs))
-					.setMessage(R.string.settings_reset_message_dialogs_confirm)
-					.setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
-						@Override
-						public void onClick(DialogInterface dialog, int which) {
-							setNeverShowAlphaReleased(0);
-							Toast.makeText(SettingsActivity.this, getString(R.string.settings_reset_message_dialogs_finished), Toast.LENGTH_LONG).show();
-							((ListView) findViewById(R.id.settings_items)).setSelection(position);
-						}
-					}).setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
-						@Override
-						public void onClick(DialogInterface dialog, int which) {
-							((ListView) findViewById(R.id.settings_items)).setSelection(position);
-						}
-					}).show();
+			updatePreferenceValues();
+			if (neverShowAlphaReleased <= 0) {
+				new AlertDialog.Builder(SettingsActivity.this).setTitle(getString(R.string.settings_reset_message_dialogs))
+				.setMessage(getString(R.string.settings_reset_message_dialogs_no_need))
+				.setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+
+					}
+				}).show();
+
+			} else {
+				new AlertDialog.Builder(SettingsActivity.this).setTitle(getString(R.string.settings_reset_message_dialogs))
+				.setMessage(R.string.settings_reset_message_dialogs_confirm)
+				.setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						setNeverShowAlphaReleased(0);
+						Toast.makeText(SettingsActivity.this, getString(R.string.settings_reset_message_dialogs_finished), Toast.LENGTH_LONG).show();
+						((ListView) findViewById(R.id.settings_items)).setSelection(position);
+					}
+				}).setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						((ListView) findViewById(R.id.settings_items)).setSelection(position);
+					}
+				}).show();
+			}
 			break;
 		}
 		default:
