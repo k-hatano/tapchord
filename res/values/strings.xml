@@ -1,6 +1,5 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
 <resources>
-
     <string name="app_name">tapchord</string>
     <string name="action_settings">Settings</string>
     <string name="hello_world">Hello world!</string>
@@ -33,15 +32,12 @@
     <string name="settings_animation_quality_low">Low</string>
     <string name="settings_animation_quality_medium">Medium</string>
     <string name="settings_animation_quality_high">High</string>
-    <string name="settings_midi_device">MIDI Device</string>
-
     <string name="settings_sampling_rate_hz"> Hz</string>
+    <string name="settings_midi_device">MIDI Device</string>
     <string name="special_thanks">Special Thanks to\nAkiyoshi Kamide</string>
-    <string name="copyright">Version 2.0α © Nita</string>
+    <string name="copyright">Version 2.0.1α © Nita</string>
     <string name="tapchord_settings">tapchord - Settings</string>
-
     <string name="settings_volume">Volume</string>
-
     <string name="darken">Darken</string>
     <string name="on">On</string>
     <string name="off">Off</string>
@@ -51,19 +47,26 @@
     <string name="enable">Enable</string>
     <string name="disable">Disable</string>
     <string name="disabled">Disabled</string>
-
     <string name="settings_volume_short">Volume</string>
     <string name="settings_sound_range_short">Range</string>
     <string name="settings_waveform_short">Form</string>
-
     <string name="midi_device">MIDI Device</string>
     <string name="not_connected">Not Connected</string>
     <string name="disconnect">Disconnect</string>
-
     <string name="midi_device_connected">MIDI device connected : </string>
     <string name="midi_device_disconnected">MIDI device disconnected.</string>
     <string name="midi_device_is_not_connected">MIDI device is not connected.</string>
     <string name="manufacturer">Manufacturer : </string>
     <string name="version">Version : </string>
-
+    <string name="version_201_alpha_released_title">2.0.1 Alpha Version is released</string>
+    <string name="version_201_alpha_released_message">2.0.1 Alpha Version, which supports MIDI OUT, is released now.\nYou can connect your Android devices to\n\n* PC via USB A-microB cable\n* MIDI devices (electronic piano, synthesizer, etc.) via USB MIDI cable &amp; USB A to microB adapter\n\nand play chords on software on PC or MIDI devices.\n\nIf you would like to join the alpha testing, please open \"tapchord\" page on Google Play app, and tap \"I\'m in\" button under \"Become a beta tester\" label.</string>
+    <string name="version_201_alpha_released_caution">** CAUTION **\ntapchord 2.0.1 is \"Alpha Version.\" Please take responsibility for your testing.</string>
+    <string name="go_to_google_play">Go to Google Play</string>
+    <string name="remind_me_later">Remind Me Later</string>
+    <string name="never_show_again">Never Show Again</string>
+    <string name="settings_reset_message_dialogs">Reset Dialogs</string>
+    <string name="settings_reset_message_dialogs_description">Show dialogs whose \"Never Show Again\" checked</string>
+    <string name="settings_reset_message_dialogs_confirm">Are you sure you want to reset dialogs?\nDialogs whose \"Never Show Again\" checkboxes were checked will be shown again.</string>
+    <string name="settings_reset_message_dialogs_finished">Dialogs were reset.</string>
+    <string name="settings_reset_message_dialogs_no_need">No dialogs need to be reset.</string>
 </resources>

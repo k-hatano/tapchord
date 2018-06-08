@@ -10,6 +10,7 @@ public class Sound {
 	static long startedPlayingTime = 0;
 	static long requiredTime = 0;
 
+	Integer[] notesInRange = new Integer[0];
 	Integer[] frequencies = new Integer[0];
 	WaveGenerator generator = null;
 	static AudioTrack track = null;
@@ -40,8 +41,10 @@ public class Sound {
 
 	static Object modeProcess = new Object();
 
-	public Sound(Integer[] freqs, Context cont) {
-		frequencies = freqs;
+	public Sound(Integer[] n, Context cont) {
+		notesInRange = n;
+		frequencies = Statics.convertRawNotesToFrequencies(n);
+
 		context = cont;
 
 		for (int i = 0; i < gaussianTable.length; i++) {
@@ -94,13 +97,12 @@ public class Sound {
 
 	final static double LOG_2 = Math.log(2.0);
 
-	public static double shepardTone(long term, int frequency, int sampleRate, int soundRange, int which) {
+	public static double shepardTone(long term, int noteInRange, int frequency, int sampleRate, int soundRange, int which) {
 		switch (which) {
 		case 6: {
 			double r = 0, g = 0;
 			double t = (double)term * frequency / sampleRate;
-			double note = (Math.log(frequency / 440.0) / LOG_2) * 12 - 6;
-			int n = (int)Math.round(note - soundRange);
+			int n = (int)(noteInRange - soundRange - 6);
 
 			g = gaussianTable[n - 24 + gaussianTable.length / 2];
 			r += Math.sin(0.5 * Math.PI * t) * g;
@@ -149,8 +151,8 @@ public class Sound {
 				}
 				break;
 			case 6:
-				for (int j = 0; j < frequencies.length; j++) {
-					s += shepardTone(term, frequencies[j], sampleRate, soundRange, waveform);
+				for (int j = 0; j < notesInRange.length; j++) {
+					s += shepardTone(term, notesInRange[j], frequencies[j], sampleRate, soundRange, waveform);
 				}
 				break;
 			}

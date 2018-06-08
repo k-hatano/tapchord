@@ -11,6 +11,8 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.media.midi.MidiDevice;
 import android.media.midi.MidiDeviceInfo;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -25,6 +27,7 @@ import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class SettingsActivity extends Activity implements OnClickListener, OnItemClickListener {
 
@@ -41,6 +44,7 @@ public class SettingsActivity extends Activity implements OnClickListener, OnIte
 	int sustainLevel;
 	int releaseTime;
 	int animationQuality;
+	int neverShowAlphaReleased;
 
 	int position = 0;
 	int selected;
@@ -56,7 +60,7 @@ public class SettingsActivity extends Activity implements OnClickListener, OnIte
 			setTheme(android.R.style.Theme_Holo_Light);
 		}
 		setContentView(R.layout.activity_settings);
-		ListView listView = (ListView)findViewById(R.id.settings_items);
+		ListView listView = (ListView) findViewById(R.id.settings_items);
 		if (darken > 0) {
 			listView.setBackgroundColor(color.black);
 		} else {
@@ -84,6 +88,7 @@ public class SettingsActivity extends Activity implements OnClickListener, OnIte
 		sustainLevel = Statics.preferenceValue(this, Statics.PREF_SUSTAIN_LEVEL, 0);
 		releaseTime = Statics.preferenceValue(this, Statics.PREF_RELEASE_TIME, 0);
 		animationQuality = Statics.preferenceValue(this, Statics.PREF_ANIMATION_QUALITY, 0);
+		neverShowAlphaReleased = Statics.preferenceValue(this, Statics.PREF_NEVER_SHOW_ALPHA_RELEASED, 0);
 	}
 
 	public void updateSettingsListView() {
@@ -144,6 +149,11 @@ public class SettingsActivity extends Activity implements OnClickListener, OnIte
 			map.put("key", getString(R.string.settings_midi_device));
 			map.put("value", Statics.nameOfMidiDevice(MainActivity.midiDevice, this));
 			list.add(map);
+
+			map = new HashMap<String, String>();
+			map.put("key", getString(R.string.settings_reset_message_dialogs));
+			map.put("value", getString(R.string.settings_reset_message_dialogs_description));
+			list.add(map);
 		}
 
 		SimpleAdapter adapter = new SimpleAdapter(this, list, android.R.layout.simple_expandable_list_item_2,
@@ -154,7 +164,7 @@ public class SettingsActivity extends Activity implements OnClickListener, OnIte
 	}
 
 	@Override
-	public void onDestroy(){
+	public void onDestroy() {
 		super.onDestroy();
 		MainActivity.settingsActivity = null;
 	}
@@ -198,8 +208,9 @@ public class SettingsActivity extends Activity implements OnClickListener, OnIte
 		switch (arg2) {
 		case 0: {
 			CharSequence list[] = new String[15];
-			for (int i = -7; i <= 7; i++)
+			for (int i = -7; i <= 7; i++) {
 				list[i + 7] = Statics.longStringOfScale(i);
+			}
 			new AlertDialog.Builder(SettingsActivity.this).setTitle(getString(R.string.settings_scale))
 					.setSingleChoiceItems(list, scale + 7, new DialogInterface.OnClickListener() {
 						@Override
@@ -341,176 +352,10 @@ public class SettingsActivity extends Activity implements OnClickListener, OnIte
 					}).show();
 			break;
 		}
-			/*
-			 * case 6:{ final CheckBox enableCheckBox = new CheckBox(this);
-			 * final SeekBar attackSeekBar = new SeekBar(this); final SeekBar
-			 * decaySeekBar = new SeekBar(this); final SeekBar sustainSeekBar =
-			 * new SeekBar(this); final SeekBar releaseSeekBar = new
-			 * SeekBar(this); final TextView attackLabel = new TextView(this);
-			 * final TextView decayLabel = new TextView(this); final TextView
-			 * sustainLabel = new TextView(this); final TextView releaseLabel =
-			 * new TextView(this); TableRow.LayoutParams tableRowParams;
-			 * enableCheckBox.setText(getString(R.string.enable));
-			 * enableCheckBox.setChecked(enableEnvelope>0);
-			 * enableCheckBox.setOnClickListener(new OnClickListener(){
-			 *
-			 * @Override public void onClick(View v) {
-			 * if(enableCheckBox.isChecked()){ attackSeekBar.setEnabled(true);
-			 * decaySeekBar.setEnabled(true); sustainSeekBar.setEnabled(true);
-			 * releaseSeekBar.setEnabled(true); }else{
-			 * attackSeekBar.setEnabled(false); decaySeekBar.setEnabled(false);
-			 * sustainSeekBar.setEnabled(false);
-			 * releaseSeekBar.setEnabled(false); attackSeekBar.setProgress(0);
-			 * decaySeekBar.setProgress(0); sustainSeekBar.setProgress(100);
-			 * releaseSeekBar.setProgress(0);
-			 * setAttackTime(attackSeekBar.getProgress());
-			 * setDecayTime(decaySeekBar.getProgress());
-			 * setSustainLevel(sustainSeekBar.getProgress());
-			 * setReleaseTime(releaseSeekBar.getProgress()); } } });
-			 * attackSeekBar.setProgress(attackTime); attackSeekBar.setMax(100);
-			 * attackSeekBar.setPadding(0,0,0,8);
-			 * attackSeekBar.setEnabled(enableEnvelope>0);
-			 * attackSeekBar.setOnSeekBarChangeListener(new
-			 * OnSeekBarChangeListener(){
-			 *
-			 * @Override public void onProgressChanged(SeekBar seekBar, int
-			 * progress, boolean fromUser) {
-			 * attackLabel.setText(getString(R.string.settings_attack)+" : "
-			 * +Statics.getStringOfSingleTime(progress,SettingsActivity.this));
-			 * }
-			 *
-			 * @Override public void onStartTrackingTouch(SeekBar seekBar) {}
-			 *
-			 * @Override public void onStopTrackingTouch(SeekBar seekBar) {} });
-			 * decaySeekBar.setProgress(decayTime); decaySeekBar.setMax(100);
-			 * decaySeekBar.setPadding(0,0,0,8);
-			 * decaySeekBar.setEnabled(enableEnvelope>0);
-			 * decaySeekBar.setOnSeekBarChangeListener(new
-			 * OnSeekBarChangeListener(){
-			 *
-			 * @Override public void onProgressChanged(SeekBar seekBar, int
-			 * progress, boolean fromUser) {
-			 * decayLabel.setText(getString(R.string.settings_decay)+" : "
-			 * +Statics.getStringOfSingleTime(progress,SettingsActivity.this));
-			 * }
-			 *
-			 * @Override public void onStartTrackingTouch(SeekBar seekBar) {}
-			 *
-			 * @Override public void onStopTrackingTouch(SeekBar seekBar) {} });
-			 * sustainSeekBar.setProgress(sustainLevel+100);
-			 * sustainSeekBar.setMax(100); sustainSeekBar.setPadding(0,0,0,8);
-			 * sustainSeekBar.setEnabled(enableEnvelope>0);
-			 * sustainSeekBar.setOnSeekBarChangeListener(new
-			 * OnSeekBarChangeListener(){
-			 *
-			 * @Override public void onProgressChanged(SeekBar seekBar, int
-			 * progress, boolean fromUser) {
-			 * sustainLabel.setText(getString(R.string.settings_sustain)+" : "
-			 * +Statics.getStringOfSustainLevel(progress-100,SettingsActivity.
-			 * this)); }
-			 *
-			 * @Override public void onStartTrackingTouch(SeekBar seekBar) {}
-			 *
-			 * @Override public void onStopTrackingTouch(SeekBar seekBar) {} });
-			 * releaseSeekBar.setProgress(releaseTime);
-			 * releaseSeekBar.setMax(100); releaseSeekBar.setPadding(0,0,0,8);
-			 * releaseSeekBar.setEnabled(enableEnvelope>0);
-			 * releaseSeekBar.setOnSeekBarChangeListener(new
-			 * OnSeekBarChangeListener(){
-			 *
-			 * @Override public void onProgressChanged(SeekBar seekBar, int
-			 * progress, boolean fromUser) {
-			 * releaseLabel.setText(getString(R.string.settings_release)+" : "
-			 * +Statics.getStringOfSingleTime(progress,SettingsActivity.this));
-			 * }
-			 *
-			 * @Override public void onStartTrackingTouch(SeekBar seekBar) {}
-			 *
-			 * @Override public void onStopTrackingTouch(SeekBar seekBar) {} });
-			 * final TableLayout tableLayout = new TableLayout(this); TableRow
-			 * row1=new TableRow(SettingsActivity.this);
-			 * enableCheckBox.setTextAppearance(this,android.R.style.
-			 * TextAppearance_Inverse); row1.addView(enableCheckBox);
-			 * tableLayout.addView(row1); TableRow row2=new
-			 * TableRow(SettingsActivity.this);
-			 * attackLabel.setText(getString(R.string.settings_attack)+" : "
-			 * +Statics.getStringOfSingleTime(attackTime,SettingsActivity.this))
-			 * ; attackLabel.setTextAppearance(this,android.R.style.
-			 * TextAppearance_Inverse); row2.addView(attackLabel);
-			 * row2.addView(attackSeekBar); tableLayout.addView(row2); TableRow
-			 * row3=new TableRow(SettingsActivity.this);
-			 * decayLabel.setText(getString(R.string.settings_decay)+" : "
-			 * +Statics.getStringOfSingleTime(decayTime,SettingsActivity.this));
-			 * decayLabel.setTextAppearance(this,android.R.style.
-			 * TextAppearance_Inverse); row3.addView(decayLabel);
-			 * row3.addView(decaySeekBar); tableLayout.addView(row3); TableRow
-			 * row4=new TableRow(SettingsActivity.this);
-			 * sustainLabel.setText(getString(R.string.settings_sustain)+" : "
-			 * +Statics.getStringOfSustainLevel(sustainLevel,SettingsActivity.
-			 * this)); sustainLabel.setTextAppearance(this,android.R.style.
-			 * TextAppearance_Inverse); row4.addView(sustainLabel);
-			 * row4.addView(sustainSeekBar); tableLayout.addView(row4); TableRow
-			 * row5=new TableRow(SettingsActivity.this);
-			 * releaseLabel.setText(getString(R.string.settings_release)+" : "
-			 * +Statics.getStringOfSingleTime(releaseTime,SettingsActivity.this)
-			 * ); releaseLabel.setTextAppearance(this,android.R.style.
-			 * TextAppearance_Inverse); row5.addView(releaseLabel);
-			 * row5.addView(releaseSeekBar); tableLayout.addView(row5);
-			 *
-			 * tableRowParams =
-			 * (TableRow.LayoutParams)enableCheckBox.getLayoutParams();
-			 * tableRowParams.span = 4;
-			 * enableCheckBox.setLayoutParams(tableRowParams); tableRowParams =
-			 * (TableRow.LayoutParams)attackSeekBar.getLayoutParams();
-			 * tableRowParams.span = 3;
-			 * attackSeekBar.setLayoutParams(tableRowParams); tableRowParams =
-			 * (TableRow.LayoutParams)decaySeekBar.getLayoutParams();
-			 * tableRowParams.span = 3;
-			 * decaySeekBar.setLayoutParams(tableRowParams); tableRowParams =
-			 * (TableRow.LayoutParams)sustainSeekBar.getLayoutParams();
-			 * tableRowParams.span = 3;
-			 * sustainSeekBar.setLayoutParams(tableRowParams); tableRowParams =
-			 * (TableRow.LayoutParams)releaseSeekBar.getLayoutParams();
-			 * tableRowParams.span = 3;
-			 * releaseSeekBar.setLayoutParams(tableRowParams);
-			 *
-			 * FrameLayout.LayoutParams
-			 * layoutParams=(FrameLayout.LayoutParams)tableLayout.
-			 * getLayoutParams(); layoutParams = new
-			 * FrameLayout.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT,
-			 * ViewGroup.LayoutParams.FILL_PARENT);
-			 * tableLayout.setLayoutParams(layoutParams);
-			 * tableLayout.setPadding(8,8,8,8);
-			 * tableLayout.setStretchAllColumns(true);
-			 *
-			 * ScrollView scrollView = new ScrollView(SettingsActivity.this);
-			 * scrollView.addView(tableLayout);
-			 *
-			 * new AlertDialog.Builder(SettingsActivity.this)
-			 * .setTitle(getString(R.string.settings_envelope))
-			 * .setView(scrollView)
-			 * .setPositiveButton(getString(R.string.ok),new
-			 * DialogInterface.OnClickListener(){
-			 *
-			 * @Override public void onClick(DialogInterface dialog, int which)
-			 * { setEnableEnvelope(enableCheckBox.isChecked()?1:0);
-			 * setAttackTime(attackSeekBar.getProgress());
-			 * setDecayTime(decaySeekBar.getProgress());
-			 * setSustainLevel(sustainSeekBar.getProgress());
-			 * setReleaseTime(releaseSeekBar.getProgress());
-			 * ((ListView)findViewById(R.id.settings_items)).setSelection(
-			 * position); } }) .setNegativeButton(getString(R.string.cancel),new
-			 * DialogInterface.OnClickListener(){
-			 *
-			 * @Override public void onClick(DialogInterface dialog, int which)
-			 * { ((ListView)findViewById(R.id.settings_items)).setSelection(
-			 * position); } }) .show(); break; }
-			 */
 		case 6: {
 			CharSequence list[] = new String[4];
 			for (int i = 0; i < 4; i++) {
-				list[i] = "" + Statics.valueOfSamplingRate(i - 3) + " "
-						+ getString(R.string.settings_sampling_rate_hz);
+				list[i] = "" + Statics.valueOfSamplingRate(i - 3) + " " + getString(R.string.settings_sampling_rate_hz);
 			}
 			new AlertDialog.Builder(SettingsActivity.this).setTitle(getString(R.string.settings_sampling_rate))
 					.setSingleChoiceItems(list, samplingRate + 3, new DialogInterface.OnClickListener() {
@@ -542,38 +387,71 @@ public class SettingsActivity extends Activity implements OnClickListener, OnIte
 		case 8: {
 			if (MainActivity.midiDevice == null) {
 				new AlertDialog.Builder(this).setTitle(getString(R.string.settings_midi_device))
-				.setMessage(getString(R.string.midi_device_is_not_connected))
-				.setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
+						.setMessage(getString(R.string.midi_device_is_not_connected))
+						.setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
+							@Override
+							public void onClick(DialogInterface dialog, int which) {
 
-					}
-				}).show();
+							}
+						}).show();
 			} else {
-				String message = MainActivity.midiDevice.getInfo().getProperties().getString(MidiDeviceInfo.PROPERTY_NAME);
+				String message = MainActivity.midiDevice.getInfo().getProperties()
+						.getString(MidiDeviceInfo.PROPERTY_NAME);
 				message += "\n";
 				message += getString(R.string.manufacturer) + " ";
-				message += MainActivity.midiDevice.getInfo().getProperties().getString(MidiDeviceInfo.PROPERTY_MANUFACTURER);
+				message += MainActivity.midiDevice.getInfo().getProperties()
+						.getString(MidiDeviceInfo.PROPERTY_MANUFACTURER);
 
-				new AlertDialog.Builder(this).setTitle(getString(R.string.settings_midi_device))
-				.setMessage(message)
-				.setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
+				new AlertDialog.Builder(this).setTitle(getString(R.string.settings_midi_device)).setMessage(message)
+						.setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
+							@Override
+							public void onClick(DialogInterface dialog, int which) {
 
-					}
-				})
-				.setNeutralButton(getString(R.string.disconnect), new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						MainActivity.disconnectMidiDevice(SettingsActivity.this);
-					}
-				})
-				.show();
+							}
+						}).setNeutralButton(getString(R.string.disconnect), new DialogInterface.OnClickListener() {
+							@Override
+							public void onClick(DialogInterface dialog, int which) {
+								MainActivity.disconnectMidiDevice(SettingsActivity.this);
+							}
+						}).show();
+			}
+			break;
+		}
+		case 9: {
+			updatePreferenceValues();
+			if (neverShowAlphaReleased <= 0) {
+				new AlertDialog.Builder(SettingsActivity.this)
+						.setTitle(getString(R.string.settings_reset_message_dialogs))
+						.setMessage(getString(R.string.settings_reset_message_dialogs_no_need))
+						.setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
+							@Override
+							public void onClick(DialogInterface arg0, int arg1) {
+								// TODO 自動生成されたメソッド・スタブ
+
+							}
+						}).show();
+			} else {
+				new AlertDialog.Builder(SettingsActivity.this)
+						.setTitle(getString(R.string.settings_reset_message_dialogs))
+						.setMessage(R.string.settings_reset_message_dialogs_confirm)
+						.setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
+							@Override
+							public void onClick(DialogInterface dialog, int which) {
+								setNeverShowAlphaReleased(0);
+								Toast.makeText(SettingsActivity.this,
+										getString(R.string.settings_reset_message_dialogs_finished), Toast.LENGTH_LONG)
+										.show();
+								((ListView) findViewById(R.id.settings_items)).setSelection(position);
+							}
+						}).setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
+							@Override
+							public void onClick(DialogInterface dialog, int which) {
+								((ListView) findViewById(R.id.settings_items)).setSelection(position);
+							}
+						}).show();
+				break;
 			}
 		}
-		default:
-			return;
 		}
 	}
 
@@ -674,5 +552,12 @@ public class SettingsActivity extends Activity implements OnClickListener, OnIte
 		position = ((ListView) findViewById(R.id.settings_items)).getFirstVisiblePosition();
 		updateSettingsListView();
 		((ListView) findViewById(R.id.settings_items)).setSelection(position);
+	}
+
+	public void setNeverShowAlphaReleased(int nsar) {
+		neverShowAlphaReleased = nsar;
+		Statics.setPreferenceValue(this, Statics.PREF_NEVER_SHOW_ALPHA_RELEASED, neverShowAlphaReleased);
+		updatePreferenceValues();
+		updateSettingsListView();
 	}
 }

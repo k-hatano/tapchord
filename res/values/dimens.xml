@@ -4,4 +4,8 @@
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
 
+    <dimen name="beta_dialog_padding">16dp</dimen>
+    <dimen name="beta_image_padding">16dp</dimen>
+    <dimen name="beta_image_width_max">256dp</dimen>
+
 </resources>

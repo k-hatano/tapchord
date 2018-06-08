@@ -19,9 +19,14 @@ public final class R {
          */
         public static final int activity_horizontal_margin=0x7f040000;
         public static final int activity_vertical_margin=0x7f040001;
+        public static final int beta_dialog_padding=0x7f040002;
+        public static final int beta_image_padding=0x7f040003;
+        public static final int beta_image_width_max=0x7f040004;
     }
     public static final class drawable {
-        public static final int tapchord=0x7f020000;
+        public static final int beta_en=0x7f020000;
+        public static final int beta_ja=0x7f020001;
+        public static final int tapchord=0x7f020002;
     }
     public static final class id {
         public static final int action_ok=0x7f080006;
@@ -51,6 +56,7 @@ public final class R {
         public static final int disabled=0x7f05002e;
         public static final int disconnect=0x7f050034;
         public static final int enable=0x7f05002c;
+        public static final int go_to_google_play=0x7f05003d;
         public static final int hello_world=0x7f050002;
         public static final int manufacturer=0x7f050038;
         public static final int message_quit=0x7f050004;
@@ -58,10 +64,12 @@ public final class R {
         public static final int midi_device_connected=0x7f050035;
         public static final int midi_device_disconnected=0x7f050036;
         public static final int midi_device_is_not_connected=0x7f050037;
+        public static final int never_show_again=0x7f05003f;
         public static final int not_connected=0x7f050033;
         public static final int off=0x7f050028;
         public static final int ok=0x7f050005;
         public static final int on=0x7f050027;
+        public static final int remind_me_later=0x7f05003e;
         public static final int settings_animation_quality=0x7f05001c;
         public static final int settings_animation_quality_high=0x7f05001f;
         public static final int settings_animation_quality_low=0x7f05001d;
@@ -73,11 +81,16 @@ public final class R {
         public static final int settings_decay=0x7f050017;
         public static final int settings_decay_time=0x7f050013;
         public static final int settings_envelope=0x7f050011;
-        public static final int settings_midi_device=0x7f050020;
+        public static final int settings_midi_device=0x7f050021;
         public static final int settings_release=0x7f050019;
         public static final int settings_release_time=0x7f050015;
+        public static final int settings_reset_message_dialogs=0x7f050040;
+        public static final int settings_reset_message_dialogs_confirm=0x7f050042;
+        public static final int settings_reset_message_dialogs_description=0x7f050041;
+        public static final int settings_reset_message_dialogs_finished=0x7f050043;
+        public static final int settings_reset_message_dialogs_no_need=0x7f050044;
         public static final int settings_sampling_rate=0x7f050007;
-        public static final int settings_sampling_rate_hz=0x7f050021;
+        public static final int settings_sampling_rate_hz=0x7f050020;
         public static final int settings_scale=0x7f05002a;
         public static final int settings_sound_range=0x7f050010;
         public static final int settings_sound_range_short=0x7f050030;
@@ -99,6 +112,9 @@ public final class R {
         public static final int special_thanks=0x7f050022;
         public static final int tapchord_settings=0x7f050024;
         public static final int version=0x7f050039;
+        public static final int version_201_alpha_released_caution=0x7f05003c;
+        public static final int version_201_alpha_released_message=0x7f05003b;
+        public static final int version_201_alpha_released_title=0x7f05003a;
     }
     public static final class style {
         /** 

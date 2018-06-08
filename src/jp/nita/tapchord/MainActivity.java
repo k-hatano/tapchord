@@ -1,6 +1,7 @@
 package jp.nita.tapchord;
 
 import java.io.IOException;
+import java.util.Locale;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -23,10 +24,19 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
+import android.net.Uri;
+import android.view.WindowManager;
+import android.widget.CheckBox;
+import android.widget.ImageView;
+import android.widget.ImageView.ScaleType;
+import android.widget.LinearLayout;
+import android.widget.ScrollView;
+import android.widget.TextView;
 
 public class MainActivity extends Activity {
 
 	public static int heartBeatInterval = 5;
+	public int neverShowAlphaReleased = 0;
 
 	private Heart heart = null;
 
@@ -53,6 +63,82 @@ public class MainActivity extends Activity {
 
 		MidiManager midiManager = (MidiManager)getSystemService(Context.MIDI_SERVICE);
 		midiManager.registerDeviceCallback(deviceCallBack, new Handler(Looper.getMainLooper()));
+
+		if (neverShowAlphaReleased <= 0) {
+			showAlphaVersionInformationDialog();
+		}
+	}
+
+	public void showAlphaVersionInformationDialog() {
+		TextView messageTextView = new TextView(this);
+		messageTextView.setTextAppearance(this, android.R.style.TextAppearance_Inverse);
+		messageTextView.setText(getString(R.string.version_201_alpha_released_message));
+
+		TextView cautionTextView = new TextView(this);
+		cautionTextView.setTextAppearance(this, android.R.style.TextAppearance_Inverse);
+		cautionTextView.setText(getString(R.string.version_201_alpha_released_caution));
+
+		String locale = Locale.getDefault().getLanguage();
+		ImageView betaImage = new ImageView(this);
+		if (locale.equals("ja")) {
+			betaImage.setImageDrawable(getResources().getDrawable(R.drawable.beta_ja));
+		} else {
+			betaImage.setImageDrawable(getResources().getDrawable(R.drawable.beta_en));
+		}
+		betaImage.setPadding(getResources().getDimensionPixelSize(R.dimen.beta_image_padding),
+				getResources().getDimensionPixelSize(R.dimen.beta_image_padding),
+				getResources().getDimensionPixelSize(R.dimen.beta_image_padding),
+				getResources().getDimensionPixelSize(R.dimen.beta_image_padding));
+		betaImage.setScaleType(ScaleType.FIT_XY);
+		betaImage.setAdjustViewBounds(true);
+		betaImage.setMaxWidth(getResources().getDimensionPixelSize(R.dimen.beta_image_width_max));
+		betaImage.setMaxHeight(getResources().getDimensionPixelSize(R.dimen.beta_image_width_max));
+
+		final CheckBox neverShowAgainCheckBox = new CheckBox(this);
+		neverShowAgainCheckBox.setTextAppearance(this, android.R.style.TextAppearance_Inverse);
+		neverShowAgainCheckBox.setTextColor(neverShowAgainCheckBox.getTextColors().getDefaultColor());
+		neverShowAgainCheckBox.setText(getString(R.string.never_show_again));
+
+		LinearLayout linearLayout = new LinearLayout(this);
+		linearLayout.setPadding(getResources().getDimensionPixelSize(R.dimen.beta_dialog_padding),
+				getResources().getDimensionPixelSize(R.dimen.beta_dialog_padding),
+				getResources().getDimensionPixelSize(R.dimen.beta_dialog_padding),
+				getResources().getDimensionPixelSize(R.dimen.beta_dialog_padding));
+		linearLayout.setOrientation(LinearLayout.VERTICAL);
+		linearLayout.addView(messageTextView);
+		linearLayout.addView(betaImage);
+		linearLayout.addView(cautionTextView);
+		linearLayout.addView(neverShowAgainCheckBox);
+
+		ScrollView scrollView = new ScrollView(this);
+		scrollView.addView(linearLayout);
+
+		final MainActivity finalActivity = this;
+
+		AlertDialog dialog = new AlertDialog.Builder(this)
+				.setTitle(getString(R.string.version_201_alpha_released_title))
+				.setIcon(android.R.drawable.ic_dialog_info).setView(scrollView)
+				.setPositiveButton(getString(R.string.remind_me_later), new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						if (neverShowAgainCheckBox.isChecked()) {
+							Statics.setPreferenceValue(finalActivity, Statics.PREF_NEVER_SHOW_ALPHA_RELEASED, 1);
+						}
+					}
+				}).setNeutralButton(getString(R.string.go_to_google_play), new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						if (neverShowAgainCheckBox.isChecked()) {
+							Statics.setPreferenceValue(finalActivity, Statics.PREF_NEVER_SHOW_ALPHA_RELEASED, 1);
+						}
+						Uri uri = Uri.parse("https://play.google.com/store/apps/details?id=jp.nita.tapchord");
+						Intent i = new Intent(Intent.ACTION_VIEW, uri);
+						startActivity(i);
+					}
+				}).create();
+		dialog.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+				WindowManager.LayoutParams.FLAG_FULLSCREEN);
+		dialog.show();
 	}
 
 	final OnDeviceOpenedListener onDeviceOpenedListener = new MidiManager.OnDeviceOpenedListener() {
@@ -157,16 +243,14 @@ public class MainActivity extends Activity {
 	@Override
 	protected void onPause() {
 		super.onPause();
-
-		((TapChordView) findViewById(R.id.tapChordView)).activityPaused();
+		((TapChordView) findViewById(R.id.tapChordView)).activityPaused(this);
 		heart.sleep();
 	}
 
 	@Override
 	protected void onResume() {
 		super.onResume();
-
-		((TapChordView) findViewById(R.id.tapChordView)).activityResumed();
+		((TapChordView) findViewById(R.id.tapChordView)).activityResumed(this);
 		updatePreferences();
 		heart.wake();
 	}
@@ -175,7 +259,7 @@ public class MainActivity extends Activity {
 	protected void onDestroy() {
 		super.onDestroy();
 
-		((TapChordView) findViewById(R.id.tapChordView)).activityPaused();
+		((TapChordView) findViewById(R.id.tapChordView)).activityPaused(this);
 		heart.die();
 	}
 
@@ -284,6 +368,7 @@ public class MainActivity extends Activity {
 		int animationQuality = Statics.preferenceValue(this, Statics.PREF_ANIMATION_QUALITY, 0);
 		setAnimationQuality(animationQuality);
 		volume = Statics.valueOfVolume(Statics.preferenceValue(this, Statics.PREF_VOLUME, 0));
+		neverShowAlphaReleased = Statics.preferenceValue(this, Statics.PREF_NEVER_SHOW_ALPHA_RELEASED, 0);
 	}
 
 	@Override
@@ -302,9 +387,10 @@ public class MainActivity extends Activity {
 
 						}
 					}).show();
-//		} else if (keyCode == KeyEvent.KEYCODE_CAMERA || keyCode == KeyEvent.KEYCODE_BACKSLASH) {
-//			TapChordView.debugMode = !TapChordView.debugMode;
-//			((TapChordView) findViewById(R.id.tapChordView)).invalidate();
+			// } else if (keyCode == KeyEvent.KEYCODE_CAMERA || keyCode ==
+			// KeyEvent.KEYCODE_BACKSLASH) {
+			// TapChordView.debugMode = !TapChordView.debugMode;
+			// ((TapChordView) findViewById(R.id.tapChordView)).invalidate();
 		} else {
 			boolean result = false;
 			result = ((TapChordView) findViewById(R.id.tapChordView)).keyPressed(keyCode, event);
@@ -326,13 +412,13 @@ public class MainActivity extends Activity {
 	}
 
 	@Override
-	public boolean onKeyLongPress(int keyCode, KeyEvent event){
+	public boolean onKeyLongPress(int keyCode, KeyEvent event) {
 		boolean result = false;
 		result = ((TapChordView) findViewById(R.id.tapChordView)).keyLongPressed(keyCode, event);
 		if (!result) {
 			return super.onKeyLongPress(keyCode, event);
 		}
-	    return super.onKeyLongPress(keyCode, event);
+		return super.onKeyLongPress(keyCode, event);
 	}
 
 	public static void onAppResumed(Activity activity) {

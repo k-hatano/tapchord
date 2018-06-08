@@ -1,6 +1,5 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
 <resources>
-
     <string name="app_name">tapchord</string>
     <string name="action_settings">設定</string>
     <string name="hello_world">Hello world!</string>
@@ -33,15 +32,12 @@
     <string name="settings_animation_quality_low">低</string>
     <string name="settings_animation_quality_medium">中</string>
     <string name="settings_animation_quality_high">高</string>
-    <string name="settings_midi_device">MIDI デバイス</string>
-
     <string name="settings_sampling_rate_hz"> Hz</string>
+    <string name="settings_midi_device">MIDI デバイス</string>
     <string name="special_thanks">Special Thanks to\nAkiyoshi Kamide</string>
-    <string name="copyright">Version 2.0α © Nita</string>
+    <string name="copyright">Version 2.0.1α © Nita</string>
     <string name="tapchord_settings">tapchord - 設定</string>
-
     <string name="settings_volume">ボリューム</string>
-
     <string name="darken">あの楽器</string>
     <string name="on">オン</string>
     <string name="off">オフ</string>
@@ -51,19 +47,26 @@
     <string name="enable">有効</string>
     <string name="disable">有効</string>
     <string name="disabled">無効</string>
-
     <string name="settings_volume_short">音量</string>
     <string name="settings_sound_range_short">音域</string>
     <string name="settings_waveform_short">波形</string>
-
     <string name="midi_device">MIDI デバイス</string>
     <string name="not_connected">接続されていません</string>
     <string name="disconnect">切断</string>
-
     <string name="midi_device_connected">MIDI デバイスが接続されました : </string>
     <string name="midi_device_disconnected">MIDI デバイスが切断されました。</string>
     <string name="midi_device_is_not_connected">MIDI デバイスは接続されていません。</string>
     <string name="manufacturer">製造元 : </string>
     <string name="version">バージョン : </string>
-
+    <string name="version_201_alpha_released_title">2.0.1 アルファ版公開中</string>
+    <string name="version_201_alpha_released_message">tapchord 2.0.1アルファ版（MIDI OUT対応版）を公開しております。\ntapchord 2.0.1では、Androidデバイスを、\n\n・USB A-microBケーブルを用いて、PCと接続\n・USB MIDIケーブル・USB A-microB変換アダプタを用いて、MIDIデバイスと接続\n\n以上を行うことによって、コードをPC上のソフトウェアやMIDIデバイスで再生することができます。\n\nアルファテストにご協力頂ける場合、Google Playアプリにて「tapchord」アプリのページを開いて頂き、「ベータ版を使ってみる」欄にある「登録する」ボタンを押してください。</string>
+    <string name="version_201_alpha_released_caution">　※　注意　※\ntapchord 2.0.1は「アルファ版」です。テストは自己責任の上で行って頂きますよう、よろしくお願いいたします。</string>
+    <string name="go_to_google_play">Google Playを開く</string>
+    <string name="remind_me_later">また後で</string>
+    <string name="never_show_again">今後表示しない</string>
+    <string name="settings_reset_message_dialogs">ダイアログのリセット</string>
+    <string name="settings_reset_message_dialogs_description">「今後表示しない」チェック済みダイアログを表示</string>
+    <string name="settings_reset_message_dialogs_confirm">ダイアログをリセットしますか？\n「今後表示しない」チェックボックスにチェックを入れたダイアログが、再び表示されるようになります。</string>
+    <string name="settings_reset_message_dialogs_finished">ダイアログはリセットされました。</string>
+    <string name="settings_reset_message_dialogs_no_need">リセットが必要なダイアログはありません。</string>
 </resources>
