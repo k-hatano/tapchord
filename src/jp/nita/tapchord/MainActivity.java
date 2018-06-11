@@ -20,6 +20,7 @@ import android.media.midi.MidiManager.OnDeviceOpenedListener;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.view.ContextThemeWrapper;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -36,6 +37,7 @@ import android.widget.TextView;
 public class MainActivity extends Activity {
 
 	public static int heartBeatInterval = 5;
+	public int darken = 0;
 	public int neverShowAlphaReleased = 0;
 
 	private Heart heart = null;
@@ -70,16 +72,17 @@ public class MainActivity extends Activity {
 	}
 
 	public void showAlphaVersionInformationDialog() {
-		TextView messageTextView = new TextView(this);
-		messageTextView.setTextAppearance(this, android.R.style.TextAppearance_Inverse);
+		updatePreferences();
+		final ContextThemeWrapper themeWrapper = new ContextThemeWrapper(this, darken > 0 ? android.R.style.Theme_Holo : android.R.style.Theme_Holo_Light);
+
+		TextView messageTextView = new TextView(themeWrapper);
 		messageTextView.setText(getString(R.string.version_201_alpha_released_message));
 
-		TextView cautionTextView = new TextView(this);
-		cautionTextView.setTextAppearance(this, android.R.style.TextAppearance_Inverse);
+		TextView cautionTextView = new TextView(themeWrapper);
 		cautionTextView.setText(getString(R.string.version_201_alpha_released_caution));
 
 		String locale = Locale.getDefault().getLanguage();
-		ImageView betaImage = new ImageView(this);
+		ImageView betaImage = new ImageView(themeWrapper);
 		if (locale.equals("ja")) {
 			betaImage.setImageDrawable(getResources().getDrawable(R.drawable.beta_ja));
 		} else {
@@ -94,12 +97,11 @@ public class MainActivity extends Activity {
 		betaImage.setMaxWidth(getResources().getDimensionPixelSize(R.dimen.beta_image_width_max));
 		betaImage.setMaxHeight(getResources().getDimensionPixelSize(R.dimen.beta_image_width_max));
 
-		final CheckBox neverShowAgainCheckBox = new CheckBox(this);
-		neverShowAgainCheckBox.setTextAppearance(this, android.R.style.TextAppearance_Inverse);
+		final CheckBox neverShowAgainCheckBox = new CheckBox(themeWrapper);
 		neverShowAgainCheckBox.setTextColor(neverShowAgainCheckBox.getTextColors().getDefaultColor());
 		neverShowAgainCheckBox.setText(getString(R.string.never_show_again));
 
-		LinearLayout linearLayout = new LinearLayout(this);
+		LinearLayout linearLayout = new LinearLayout(themeWrapper);
 		linearLayout.setPadding(getResources().getDimensionPixelSize(R.dimen.beta_dialog_padding),
 				getResources().getDimensionPixelSize(R.dimen.beta_dialog_padding),
 				getResources().getDimensionPixelSize(R.dimen.beta_dialog_padding),
@@ -110,14 +112,14 @@ public class MainActivity extends Activity {
 		linearLayout.addView(cautionTextView);
 		linearLayout.addView(neverShowAgainCheckBox);
 
-		ScrollView scrollView = new ScrollView(this);
+		ScrollView scrollView = new ScrollView(themeWrapper);
 		scrollView.addView(linearLayout);
 
 		final MainActivity finalActivity = this;
 
-		AlertDialog dialog = new AlertDialog.Builder(this)
+		AlertDialog dialog = new AlertDialog.Builder(themeWrapper)
 				.setTitle(getString(R.string.version_201_alpha_released_title))
-				.setIcon(android.R.drawable.ic_dialog_info).setView(scrollView)
+				.setView(scrollView)
 				.setPositiveButton(getString(R.string.remind_me_later), new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
@@ -368,13 +370,17 @@ public class MainActivity extends Activity {
 		int animationQuality = Statics.preferenceValue(this, Statics.PREF_ANIMATION_QUALITY, 0);
 		setAnimationQuality(animationQuality);
 		volume = Statics.valueOfVolume(Statics.preferenceValue(this, Statics.PREF_VOLUME, 0));
+		darken = Statics.preferenceValue(this, Statics.PREF_DARKEN, 0);
 		neverShowAlphaReleased = Statics.preferenceValue(this, Statics.PREF_NEVER_SHOW_ALPHA_RELEASED, 0);
 	}
 
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		if (keyCode == KeyEvent.KEYCODE_BACK) {
-			new AlertDialog.Builder(this).setTitle(getString(R.string.action_quit))
+			updatePreferences();
+			final ContextThemeWrapper themeWrapper = new ContextThemeWrapper(this, darken > 0 ? android.R.style.Theme_Holo : android.R.style.Theme_Holo_Light);
+
+			new AlertDialog.Builder(themeWrapper).setTitle(getString(R.string.action_quit))
 					.setMessage(getString(R.string.message_quit))
 					.setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
 						@Override
