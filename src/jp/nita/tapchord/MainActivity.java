@@ -76,26 +76,10 @@ public class MainActivity extends Activity {
 		final ContextThemeWrapper themeWrapper = new ContextThemeWrapper(this, darken > 0 ? android.R.style.Theme_Holo : android.R.style.Theme_Holo_Light);
 
 		TextView messageTextView = new TextView(themeWrapper);
-		messageTextView.setText(getString(R.string.version_201_alpha_released_message));
+		messageTextView.setText(getString(R.string.thank_you_for_joining_alpha_test_message));
 
 		TextView cautionTextView = new TextView(themeWrapper);
-		cautionTextView.setText(getString(R.string.version_201_alpha_released_caution));
-
-		String locale = Locale.getDefault().getLanguage();
-		ImageView betaImage = new ImageView(themeWrapper);
-		if (locale.equals("ja")) {
-			betaImage.setImageDrawable(getResources().getDrawable(R.drawable.beta_ja));
-		} else {
-			betaImage.setImageDrawable(getResources().getDrawable(R.drawable.beta_en));
-		}
-		betaImage.setPadding(getResources().getDimensionPixelSize(R.dimen.beta_image_padding),
-				getResources().getDimensionPixelSize(R.dimen.beta_image_padding),
-				getResources().getDimensionPixelSize(R.dimen.beta_image_padding),
-				getResources().getDimensionPixelSize(R.dimen.beta_image_padding));
-		betaImage.setScaleType(ScaleType.FIT_XY);
-		betaImage.setAdjustViewBounds(true);
-		betaImage.setMaxWidth(getResources().getDimensionPixelSize(R.dimen.beta_image_width_max));
-		betaImage.setMaxHeight(getResources().getDimensionPixelSize(R.dimen.beta_image_width_max));
+		cautionTextView.setText(getString(R.string.thank_you_for_joining_alpha_test_caution));
 
 		final CheckBox neverShowAgainCheckBox = new CheckBox(themeWrapper);
 		neverShowAgainCheckBox.setTextColor(neverShowAgainCheckBox.getTextColors().getDefaultColor());
@@ -108,7 +92,6 @@ public class MainActivity extends Activity {
 				getResources().getDimensionPixelSize(R.dimen.beta_dialog_padding));
 		linearLayout.setOrientation(LinearLayout.VERTICAL);
 		linearLayout.addView(messageTextView);
-		linearLayout.addView(betaImage);
 		linearLayout.addView(cautionTextView);
 		linearLayout.addView(neverShowAgainCheckBox);
 
@@ -118,24 +101,14 @@ public class MainActivity extends Activity {
 		final MainActivity finalActivity = this;
 
 		AlertDialog dialog = new AlertDialog.Builder(themeWrapper)
-				.setTitle(getString(R.string.version_201_alpha_released_title))
+				.setTitle(getString(R.string.thank_you_for_joining_alpha_test_title))
 				.setView(scrollView)
-				.setPositiveButton(getString(R.string.remind_me_later), new DialogInterface.OnClickListener() {
+				.setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
 						if (neverShowAgainCheckBox.isChecked()) {
 							Statics.setPreferenceValue(finalActivity, Statics.PREF_NEVER_SHOW_ALPHA_RELEASED, 1);
 						}
-					}
-				}).setNeutralButton(getString(R.string.go_to_google_play), new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						if (neverShowAgainCheckBox.isChecked()) {
-							Statics.setPreferenceValue(finalActivity, Statics.PREF_NEVER_SHOW_ALPHA_RELEASED, 1);
-						}
-						Uri uri = Uri.parse("https://play.google.com/store/apps/details?id=jp.nita.tapchord");
-						Intent i = new Intent(Intent.ACTION_VIEW, uri);
-						startActivity(i);
 					}
 				}).create();
 		dialog.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
