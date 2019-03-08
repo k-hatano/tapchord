@@ -51,7 +51,7 @@
     <string name="settings_waveform_short">波形</string>
     <string name="version_201_alpha_released_title">2.0.1 アルファ版公開中</string>
     <string name="version_201_alpha_released_message">tapchord 2.0.1アルファ版（MIDI OUT対応版）を公開しております。\ntapchord 2.0.1では、Androidデバイスを、\n\n・USB A-microBケーブルを用いて、PCと接続\n・USB MIDIケーブル・USB A-microB変換アダプタを用いて、MIDIデバイスと接続\n\n以上を行うことによって、コードをPC上のソフトウェアやMIDIデバイスで再生することができます。\n\nアルファテストにご協力頂ける場合、Google Playアプリにて「tapchord」アプリのページを開いて頂き、「ベータ版を使ってみる」欄にある「登録する」ボタンを押してください。</string>
-    <string name="version_201_alpha_released_caution">　※　注意　※\ntapchord 2.0.1は「アルファ版」です。テストは自己責任の上で行って頂きますよう、よろしくお願いいたします。</string>
+    <string name="version_201_alpha_released_caution">　※　注意　※\n・アルファテストには Android 6.0 以上が必要です。\n・tapchord 2.0.1は「アルファ版」です。テストは自己責任の上で行って頂きますよう、よろしくお願いいたします。</string>
     <string name="go_to_google_play">Google Playを開く</string>
     <string name="remind_me_later">また後で</string>
     <string name="never_show_again">今後表示しない</string>
