@@ -64,7 +64,11 @@ public class MainActivity extends Activity {
 		main = this;
 
 		MidiManager midiManager = (MidiManager)getSystemService(Context.MIDI_SERVICE);
-		midiManager.registerDeviceCallback(deviceCallBack, new Handler(Looper.getMainLooper()));
+		try {
+			midiManager.registerDeviceCallback(deviceCallBack, new Handler(Looper.getMainLooper()));
+		} catch (Exception ex) {
+			Toast.makeText(main, main.getString(R.string.midi_unavailable), Toast.LENGTH_SHORT).show();
+		}
 
 		if (neverShowAlphaReleased <= 0) {
 			showAlphaVersionInformationDialog();
@@ -402,7 +406,11 @@ public class MainActivity extends Activity {
 
 	public static void onAppResumed(Activity activity) {
 		MidiManager midiManager = (MidiManager) main.getSystemService(Context.MIDI_SERVICE);
-		midiManager.registerDeviceCallback(main.deviceCallBack, new Handler(Looper.getMainLooper()));
+		try {
+			midiManager.registerDeviceCallback(main.deviceCallBack, new Handler(Looper.getMainLooper()));
+		} catch (Exception ignore) {
+			
+		}
 	}
 
 	public static void onAppPaused(Activity activity) {
@@ -435,7 +443,11 @@ public class MainActivity extends Activity {
 			}
 		}
 
-		midiManager.unregisterDeviceCallback(main.deviceCallBack);
+		try {
+			midiManager.unregisterDeviceCallback(main.deviceCallBack);
+		} catch (Exception ignore) {
+			
+		}
 	}
 
 	public static void disconnectMidiDevice(Activity activity) {
