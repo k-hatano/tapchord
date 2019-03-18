@@ -50,7 +50,7 @@
     <string name="settings_sound_range_short">Range</string>
     <string name="settings_waveform_short">Form</string>
     <string name="version_201_alpha_released_title">2.0.1 Alpha Version is released</string>
-    <string name="version_201_alpha_released_message">2.0.1 Alpha Version, which supports MIDI OUT, is released now.\nYou can connect your Android devices to\n\n* PC via USB A-microB cable\n* MIDI devices (electronic piano, synthesizer, etc.) via USB MIDI cable &amp; USB A to microB adapter\n\nand play chords on software on PC or MIDI devices.\n\nIf you would like to join the alpha testing, please open \"tapchord\" page on Google Play app, and tap \"I\'m in\" button under \"Become a beta tester\" label.</string>
+    <string name="version_201_alpha_released_message">2.0.1 Alpha Version, which supports MIDI OUT, is released now.\nYou can connect your Android devices to\n\n* PC via USB A-microB cable\n* MIDI devices (electronic piano, synthesizer, etc.) via USB MIDI cable &amp; USB A to microB adapter\n\nand play chords on software on PC or MIDI devices.\n\nIf you would like to join the alpha testing, please open \"tapchord\" page on Google Play app, and tap \"Join\" button under \"Join the beta\" label.</string>
     <string name="version_201_alpha_released_caution">** CAUTION **\n* Android 6.0 or above is required for alpha testing.\n* tapchord 2.0.1 is \"Alpha Version.\" Please take responsibility for your testing.</string>
     <string name="go_to_google_play">Go to Google Play</string>
     <string name="remind_me_later">Remind Me Later</string>
